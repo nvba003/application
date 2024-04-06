@@ -18,6 +18,14 @@ return [
         'passwords' => 'users',
     ],
 
+    'guards' => [
+        'api' => [
+            'driver' => 'jwt',
+            'provider' => 'users',
+            'hash' => false,
+        ],
+    ],    
+
     /*
     |--------------------------------------------------------------------------
     | Authentication Guards

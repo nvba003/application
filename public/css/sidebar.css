@@ -1,0 +1,114 @@
+/* Layout chung */
+.flex {
+    display: flex;
+}
+
+/* Sidebar styles */
+.sidebar {
+    max-width: 200px;  /*Chiếm tối đa width khi hiện */
+    height: 100vh; /* Chiều cao 100% của viewport */
+    /*position: fixed;  Để sidebar cố định */
+    left: 0;
+    top: 0;
+    transition: width 0.5s ease; /* Hiệu ứng chuyển đổi nếu bạn muốn thay đổi chiều rộng */
+    background-color: #000d1a; /* Màu xanh dương đậm */
+    color: #d4d4d4;
+}
+
+.sidebar.collapsed {
+    width: 60px; /* Chiều rộng khi chỉ còn icon */
+}
+
+/* Content styles */
+.content {
+    /*width: 90%;  /*Chiếm phần còn lại khi sidebar hiện */
+    flex: 1; /* Chiếm mọi không gian còn lại sau khi sidebar đã được đặt chiều rộng */
+    transition: width 0.3s ease;
+}
+
+.sidebar.collapsed ~ .content {
+    width: calc(100% - 50px); /* Chiếm phần còn lại khi sidebar chỉ còn icon */
+}
+
+/* Khi sidebar không bị collapse */
+.navigation {
+    /* width: 100%; */
+    transition: width 0.3s ease;
+}
+
+/* Khi sidebar bị collapse */
+.sidebar.collapsed ~ .navigation {
+    width: 100%; /* Chiếm toàn bộ width khi sidebar collapse */
+}
+
+/* Ẩn text menu khi sidebar không được mở rộng */
+.toggle-sidebar .button-text {
+    display: none;
+}
+
+/* Hiển thị text menu khi sidebar được mở rộng */
+.sidebar:not(.collapsed) .toggle-sidebar .button-text {
+    display: inline; /* Hoặc bạn có thể sử dụng 'block' tùy thuộc vào cách bạn muốn hiển thị */
+}
+
+.menu-toggle {
+    background: none;
+    border: none;
+    text-align: left;
+    width: 100%;
+}
+
+.sub-menu {
+    padding-left: 20px; /* Tạo một khoảng lề cho menu con */
+}
+
+/* Ẩn nav-list khi sidebar được thu */
+.sidebar.collapsed .nav-list {
+    display: none;
+}
+
+.toggle-sidebar {
+    display: flex; /* Sử dụng Flexbox để sắp xếp các thành phần bên trong */
+    justify-content: space-between; /* Căn chỉnh các item bên trong ra hai bên */
+    align-items: center; /* Đảm bảo các item bên trong được căn giữa theo chiều dọc */
+    width: 100%; /* Đặt chiều rộng cho nút, có thể điều chỉnh theo yêu cầu */
+    padding: 10px 20px; /* Thêm padding để tăng khoảng cách bên trong nút */
+    margin-bottom: 20px;
+    border: none; /* Loại bỏ viền */
+    /*background-color: #007BFF;  Màu nền */
+    color: #FFFFFF; /* Màu chữ */
+    border-radius: 0px; /* Bo tròn góc */
+    cursor: pointer; /* Hiển thị con trỏ là pointer khi hover */
+    transition: all 0.3s ease; /* Hiệu ứng chuyển màu mượt mà khi hover và active */
+    font-size: 16px; /* Đặt kích thước font chữ, có thể điều chỉnh */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2); /* Thêm bóng đổ cho nút */
+}
+
+/* -------cần xem lại---------- */
+.nav-item.active, .nav-item.active a {
+    background-color: #FFFF00; /* Màu vàng cho menu con đang được chọn */
+    color: #000000; /* Màu chữ, nếu cần */
+}
+.nav-list, .sub-menu {
+    list-style: none; /* Loại bỏ các dấu đầu dòng mặc định */
+    padding: 0; /* Loại bỏ padding mặc định */
+}
+
+.nav-item {
+    margin-bottom: 5px; /* Điều chỉnh khoảng cách giữa các nav-item */
+}
+
+.nav-item a {
+    display: block; /* Để các link chiếm hết không gian của li */
+    font-size: 16px; /* Điều chỉnh kích thước font của text */
+    line-height: 24px; /* Điều chỉnh khoảng cách giữa các dòng */
+    padding: 10px; /* Thêm một chút padding cho mỗi link */
+    text-decoration: none; /* Loại bỏ gạch chân */
+    color: #808080; /* Màu xám cho text */
+    transition: color 0.3s ease; /* Hiệu ứng chuyển màu mượt mà khi hover */
+}
+
+.nav-item :hover {
+    color: #FFFFFF; /* Màu trắng cho text khi hover */
+    background-color: #343434; /* Màu nền khi hover */
+}
