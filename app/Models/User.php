@@ -13,7 +13,6 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 class User extends Authenticatable implements JWTSubject
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
-    use \Tymon\JWTAuth\Contracts\JWTSubject;
 
     // Hàm này để lấy khoá chính (id) của user
     public function getJWTIdentifier()
