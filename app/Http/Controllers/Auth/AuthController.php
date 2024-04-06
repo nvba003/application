@@ -24,7 +24,13 @@ class AuthController extends Controller
             return response()->json(['error' => 'could_not_create_token'], 500);
         }
 
-        return response()->json(compact('token'));
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            // 'expires_in' => Auth::factory()->getTTL() * 60 // Thời gian sống của token (tùy chọn)
+            'username' => auth()->user()->name, // Lấy name của người dùng và thêm vào phản hồi
+        ]);
+
     }
 
     // Method to get authenticated user
