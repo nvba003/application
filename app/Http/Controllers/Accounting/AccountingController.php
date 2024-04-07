@@ -149,10 +149,10 @@ class AccountingController extends Controller
                 'product_name' => $item['product_name'] ?? null,
                 'status' => $item['status'] ?? null,
                 'packaging' => $item['packaging'] ?? null,
-                'price_sellin_per_pack' => $item['price_sellin_per_pack'] ?? null,
-                'price_sellin_per_unit' => $item['price_sellin_per_unit'] ?? null,
-                'price_sellout_per_pack' => $item['price_sellout_per_pack'] ?? null,
-                'price_sellout_per_unit' => $item['price_sellout_per_unit'] ?? null
+                'price_sellin_per_pack' => $this->convertCurrencyToNumber($item['price_sellin_per_pack'] ?? '0 ₫'),
+                'price_sellin_per_unit' => $this->convertCurrencyToNumber($item['price_sellin_per_unit'] ?? '0 ₫'),
+                'price_sellout_per_pack' => $this->convertCurrencyToNumber($item['price_sellout_per_pack'] ?? '0 ₫'),
+                'price_sellout_per_unit' => $this->convertCurrencyToNumber($item['price_sellout_per_unit'] ?? '0 ₫')
             ];
             ProductPrice::updateOrCreate($detailAttributes, $detailValues);
         }
