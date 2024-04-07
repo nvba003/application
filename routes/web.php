@@ -26,7 +26,7 @@ Route::get('/', function () {
 
 require __DIR__.'/auth.php';
 
-Route::get('/accounting', [AccountingController::class, 'index']);
+Route::get('/product_list', [AccountingController::class, 'productList']);
 Route::get('/users', [UserController::class, 'index'])->name('users.index');
 Route::get('/user/{id}/roles', [UserController::class, 'editRoles'])->name('user.edit.roles');
 Route::post('/user/{id}/roles', [UserController::class, 'updateRoles'])->name('user.update.roles');

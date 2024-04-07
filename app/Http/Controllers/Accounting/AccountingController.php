@@ -13,9 +13,11 @@ use Carbon\Carbon;
 
 class AccountingController extends Controller
 {
-    public function index()
+    public function productList()
     {
-        return view('accounting/index');
+        $product_price = ProductPrice::all();
+        $header = 'Danh sách sản phẩm';
+        return view('accounting.product_list', compact('product_price', 'header'));
     }
 
     public function store(Request $request)
