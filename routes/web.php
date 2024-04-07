@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AccountingController;
+use App\Http\Controllers\Accounting\AccountingController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Accounting\SaleStaffController;
 
@@ -31,6 +31,6 @@ Route::get('/users', [UserController::class, 'index'])->name('users.index');
 Route::get('/user/{id}/roles', [UserController::class, 'editRoles'])->name('user.edit.roles');
 Route::post('/user/{id}/roles', [UserController::class, 'updateRoles'])->name('user.update.roles');
 
-Route::resource('accounting/sale-staff', SaleStaffController::class);
+Route::resource('sale-staff', SaleStaffController::class);
 
 
