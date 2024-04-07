@@ -72,6 +72,4 @@ class AccountingController extends Controller
         // Loại bỏ các ký tự không phải số và chuyển đổi chuỗi kết quả thành số nguyên
         return (int) filter_var($currency, FILTER_SANITIZE_NUMBER_INT);
     }
-
-
 }
