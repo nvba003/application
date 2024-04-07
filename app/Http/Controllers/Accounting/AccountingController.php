@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Accounting\AccountingOrder; 
 use App\Models\Accounting\AccountingOrderDetail; 
+use App\Models\Accounting\RecoveryOrder; 
+use App\Models\Accounting\RecoveryOrderDetail; 
 use Carbon\Carbon;
 
 class AccountingController extends Controller
@@ -49,9 +51,9 @@ class AccountingController extends Controller
         // Xử lý tableData
         foreach ($tableData as $item) {
             if (is_null($item['le']) && is_null($item['thanhTien']) && is_null($item['giamTien']) && is_null($item['thanhToan'])) {
-                $this->handleSpecialData($item);// Xử lý dữ liệu đặc biệt ở đây
+                $this->handleSpecialData($item,$accountingOrder);// Xử lý dữ liệu đặc biệt ở đây
             } else {
-                $this->handleRegularData($item);// Xử lý dữ liệu bình thường ở đây
+                $this->handleRegularData($item,$accountingOrder);// Xử lý dữ liệu bình thường ở đây
             }
         }
 
@@ -64,12 +66,13 @@ class AccountingController extends Controller
         return (int) filter_var($currency, FILTER_SANITIZE_NUMBER_INT);
     }
 
-    protected function handleSpecialData($item)
+    protected function handleSpecialData($item,$accountingOrder)
     {
-        $detailAttributes = ['order_id' => $accountingOrder->id, 'product_code' => $item['maSanPham'] ?? null];
+        $detailAttributes = ['order_id' => $accountingOrder->id, 'product_code' => $item['maSanPham'] ?? null, 'is_special' => true];
         $detailValues = [
             'stt' => $item['stt'] ?? null,
             'product_name' => $item['tenSanPham'] ?? null,
+            'product_code' => $item['maSanPham'] ?? null,
             'thung' => $item['quyCach'] ?? null,//dữ liệu số thùng ở item quyCach
             'le' => $item['gia'] ?? null,//dữ liệu số lẻ ở item gia
             'is_special' => true,
@@ -78,10 +81,10 @@ class AccountingController extends Controller
         AccountingOrderDetail::updateOrCreate($detailAttributes, $detailValues);
     }
 
-    protected function handleRegularData($item)
+    protected function handleRegularData($item,$accountingOrder)
     {
-        // Sử dụng updateOrCreate để cập nhật hoặc tạo mới AccountingOrderDetail dựa trên order_id và product_code
-        $detailAttributes = ['order_id' => $accountingOrder->id, 'product_code' => $item['maSanPham'] ?? null];
+        // Sử dụng updateOrCreate để cập nhật hoặc tạo mới AccountingOrderDetail dựa trên order_id và stt
+        $detailAttributes = ['order_id' => $accountingOrder->id, 'product_code' => $item['maSanPham'] ?? null, 'is_special' => false];
         $detailValues = [
             'stt' => $item['stt'] ?? null,
             'product_name' => $item['tenSanPham'] ?? null,
@@ -94,6 +97,43 @@ class AccountingController extends Controller
             'payable' => $this->convertCurrencyToNumber($item['thanhToan'] ?? '0 ₫')
         ];
         AccountingOrderDetail::updateOrCreate($detailAttributes, $detailValues);
+    }
+
+    //==================================================================
+    public function recovery(Request $request)
+    {
+        $generalData = $request->input('generalData');
+        $tableData = $request->input('tableData', []);
+
+        $approval_date_string = $generalData['Ngày Duyệt'] ?? null;
+        // Tạo một đối tượng Carbon từ chuỗi ngày giờ với định dạng cụ thể
+        $approval_date = Carbon::createFromFormat('d/m/Y H:i', $approval_date_string, 'UTC');
+        $recovery_date = Carbon::createFromFormat('d/m/Y', $generalData['Ngày thu hồi'] ?? null);
+        $recovery_creation_date = Carbon::createFromFormat('d/m/Y', $generalData['Ngày tạo phiếu'] ?? null);
+
+        $attributes = ['recovery_code' => $generalData['Mã phiếu'] ?? null];
+        $values = [
+            'staff' => $generalData['NVBH'] ?? null,
+            'status' => $generalData['Trạng thái'] ?? null,
+            'approval_date' => $approval_date ?? null,
+            'recovery_date' => $recovery_date ?? null,
+            'recovery_creation_date' => $recovery_creation_date ?? null
+        ];
+        $recoveryOrder = RecoveryOrder::updateOrCreate($attributes, $values);
+
+        // Xử lý tableData
+        foreach ($tableData as $item) {
+            $detailAttributes = ['recovery_order_id' => $recoveryOrder->id, 'product_code' => $item['maSanPham'] ?? null];
+            $detailValues = [
+                'stt' => $item['stt'] ?? null,
+                'product_name' => $item['tenSanPham'] ?? null,
+                'quantity' => $item['quyCach'] ?? null,//số lượng lẻ ở cột quyCach
+                'recovery_reason' => $item['gia'] ?? null //lý do thu hồi ở cột gia
+            ];
+            RecoveryOrderDetail::updateOrCreate($detailAttributes, $detailValues);
+        }
+
+        return response()->json(['message' => 'Dữ liệu đã được cập nhật thành công']);
     }
 
 }
