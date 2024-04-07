@@ -27,6 +27,8 @@ class CreateAccountingOrderDetailsTable extends Migration
             $table->unsignedMediumInteger('subtotal')->nullable();//thành tiền
             $table->unsignedMediumInteger('discount')->nullable();//giảm tiền
             $table->unsignedMediumInteger('payable')->nullable();//thanh toán
+            $table->boolean('is_special')->default(false); // Thêm cột is_special với kiểu boolean
+            $table->text('notes')->nullable(); // Thêm cột notes với kiểu text và cho phép giá trị NULL
             $table->timestamps();
         });
     }
