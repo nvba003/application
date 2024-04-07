@@ -15,9 +15,9 @@ class AccountingController extends Controller
 {
     public function productList()
     {
-        $product_price = ProductPrice::all();
+        $products = ProductPrice::all();
         $header = 'Danh sách sản phẩm';
-        return view('accounting.product_list', compact('product_price', 'header'));
+        return view('accounting.product_list', compact('products', 'header'));
     }
 
     public function store(Request $request)
