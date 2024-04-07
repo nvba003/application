@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Accounting;
 
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use App\Models\Accounting\AccountingOrder; 
 use App\Models\Accounting\AccountingOrderDetail; 
 
