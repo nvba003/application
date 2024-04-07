@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class AccountingOrder extends Model
 {
     use HasFactory;
-    protected $guard = ['id'];
+    protected $guarded = ['id'];
     public function orderDetails()
     {
         return $this->hasOne(AccountingOrderDetail::class);

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class AccountingOrderDetail extends Model
 {
     use HasFactory;
-    protected $guard = ['id'];
+    protected $guarded = ['id'];
     public function order()
     {
         return $this->belongsTo(AccountingOrder::class);
