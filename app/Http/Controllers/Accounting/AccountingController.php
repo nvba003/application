@@ -7,7 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Accounting\AccountingOrder; 
 use App\Models\Accounting\AccountingOrderDetail; 
 use App\Models\Accounting\RecoveryOrder; 
-use App\Models\Accounting\RecoveryOrderDetail; 
+use App\Models\Accounting\RecoveryOrderDetail;
+use App\Models\Accounting\ProductPrice; 
 use Carbon\Carbon;
 
 class AccountingController extends Controller
@@ -131,6 +132,29 @@ class AccountingController extends Controller
                 'recovery_reason' => $item['gia'] ?? null //lý do thu hồi ở cột gia
             ];
             RecoveryOrderDetail::updateOrCreate($detailAttributes, $detailValues);
+        }
+
+        return response()->json(['message' => 'Dữ liệu đã được cập nhật thành công']);
+    }
+
+    //==================================================================
+    public function productPrice(Request $request)
+    {
+        $tableData = $request->input('data');
+        // Xử lý tableData
+        foreach ($tableData as $item) {
+            $detailAttributes = ['product_code' => $item['product_code']];
+            $detailValues = [
+                'sap_code' => $item['sap_code'] ?? null,
+                'product_name' => $item['product_name'] ?? null,
+                'status' => $item['status'] ?? null,
+                'packaging' => $item['packaging'] ?? null,
+                'price_sellin_per_pack' => $item['price_sellin_per_pack'] ?? null,
+                'price_sellin_per_unit' => $item['price_sellin_per_unit'] ?? null,
+                'price_sellout_per_pack' => $item['price_sellout_per_pack'] ?? null,
+                'price_sellout_per_unit' => $item['price_sellout_per_unit'] ?? null
+            ];
+            ProductPrice::updateOrCreate($detailAttributes, $detailValues);
         }
 
         return response()->json(['message' => 'Dữ liệu đã được cập nhật thành công']);

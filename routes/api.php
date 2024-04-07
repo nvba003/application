@@ -33,3 +33,4 @@ Route::group(['middleware' => 'auth:api'], function() {
 
 Route::post('/accounting_orders', [AccountingController::class, 'store']);
 Route::post('/accounting_recovery', [AccountingController::class, 'recovery']);
+Route::post('/accounting_product_price', [AccountingController::class, 'productPrice']);
