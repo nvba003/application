@@ -11,7 +11,7 @@ class AccountingOrder extends Model
     protected $guarded = ['id'];
     public function orderDetails()
     {
-        return $this->hasMany(AccountingOrderDetail::class);
+        return $this->hasMany(AccountingOrderDetail::class, 'order_id');
     }
 
 }

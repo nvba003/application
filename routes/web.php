@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Accounting\AccountingController;
+use App\Http\Controllers\Accounting\AccountingOrderController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Accounting\SaleStaffController;
 
@@ -32,5 +33,8 @@ Route::get('/user/{id}/roles', [UserController::class, 'editRoles'])->name('user
 Route::post('/user/{id}/roles', [UserController::class, 'updateRoles'])->name('user.update.roles');
 
 Route::resource('sale-staff', SaleStaffController::class);
+
+Route::get('/orders', [AccountingOrderController::class, 'index'])->name('orders.index');
+
 
 

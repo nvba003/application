@@ -11,7 +11,7 @@ class AccountingOrderDetail extends Model
     protected $guarded = ['id'];
     public function order()
     {
-        return $this->belongsTo(AccountingOrder::class);
+        return $this->belongsTo(AccountingOrder::class, 'order_id');
     }
 
 }
