@@ -15,7 +15,7 @@ class CreateAccountingOrdersTable extends Migration
     {
         Schema::create('accounting_orders', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('order_code')->nullable();//mã đơn hàng
+            $table->string('order_code')->unique()->nullable();//mã đơn hàng
             $table->string('staff')->nullable();//NVBH
             $table->string('source')->nullable();//Nguồn đặt
             $table->string('status')->nullable();//trạng thái
