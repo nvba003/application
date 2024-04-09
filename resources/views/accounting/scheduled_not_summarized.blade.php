@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container mt-3">
-    <h4>Tìm Kiếm và Bộ Lọc Đơn Hàng</h4>
+    <h3>Danh Sách Đơn Hàng Chưa Tổng Hợp</h3>
     <form id="searchForm" method="GET" class="form-inline">
         <div class="form-group mb-2">
             <input type="text" class="form-control" id="order_code" name="order_code" placeholder="Mã Đơn Hàng">
@@ -28,45 +28,69 @@
         <div class="form-group mx-sm-3 mb-2">
             <input type="date" class="form-control" id="order_date" name="order_date" placeholder="Ngày Đặt">
         </div>
-        <div class="form-group mb-2">
-            <select class="form-control" id="order_type" name="order_type">
-                <option value="">Chọn loại đơn hàng</option>
-                <option value="Đơn bán / Giao ngay">Giao ngay</option>
-                <option value="Đơn bán / Giao sau">Giao sau</option>
-            </select>
-        </div>
-        <button type="submit" class="btn btn-primary mb-2 ml-2">Tìm Kiếm</button>
+        <button type="submit" class="btn btn-primary mb-2">Tìm Kiếm</button>
     </form>
-
 
     <div class="row">
         <div class="col-md-12">
             <table class="table" id="ordersTable">
-            <thead>
-                <tr>
-                    <th></th> <!-- Cột cho nút mở rộng -->
-                    <th>Mã Đơn Hàng</th>
-                    <th>Ngày Đặt</th>
-                    <th>Nhân Viên</th>
-                    <th>Trạng Thái</th>
-                    <th>Chiết Khấu</th>
-                    <th>Thành tiền</th>
-                </tr>
-            </thead>
-            <tbody>
-                @include('accounting.partials.orders_table_body', ['orders' => $orders])
-            </tbody>
+                <thead>
+                    <tr>
+                        <th>STT</th> <!-- Cột cho nút mở rộng -->
+                        <th>Ngày Đặt</th>
+                        <th>Mã Đơn Hàng</th>
+                        <th>NVBH</th>
+                        <th>Trạng Thái</th>
+                        <th>Chiết Khấu</th>
+                        <th>Thành Tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @include('accounting.partials.scheduled_not_summarized_tbody', ['orders' => $orders])
+                </tbody>
             </table>
             <div id="pagination-links" class="mt-3">
                 
             </div>
+
         </div>
     </div>
 </div>
-@endsection
+@include('accounting.partials.add_summary_order_modal')
 
+@endsection
 @push('scripts')
 <script>
+
+function showAddSummaryOrderModal(order) {
+    // Logic để hiển thị modal và điền dữ liệu vào form
+    $('#modalStaff').text(order.staff);
+    $('#modalOrderId').val(order.id);
+    $('#modalOrderCode').text(order.order_code);
+    $('#addSummaryOrderModal').modal('show');
+}
+function submitSummaryOrder() {
+    var formData = $('#addSummaryOrderForm').serialize();
+    $.ajax({
+        url: 'add-summary-order-for-scheduled',
+        type: 'POST',
+        data: formData,
+        success: function(response) {
+            console.log(response);
+            $('#addSummaryOrderModal').modal('hide');
+            alert('Thêm Summary Order thành công!');
+            // Cập nhật trạng thái của button
+            var orderId = $('#modalOrderId').val();
+            $('#addButton-' + orderId).hide(); // Ẩn button "Thêm"
+            $('#addedStatus-' + orderId).text('Đã thêm').show(); // Hiển thị chữ "Đã thêm"
+        },
+        error: function(error) {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra khi thêm Summary Order.');
+        }
+    });
+}
+
 $(document).ready(function() {
     function fetchData(url) {
         $.ajax({
@@ -82,30 +106,26 @@ $(document).ready(function() {
         });
     }
 
-    // Gọi hàm fetchData khi trang được tải để tải dữ liệu ban đầu
-    fetchData('{{ route('orders.index') }}');
+    fetchData('{{ route('orders.scheduled_not_summarized') }}');
 
-    // Xử lý form tìm kiếm
     let currentSearchParams = "";
     $('#searchForm').on('submit', function(e) {
         e.preventDefault();
         currentSearchParams = $(this).serialize(); // Lưu trữ các tham số tìm kiếm
-        fetchData('{{ route('orders.index') }}?' + currentSearchParams);
+        fetchData('{{ route('orders.scheduled_not_summarized') }}?' + currentSearchParams);
     });
 
-    // Xử lý sự kiện click trên links phân trang
     $('#pagination-links').on('click', 'a.relative', function(e) {
         e.preventDefault();
         var href = $(this).attr('href');
         fetchData(href + '&' + currentSearchParams); // Thêm tham số tìm kiếm vào URL phân trang
     });
 
-    // Xử lý nút mở rộng để hiển thị chi tiết đơn hàng
-    $('#ordersTable').on('click', '.expand-button', function() {
-        var targetId = $(this).data('target');
-        $(targetId).toggle();
-    });
-});
+    // $('#recoveryOrdersTable').on('click', '.expand-button', function() {
+    //     var targetId = $(this).data('target');
+    //     $(targetId).toggle();
+    // });
 
+});
 </script>
 @endpush

@@ -9,8 +9,8 @@ class RecoveryOrder extends Model
 {
     use HasFactory;
     protected $guarded = ['id'];
-    public function details()
+    public function recoveryDetails()
     {
-        return $this->hasMany(RecoveryOrderDetail::class);
+        return $this->hasMany(RecoveryOrderDetail::class,'recovery_order_id');
     }
 }

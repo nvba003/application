@@ -1,6 +1,8 @@
-@extends('layouts.app') {{-- Giả sử bạn có một layout chung tên là app --}}
+@extends('layouts.app')
 
 @section('content')
+@if(auth()->user()->hasRole('admin'))
+
 <div class="container">
     <h1>Quản Lý Users</h1>
     <table class="table">
@@ -27,4 +29,5 @@
         </tbody>
     </table>
 </div>
+@endif
 @endsection

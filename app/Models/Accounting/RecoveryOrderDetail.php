@@ -11,6 +11,6 @@ class RecoveryOrderDetail extends Model
     protected $guarded = ['id'];
     public function order()
     {
-        return $this->belongsTo(RecoveryOrder::class);
+        return $this->belongsTo(RecoveryOrder::class,'recovery_order_id');
     }
 }

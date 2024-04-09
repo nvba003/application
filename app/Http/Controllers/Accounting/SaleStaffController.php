@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Accounting;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Accounting\SaleStaff; // Đảm bảo dùng đúng namespace của model SaleStaff
+use App\Models\Accounting\SaleStaff;
 
 class SaleStaffController extends Controller
 {
@@ -38,8 +38,19 @@ class SaleStaffController extends Controller
     // Cập nhật thông tin nhân viên bán hàng
     public function update(Request $request, $id)
     {
-        // Validation và logic cập nhật nhân viên bán hàng
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'final_char' => 'string|nullable',
+            'customer_code' => 'string|nullable',
+            'parameter' => 'string|nullable',
+        ]);
+
+        $member = SaleStaff::findOrFail($id);
+        $member->update($validatedData);
+
+        return redirect()->route('sale-staff')->with('success', 'Thông tin nhân viên đã được cập nhật.');
     }
+
 
     // Xóa nhân viên bán hàng
     public function destroy($id)
