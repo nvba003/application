@@ -27,11 +27,10 @@ Route::group(['middleware' => 'auth:api'], function() {
     // Đặt các route cần bảo vệ ở đây
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('refresh', [AuthController::class, 'refresh']);
-    Route::post('me', [AuthController::class, 'me']);
+    Route::post('me', [AuthController::class, 'me']);  
+});
 
     Route::post('/accounting_orders', [AccountingController::class, 'store']);
     Route::post('/accounting_recovery', [AccountingController::class, 'recovery']);
     Route::post('/accounting_product_price', [AccountingController::class, 'productPrice']);
-    
-});
 
