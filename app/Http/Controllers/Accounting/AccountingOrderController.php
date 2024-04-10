@@ -135,7 +135,7 @@ class AccountingOrderController extends Controller
         }
 
         $query->orderBy('order_date', 'desc');
-        $orders = $query->paginate(3); // Hoặc số lượng bạn muốn hiển thị trên mỗi trang
+        $orders = $query->paginate(30); // Hoặc số lượng bạn muốn hiển thị trên mỗi trang
 
         if ($request->ajax()) {
             $view = view('accounting.partials.immediate_not_summarized_tbody', compact('orders'))->render();
