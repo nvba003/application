@@ -162,4 +162,16 @@ class AccountingController extends Controller
         return response()->json(['message' => 'Dữ liệu đã được cập nhật thành công']);
     }
 
+    public function getOrderCodes()
+    {
+        $orderCodes = AccountingOrder::pluck('order_code');
+        return response()->json($orderCodes);
+    }
+
+    public function getRecoveryCodes()
+    {
+        $recoveryCodes = AccountingOrder::pluck('recovery_code');
+        return response()->json($recoveryCodes);
+    }
+
 }
