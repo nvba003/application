@@ -57,6 +57,7 @@ class AccountingOrderController extends Controller
             $query->where('type', $request->order_type);
         }        
 
+        $query->orderBy('order_date', 'desc');
         return $query->paginate(3); // Số "10" là số lượng bản ghi trên mỗi trang
     }
 
@@ -106,6 +107,7 @@ class AccountingOrderController extends Controller
             $query->whereDate('recovery_creation_date', $request->input('recovery_creation_date'));
         }
 
+        $query->orderBy('recovery_creation_date', 'desc');
         return $query->paginate(3);
     }
 
@@ -132,6 +134,7 @@ class AccountingOrderController extends Controller
             $query->where('status', $request->status);
         }
 
+        $query->orderBy('order_date', 'desc');
         $orders = $query->paginate(3); // Hoặc số lượng bạn muốn hiển thị trên mỗi trang
 
         if ($request->ajax()) {
@@ -166,6 +169,7 @@ class AccountingOrderController extends Controller
             $query->where('status', $request->status);
         }
 
+        $query->orderBy('order_date', 'desc');
         $orders = $query->paginate(3); // Hoặc số lượng bạn muốn hiển thị trên mỗi trang
 
         if ($request->ajax()) {

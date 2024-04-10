@@ -37,6 +37,7 @@ class ReportController extends Controller
             });
         }
         
+        $query->orderBy('created_at', 'desc');
         $transactions = $query->paginate(3); // Hoặc số lượng bạn muốn hiển thị trên mỗi trang
         if ($request->ajax()) {
             $view = view('accounting.partials.transactions_table', compact('transactions'))->render();
