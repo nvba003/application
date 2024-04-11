@@ -32,8 +32,13 @@ class AccountingController extends Controller
         $delivery_date_string = $generalData['Ngày giao thực tế:'] ?? null;
         $format = 'd/m/Y H:i';
         // Tạo một đối tượng Carbon từ chuỗi ngày giờ với định dạng cụ thể
-        $order_date = Carbon::createFromFormat($format, $order_date_string, 'UTC');
-        $delivery_date = Carbon::createFromFormat($format, $delivery_date_string, 'UTC');
+        if (!empty($order_date_string)) {
+            $order_date = Carbon::createFromFormat($format, $order_date_string, 'Asia/Ho_Chi_Minh');
+        }
+
+        if (!empty($delivery_date_string)) {
+            $delivery_date = Carbon::createFromFormat($format, $delivery_date_string, 'Asia/Ho_Chi_Minh');
+        }
 
         // Sử dụng updateOrCreate để cập nhật hoặc tạo mới AccountingOrder
         $attributes = ['order_code' => $generalData['Mã ĐH:'] ?? null]; // Điều kiện tìm kiếm dựa trên order_code
@@ -133,9 +138,17 @@ class AccountingController extends Controller
         $approval_date_string = $generalData['Ngày Duyệt'] ?? null;
         // Tạo một đối tượng Carbon từ chuỗi ngày giờ với định dạng cụ thể
 
-        $approval_date = Carbon::createFromFormat('d/m/Y H:i', $approval_date_string ?? null);
-        $recovery_date = Carbon::createFromFormat('d/m/Y', $generalData['Ngày thu hồi'] ?? null);
-        $recovery_creation_date = Carbon::createFromFormat('d/m/Y', $generalData['Ngày tạo phiếu'] ?? null);
+        if (!empty($approval_date_string)) {
+            $approval_date = Carbon::createFromFormat('d/m/Y H:i', $approval_date_string, 'Asia/Ho_Chi_Minh');
+        }
+        
+        if (!empty($generalData['Ngày thu hồi'])) {
+            $recovery_date = Carbon::createFromFormat('d/m/Y', $generalData['Ngày thu hồi'], 'Asia/Ho_Chi_Minh');
+        }
+        
+        if (!empty($generalData['Ngày tạo phiếu'])) {
+            $recovery_creation_date = Carbon::createFromFormat('d/m/Y', $generalData['Ngày tạo phiếu'], 'Asia/Ho_Chi_Minh');
+        }
 
         $attributes = ['recovery_code' => $generalData['Mã phiếu'] ?? null];
         $values = [
