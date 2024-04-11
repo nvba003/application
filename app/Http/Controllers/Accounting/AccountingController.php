@@ -183,6 +183,7 @@ class AccountingController extends Controller
             $product = ProductPrice::updateOrCreate(
                 ['sap_code' => $item['sap_code']],
                 [
+                    'product_code' => $item['product_code'],
                     'product_name' => $item['product_name'] ?? null,
                     'status' => $item['status'] ?? null,
                     'packaging' => $item['packaging'] ?? null,
