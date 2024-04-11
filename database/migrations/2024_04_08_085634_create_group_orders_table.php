@@ -19,6 +19,8 @@ class CreateGroupOrdersTable extends Migration
             $table->foreign('group_id')->references('id')->on('summary_orders')->onDelete('cascade');
             $table->unsignedInteger('order_id');
             $table->foreign('order_id')->references('id')->on('accounting_orders')->onDelete('cascade');
+            $table->unsignedInteger('recovery_id');
+            $table->foreign('recovery_id')->references('id')->on('recovery_orders')->onDelete('cascade');
             $table->timestamps();
         });
     }

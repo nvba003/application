@@ -13,4 +13,8 @@ class RecoveryOrder extends Model
     {
         return $this->hasMany(RecoveryOrderDetail::class,'recovery_order_id');
     }
+    public function groupOrder()
+    {
+        return $this->belongsTo(GroupOrder::class, 'id', 'recovery_id');
+    }
 }

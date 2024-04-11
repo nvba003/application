@@ -115,6 +115,7 @@ class AccountingOrderController extends Controller
 
     public function immediateNotSummarized(Request $request)
     {
+        $perPage = $request->input('per_page', 3); // Số lượng mặc định là 3 nếu không có tham số per_page
         $saleStaffs = SaleStaff::all();
         $query = AccountingOrder::where('type', 'Đơn bán / Giao ngay')->whereDoesntHave('groupOrder');
 
@@ -135,7 +136,7 @@ class AccountingOrderController extends Controller
         }
 
         $query->orderBy('order_date', 'desc');
-        $orders = $query->paginate(30); // Hoặc số lượng bạn muốn hiển thị trên mỗi trang
+        $orders = $query->paginate($perPage); // Hoặc số lượng bạn muốn hiển thị trên mỗi trang
 
         if ($request->ajax()) {
             $view = view('accounting.partials.immediate_not_summarized_tbody', compact('orders'))->render();
@@ -180,6 +181,40 @@ class AccountingOrderController extends Controller
 
         $header = 'Đơn giao sau chưa tổng hợp';
         return view('accounting.scheduled_not_summarized', compact('orders','header','saleStaffs'));
+    }
+
+    public function recoveryNotSummarized(Request $request)
+    {
+        $perPage = $request->input('per_page', 3); // Số lượng mặc định là 3 nếu không có tham số per_page
+        $saleStaffs = SaleStaff::all();
+        $query = RecoveryOrder::whereDoesntHave('groupOrder');
+
+        // Lọc theo mã phiếu
+        if ($request->filled('recovery_code')) {
+            $query->where('recovery_code', 'like', '%' . $request->input('recovery_code') . '%');
+        }
+
+        // Lọc theo nhân viên bán hàng
+        if ($request->filled('staff')) {
+            $query->where('staff', 'like', '%' . $request->input('staff') . '%');
+        }
+
+        // Lọc theo ngày tạo phiếu
+        if ($request->filled('recovery_creation_date')) {
+            $query->whereDate('recovery_creation_date', $request->input('recovery_creation_date'));
+        }
+
+        $query->orderBy('recovery_creation_date', 'desc');
+        $recoveryOrders = $query->paginate($perPage); // Hoặc số lượng bạn muốn hiển thị trên mỗi trang
+
+        if ($request->ajax()) {
+            $view = view('accounting.partials.recovery_not_summarized_tbody', compact('recoveryOrders'))->render();
+            $links = $recoveryOrders->links()->toHtml(); // Lấy HTML của links phân trang
+            return response()->json(['table' => $view, 'links' => $links]);
+        }
+
+        $header = 'Đơn thu hồi chưa tổng hợp';
+        return view('accounting.recovery_not_summarized', compact('recoveryOrders','header','saleStaffs'));
     }
     //--------------------------------------------------
 

@@ -14,22 +14,12 @@ class CreateTransactionsTable extends Migration
     public function up()
     {
         Schema::create('transactions', function (Blueprint $table) {
-            $table->unsignedBigInteger('id')->primary();//transaction_code
-            $table->unsignedTinyInteger('staff_id')->nullable();
+            $table->increments('id');
+            $table->unsignedTinyInteger('staff_id')->nullable();//nhân viên phụ trách 
             $table->foreign('staff_id')->references('id')->on('sale_staffs')->onDelete('set null');
-            $table->unsignedMediumInteger('transfer_amount')->nullable();//chuyển khoản
-            $table->unsignedSmallInteger('note_500')->nullable();
-            $table->unsignedSmallInteger('note_200')->nullable();
-            $table->unsignedSmallInteger('note_100')->nullable();
-            $table->unsignedSmallInteger('note_50')->nullable();
-            $table->unsignedSmallInteger('note_20')->nullable();
-            $table->unsignedSmallInteger('note_10')->nullable();
-            $table->unsignedSmallInteger('note_5')->nullable();
-            $table->unsignedSmallInteger('note_2')->nullable();
-            $table->unsignedSmallInteger('note_1')->nullable();
             $table->unsignedMediumInteger('total_amount')->nullable();
-            $table->unsignedTinyInteger('submitter_id')->nullable();//người nộp
-            $table->foreign('submitter_id')->references('id')->on('sale_staffs')->onDelete('set null');
+            $table->unsignedSmallInteger('diff_amount')->nullable();//different amount
+            $table->date('pay_date')->nullable();//ngày trả tiền = ngày báo cáo
             $table->text('notes')->nullable();
             $table->timestamps();
         });

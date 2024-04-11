@@ -5,7 +5,7 @@
     <h3>Danh Sách Đơn Hàng Chưa Tổng Hợp</h3>
     <form id="searchForm" method="GET" class="form-inline">
         <div class="form-group mb-2">
-            <input type="text" class="form-control" id="order_code" name="order_code" placeholder="Mã Đơn Hàng">
+            <input type="text" class="form-control" id="recovery_code" name="recovery_code" placeholder="Mã Đơn Hàng">
         </div>
         <div class="form-group mx-sm-3 mb-2">
             <select id="staff" name="staff" class="form-control">
@@ -26,7 +26,7 @@
             </select>
         </div>
         <div class="form-group mx-sm-3 mb-2">
-            <input type="date" class="form-control" id="order_date" name="order_date" placeholder="Ngày Đặt">
+            <input type="date" class="form-control" id="recovery_creation_date" name="recovery_creation_date" placeholder="Ngày Đặt">
         </div>
         <button type="submit" class="btn btn-primary mb-2">Tìm Kiếm</button>
     </form>
@@ -50,7 +50,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @include('accounting.partials.immediate_not_summarized_tbody', ['orders' => $orders])
+                    @include('accounting.partials.recovery_not_summarized_tbody', ['recoveryOrders' => $recoveryOrders])
                 </tbody>
             </table>
             <div class="d-flex flex-row-reverse align-items-center"> <!-- flex-row-reverse đảo ngược thứ tự hiển thị các phần tử con -->
@@ -252,14 +252,14 @@ $(document).ready(function() {
         });
     }
 
-    fetchData('{{ route('orders.immediate_not_summarized') }}');
+    fetchData('{{ route('orders.recovery_not_summarized') }}');
 
     let currentSearchParams = "";
     let currentPerPage = "";
     $('#searchForm').on('submit', function(e) {
         e.preventDefault();
         currentSearchParams = $(this).serialize(); // Lưu trữ các tham số tìm kiếm
-        fetchData('{{ route('orders.immediate_not_summarized') }}?' + currentSearchParams);
+        fetchData('{{ route('orders.recovery_not_summarized') }}?' + currentSearchParams);
     });
 
     $('#pagination-links').on('click', 'a.relative', function(e) {
@@ -276,7 +276,7 @@ $(document).ready(function() {
     $('#perPage').on('change', function() {
         var perPage = $(this).val();
         currentSearchParams = updateSearchParams('per_page', perPage, currentSearchParams);
-        fetchData('{{ route('orders.immediate_not_summarized') }}?' + currentSearchParams);
+        fetchData('{{ route('orders.recovery_not_summarized') }}?' + currentSearchParams);
     });
     function updateSearchParams(key, value, paramsString) {
         var searchParams = new URLSearchParams(paramsString);

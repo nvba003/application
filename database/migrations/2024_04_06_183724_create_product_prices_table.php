@@ -16,7 +16,7 @@ class CreateProductPricesTable extends Migration
         Schema::create('product_prices', function (Blueprint $table) {
             $table->smallIncrements('id');
             $table->string('product_code')->unique(); // Mã SP
-            $table->string('sap_code')->unique(); // Mã SAP
+            $table->unsignedMediumInteger('sap_code')->unique(); // Mã SAP
             $table->string('product_name'); // Tên sản phẩm
             $table->string('status'); // Trạng thái
             $table->string('packaging'); // Quy cách thùng

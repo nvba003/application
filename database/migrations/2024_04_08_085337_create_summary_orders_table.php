@@ -16,8 +16,9 @@ class CreateSummaryOrdersTable extends Migration
         Schema::create('summary_orders', function (Blueprint $table) {
             $table->increments('id');
             $table->string('invoice_code')->unique()->nullable();
-            $table->boolean('is_group')->default(false);//là nhóm thật
-            $table->unsignedBigInteger('transaction_id')->nullable();//mã giao dịch
+            $table->boolean('is_group')->default(false);//là đơn hàng được nhóm lại, dành cho giao ngay
+            $table->boolean('is_recovery')->default(false);//là thu hồi
+            $table->unsignedInteger('transaction_id')->nullable();//mã phiếu thu
             $table->foreign('transaction_id')->references('id')->on('transactions')->onDelete('set null');
             $table->boolean('is_entered')->default(false);
             $table->date('report_date')->nullable();//ngày báo cáo

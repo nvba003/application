@@ -201,6 +201,8 @@
 @push('scripts')
 <script>
 $(document).ready(function() {
+    var summaryOrders = @json($summaryOrders)['data'];
+    console.log(summaryOrders);
     function fetchData(url) {
         $.ajax({
             url: url,

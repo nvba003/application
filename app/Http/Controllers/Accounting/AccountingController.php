@@ -9,6 +9,7 @@ use App\Models\Accounting\AccountingOrderDetail;
 use App\Models\Accounting\RecoveryOrder; 
 use App\Models\Accounting\RecoveryOrderDetail;
 use App\Models\Accounting\ProductPrice; 
+use App\Models\Accounting\ProductDiscount; 
 use Carbon\Carbon;
 
 class AccountingController extends Controller
@@ -157,11 +158,28 @@ class AccountingController extends Controller
                 'price_sellout_per_unit' => $this->convertCurrencyToNumber($item['price_sellout_per_unit'] ?? '0 ₫')
             ];
             ProductPrice::updateOrCreate($detailAttributes, $detailValues);
-        }
 
+            $discountAttributes = ['sap_code' => $item['sap_code']]; // khóa ngoại để cập nhật product_discount
+            $discountValues = [
+                'product_name' => $item['product_name'] ?? null,
+                'price' => $item['price_sellout_per_unit'] ?? 0, // Giá trước chiết khấu là giá bán lẻ mỗi đơn vị
+            ];
+            ProductDiscount::updateOrCreate($discountAttributes, $discountValues);
+        }
+        $this->updateProductDiscounts();//tính lại discounted_price
         return response()->json(['message' => 'Dữ liệu đã được cập nhật thành công']);
     }
+    public function updateProductDiscounts()
+    {
+        ProductDiscount::each(function ($discount) {
+            $discountedPrice = $discount->price * (1 - $discount->discount_percentage / 100);// Tính toán giá sau chiết khấu
+            $discountedPrice = round($discountedPrice);// Làm tròn giá sau chiết khấu nếu có số thập phân
+            $discount->update(['discounted_price' => $discountedPrice]);// Cập nhật bản ghi với giá sau chiết khấu mới
+        });
+        return response()->json(['message' => 'Success']);
+    }
 
+    //==================================================================
     public function getOrderCodes()
     {
         $orderCodes = AccountingOrder::pluck('order_code');
