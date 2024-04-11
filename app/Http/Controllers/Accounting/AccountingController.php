@@ -32,13 +32,13 @@ class AccountingController extends Controller
         $delivery_date_string = $generalData['Ngày giao thực tế:'] ?? null;
         $format = 'd/m/Y H:i';
         // Tạo một đối tượng Carbon từ chuỗi ngày giờ với định dạng cụ thể
-        if (!empty($order_date_string)) {
+        if (!empty($order_date_string) && $order_date_string !== '--') {
             $order_date = Carbon::createFromFormat($format, $order_date_string, 'Asia/Ho_Chi_Minh');
         }
-
-        if (!empty($delivery_date_string)) {
+        
+        if (!empty($delivery_date_string) && $delivery_date_string !== '--') {
             $delivery_date = Carbon::createFromFormat($format, $delivery_date_string, 'Asia/Ho_Chi_Minh');
-        }
+        }        
 
         // Sử dụng updateOrCreate để cập nhật hoặc tạo mới AccountingOrder
         $attributes = ['order_code' => $generalData['Mã ĐH:'] ?? null]; // Điều kiện tìm kiếm dựa trên order_code
