@@ -103,6 +103,27 @@ class AccountingController extends Controller
         AccountingOrderDetail::updateOrCreate($detailAttributes, $detailValues);
     }
 
+    public function productPrice(Request $request)//cập nhật data từ extension vào product_prices
+    {
+        $tableData = $request->input('data');
+        // Xử lý tableData
+        foreach ($tableData as $item) {
+            $detailAttributes = ['product_code' => $item['product_code']];
+            $detailValues = [
+                'sap_code' => $item['sap_code'] ?? null,
+                'product_name' => $item['product_name'] ?? null,
+                'status' => $item['status'] ?? null,
+                'packaging' => $item['packaging'] ?? null,
+                'price_sellin_per_pack' => $this->convertCurrencyToNumber($item['price_sellin_per_pack'] ?? '0 ₫'),
+                'price_sellin_per_unit' => $this->convertCurrencyToNumber($item['price_sellin_per_unit'] ?? '0 ₫'),
+                'price_sellout_per_pack' => $this->convertCurrencyToNumber($item['price_sellout_per_pack'] ?? '0 ₫'),
+                'price_sellout_per_unit' => $this->convertCurrencyToNumber($item['price_sellout_per_unit'] ?? '0 ₫')
+            ];
+            ProductPrice::updateOrCreate($detailAttributes, $detailValues);
+        }
+        return response()->json(['message' => 'Dữ liệu đã được cập nhật thành công']);
+    }
+
     //==================================================================
     public function recovery(Request $request)
     {
