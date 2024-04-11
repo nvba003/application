@@ -33,7 +33,7 @@ Route::group(['middleware' => 'auth:api'], function() {
 
     Route::post('/accounting_orders', [AccountingController::class, 'store']);
     Route::post('/accounting_recovery', [AccountingController::class, 'recovery']);
-    Route::post('/accounting_product_price', [AccountingController::class, 'productPrice']);
+    Route::post('/accounting_product_price', [AccountingController::class, 'updateProductPrice']);
 
     Route::get('/accounting_orders', [AccountingController::class, 'getOrderCodes']);
     Route::get('/accounting_recovery', [AccountingController::class, 'getRecoveryCodes']);

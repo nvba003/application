@@ -15,6 +15,7 @@ class CreateProductDiscountsTable extends Migration
     {
         Schema::create('product_discounts', function (Blueprint $table) {
             $table->smallIncrements('id');
+            $table->string('product_code')->unique(); // Mã SP
             $table->unsignedMediumInteger('sap_code'); // Mã SAP
             $table->foreign('sap_code')->references('sap_code')->on('product_prices');
             $table->string('product_name')->nullable(); // Tên sản phẩm

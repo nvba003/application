@@ -14,14 +14,14 @@ use Carbon\Carbon;
 
 class AccountingController extends Controller
 {
-    public function productList()
+    public function productList()//hiển thị danh sách sản phẩm
     {
         $products = ProductPrice::all();
         $header = 'Danh sách sản phẩm';
         return view('accounting.product_list', compact('products', 'header'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request)//lưu order từ extension
     {
         $generalData = $request->input('generalData');
         $customerData = $request->input('customerData');
@@ -108,29 +108,29 @@ class AccountingController extends Controller
         AccountingOrderDetail::updateOrCreate($detailAttributes, $detailValues);
     }
 
-    public function productPrice(Request $request)//cập nhật data từ extension vào product_prices
-    {
-        $tableData = $request->input('data');
-        // Xử lý tableData
-        foreach ($tableData as $item) {
-            $detailAttributes = ['product_code' => $item['product_code']];
-            $detailValues = [
-                'sap_code' => $item['sap_code'] ?? null,
-                'product_name' => $item['product_name'] ?? null,
-                'status' => $item['status'] ?? null,
-                'packaging' => $item['packaging'] ?? null,
-                'price_sellin_per_pack' => $this->convertCurrencyToNumber($item['price_sellin_per_pack'] ?? '0 ₫'),
-                'price_sellin_per_unit' => $this->convertCurrencyToNumber($item['price_sellin_per_unit'] ?? '0 ₫'),
-                'price_sellout_per_pack' => $this->convertCurrencyToNumber($item['price_sellout_per_pack'] ?? '0 ₫'),
-                'price_sellout_per_unit' => $this->convertCurrencyToNumber($item['price_sellout_per_unit'] ?? '0 ₫')
-            ];
-            ProductPrice::updateOrCreate($detailAttributes, $detailValues);
-        }
-        return response()->json(['message' => 'Dữ liệu đã được cập nhật thành công']);
-    }
+    // public function productPrice(Request $request)//cập nhật data từ extension vào product_prices
+    // {
+    //     $tableData = $request->input('data');
+    //     // Xử lý tableData
+    //     foreach ($tableData as $item) {
+    //         $detailAttributes = ['product_code' => $item['product_code']];
+    //         $detailValues = [
+    //             'sap_code' => $item['sap_code'] ?? null,
+    //             'product_name' => $item['product_name'] ?? null,
+    //             'status' => $item['status'] ?? null,
+    //             'packaging' => $item['packaging'] ?? null,
+    //             'price_sellin_per_pack' => $this->convertCurrencyToNumber($item['price_sellin_per_pack'] ?? '0 ₫'),
+    //             'price_sellin_per_unit' => $this->convertCurrencyToNumber($item['price_sellin_per_unit'] ?? '0 ₫'),
+    //             'price_sellout_per_pack' => $this->convertCurrencyToNumber($item['price_sellout_per_pack'] ?? '0 ₫'),
+    //             'price_sellout_per_unit' => $this->convertCurrencyToNumber($item['price_sellout_per_unit'] ?? '0 ₫')
+    //         ];
+    //         ProductPrice::updateOrCreate($detailAttributes, $detailValues);
+    //     }
+    //     return response()->json(['message' => 'Dữ liệu đã được cập nhật thành công']);
+    // }
 
     //==================================================================
-    public function recovery(Request $request)
+    public function recovery(Request $request)//lưu đơn thu hồi từ extension
     {
         $generalData = $request->input('generalData');
         $tableData = $request->input('tableData', []);
@@ -176,7 +176,7 @@ class AccountingController extends Controller
     }
 
     //==================================================================
-    public function updateProductPrice(Request $request)
+    public function updateProductPrice(Request $request)//cập nhật data từ extension vào product_prices
     {
         $tableData = $request->input('data');
         foreach ($tableData as $item) {
@@ -198,6 +198,7 @@ class AccountingController extends Controller
                 ProductDiscount::updateOrCreate(
                     ['sap_code' => $item['sap_code']],
                     [
+                        'product_code' => $item['product_code'],
                         'product_name' => $item['product_name'],
                         'discount_percentage' => $item['discount_percentage'],
                         'discounted_price_per_unit' => $discountedPrice
