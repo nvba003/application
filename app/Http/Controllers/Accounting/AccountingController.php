@@ -132,7 +132,8 @@ class AccountingController extends Controller
 
         $approval_date_string = $generalData['Ngày Duyệt'] ?? null;
         // Tạo một đối tượng Carbon từ chuỗi ngày giờ với định dạng cụ thể
-        $approval_date = Carbon::createFromFormat('d/m/Y H:i', $approval_date_string, 'UTC');
+
+        $approval_date = Carbon::createFromFormat('d/m/Y H:i', $approval_date_string ?? null);
         $recovery_date = Carbon::createFromFormat('d/m/Y', $generalData['Ngày thu hồi'] ?? null);
         $recovery_creation_date = Carbon::createFromFormat('d/m/Y', $generalData['Ngày tạo phiếu'] ?? null);
 
