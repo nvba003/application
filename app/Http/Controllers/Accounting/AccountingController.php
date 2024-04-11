@@ -205,7 +205,7 @@ class AccountingController extends Controller
 
     public function getRecoveryCodes()
     {
-        $recoveryCodes = AccountingOrder::pluck('recovery_code');
+        $recoveryCodes = RecoveryOrder::pluck('recovery_code');
         return response()->json($recoveryCodes);
     }
 
