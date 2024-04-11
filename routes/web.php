@@ -30,6 +30,8 @@ Route::get('/', function () {
 require __DIR__.'/auth.php';
 
 Route::get('/product_list', [AccountingController::class, 'productList']);
+Route::get('/product-discounts', [AccountingController::class, 'productDiscounts'])->name('productDiscounts');
+Route::post('/product-discounts', [AccountingController::class, 'updateProductDiscount'])->name('updateProductDiscount');
 Route::get('/users', [UserController::class, 'index'])->name('users.index');
 
 Route::get('/user/{id}/roles', [UserController::class, 'editRoles'])->name('user.edit.roles');

@@ -141,42 +141,59 @@ class AccountingController extends Controller
     }
 
     //==================================================================
-    public function productPrice(Request $request)
+    public function updateProductPrice(Request $request)
     {
         $tableData = $request->input('data');
-        // Xử lý tableData
         foreach ($tableData as $item) {
-            $detailAttributes = ['product_code' => $item['product_code']];
-            $detailValues = [
-                'sap_code' => $item['sap_code'] ?? null,
-                'product_name' => $item['product_name'] ?? null,
-                'status' => $item['status'] ?? null,
-                'packaging' => $item['packaging'] ?? null,
-                'price_sellin_per_pack' => $this->convertCurrencyToNumber($item['price_sellin_per_pack'] ?? '0 ₫'),
-                'price_sellin_per_unit' => $this->convertCurrencyToNumber($item['price_sellin_per_unit'] ?? '0 ₫'),
-                'price_sellout_per_pack' => $this->convertCurrencyToNumber($item['price_sellout_per_pack'] ?? '0 ₫'),
-                'price_sellout_per_unit' => $this->convertCurrencyToNumber($item['price_sellout_per_unit'] ?? '0 ₫')
-            ];
-            $producPrice = ProductPrice::updateOrCreate($detailAttributes, $detailValues);
-
-            $discountAttributes = ['sap_code' => $item['sap_code']]; // khóa ngoại để cập nhật product_discount
-            $discountValues = [
-                'product_name' => $item['product_name'] ?? null,
-                'price' => $producPrice->price_sellout_per_unit, // Giá trước chiết khấu là giá bán lẻ mỗi đơn vị
-            ];
-            ProductDiscount::updateOrCreate($discountAttributes, $discountValues);
+            $product = ProductPrice::updateOrCreate(
+                ['sap_code' => $item['sap_code']],
+                [
+                    'product_name' => $item['product_name'] ?? null,
+                    'status' => $item['status'] ?? null,
+                    'packaging' => $item['packaging'] ?? null,
+                    'price_sellin_per_pack' => $this->convertCurrencyToNumber($item['price_sellin_per_pack'] ?? '0 ₫'),
+                    'price_sellin_per_unit' => $this->convertCurrencyToNumber($item['price_sellin_per_unit'] ?? '0 ₫'),
+                    'price_sellout_per_pack' => $this->convertCurrencyToNumber($item['price_sellout_per_pack'] ?? '0 ₫'),
+                    'price_sellout_per_unit' => $this->convertCurrencyToNumber($item['price_sellout_per_unit'] ?? '0 ₫')
+                ]
+            );
+            if ($product) {
+                $discountedPrice = $product->price_sellout_per_unit * (1 - ($item['discount_percentage'] / 100));
+                $discountedPrice = round($discountedPrice); // Làm tròn giá sau chiết khấu
+                ProductDiscount::updateOrCreate(
+                    ['sap_code' => $item['sap_code']],
+                    [
+                        'product_name' => $item['product_name'],
+                        'discount_percentage' => $item['discount_percentage'],
+                        'discounted_price_per_unit' => $discountedPrice
+                    ]
+                );
+            }
         }
-        $this->updateProductDiscounts();//tính lại discounted_price
-        return response()->json(['message' => 'Dữ liệu đã được cập nhật thành công']);
+        return response()->json(['message' => 'Cập nhật giá và chiết khấu thành công']);
     }
-    public function updateProductDiscounts()
+
+    public function productDiscounts()
     {
-        ProductDiscount::each(function ($discount) {
-            $discountedPrice = $discount->price * (1 - $discount->discount_percentage / 100);// Tính toán giá sau chiết khấu
-            $discountedPrice = round($discountedPrice);// Làm tròn giá sau chiết khấu nếu có số thập phân
-            $discount->update(['discounted_price' => $discountedPrice]);// Cập nhật bản ghi với giá sau chiết khấu mới
-        });
-        return response()->json(['message' => 'Success']);
+        $productDiscounts = ProductDiscount::all();
+        $header = 'Danh sách sản phẩm chiết khấu';
+        return view('accounting.product_discounts', compact('productDiscounts', 'header'));
+    }
+
+    public function updateProductDiscount(Request $request)
+    {
+        $discounts = $request->input('discounts', []);
+        foreach ($discounts as $productCode => $discountPercentage) {
+            $productDiscount = ProductDiscount::where('sap_code', $productCode)->first();
+            if ($productDiscount) {
+                $discountedPrice = round($productDiscount->price * (1 - $discountPercentage / 100));
+                $productDiscount->update([
+                    'discount_percentage' => $discountPercentage,
+                    'discounted_price' => $discountedPrice
+                ]);
+            }
+        }
+        return response()->json(['message' => 'Chiết khấu sản phẩm đã được cập nhật thành công']);
     }
 
     //==================================================================
