@@ -193,16 +193,17 @@ class AccountingController extends Controller
                     'price_sellout_per_unit' => $this->convertCurrencyToNumber($item['price_sellout_per_unit'] ?? '0 ₫')
                 ]
             );
-            $discountPercentage = ProductDiscount::where('sap_code', $product->sap_code)->value('discount_percentage');
             if ($product) {
+                $discountPercentage = ProductDiscount::where('sap_code', $product->sap_code)->value('discount_percentage');
                 $discountedPrice = round($product->price_sellout_per_unit * (1 - ($discountPercentage / 100)));
                 ProductDiscount::updateOrCreate(
                     ['sap_code' => $item['sap_code']],
                     [
-                        'product_code' => $item['product_code'],
-                        'product_name' => $item['product_name'],
+                        'product_code' => $product->product_code,
+                        'product_name' => $product->product_name,
+                        'product_price' => $product->price_sellout_per_unit,
                         'discount_percentage' => $discountPercentage,
-                        'discounted_price_per_unit' => $discountedPrice
+                        'discounted_price' => $discountedPrice
                     ]
                 );
             }
