@@ -201,7 +201,7 @@ class AccountingController extends Controller
                     [
                         'product_code' => $product->product_code,
                         'product_name' => $product->product_name,
-                        'product_price' => $product->price_sellout_per_unit,
+                        'price' => $product->price_sellout_per_unit,
                         'discount_percentage' => $discountPercentage,
                         'discounted_price' => $discountedPrice
                     ]
