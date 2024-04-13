@@ -54,6 +54,7 @@ Route::get('/summary-orders', [ReportController::class, 'summaryOrders'])->name(
 Route::post('/save-transaction', [ReportController::class, 'saveTransaction']);
 Route::put('/update-summary-orders', [ReportController::class, 'updateSummary']);
 Route::put('/update-is-entered/{id}', [ReportController::class, 'updateIsEntered']);
+Route::post('/add-transaction-detail', [ReportController::class, 'addTransactionDetail']);
 
 
 

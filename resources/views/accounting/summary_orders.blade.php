@@ -23,7 +23,8 @@
                 <select class="form-control" id="is_group" name="is_group">
                     <option value="">Loại đơn</option>
                     <option value="1">Giao Ngay</option>
-                    <option value="0">Giao Sau</option>
+                    <option value="2">Giao Sau</option>
+                    <option value="3">Thu hồi</option>
                 </select>
             </div>
             <div class="form-group mx-sm-3 mb-2">
@@ -35,14 +36,16 @@
             </div>
             <button type="submit" class="btn btn-primary mb-2">Tìm kiếm</button>
         </form>
-        <button id="showSummaryBtn" class="btn btn-warning">Thu tiền</button>
+        <button id="showSummaryBtn" class="btn btn-warning">Tạo phiếu thu</button>
     </div>
 
     <div id="ordersTable">
         <table class="table">
             <thead>
                 <tr>
-                    <th></th> <!-- Thêm cột cho checkbox -->    
+                    <th>
+                        <input type="checkbox" id="checkAll">
+                    </th>
                     <th></th>
                     <th>Ngày BC</th>
                     <th>NVBH</th>
@@ -60,8 +63,20 @@
         </table>
     </div>
 
-    <div id="pagination-links" class="mt-3">
-        <!-- Pagination links loaded here by AJAX -->
+    <div class="d-flex flex-row-reverse align-items-center"> <!-- flex-row-reverse đảo ngược thứ tự hiển thị các phần tử con -->
+        <div class="form-inline">
+            <label for="perPage" class="ml-2">Số hàng:</label>
+            <select id="perPage" class="form-control form-control-sm">
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </div>
+        <div id="pagination-links" class="d-flex align-items-center">
+            <!-- Nội dung của pagination-links -->
+        </div>
     </div>
 </div>
 
@@ -80,62 +95,23 @@
                 <div class="container">
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <input type="number" id="transfer_amount" class="form-control" placeholder="Số chuyển khoản" />
-                        </div>
-                        <div class="col-md-6">
-                            <select id="submitter_id" class="form-control">
+                            <label for="staff">NV phụ trách:</label>
+                            <select id="staff_id" class="form-control">
                                 @foreach($saleStaffs as $staff)
-                                    <option value="{{ $staff->id }}">{{ $staff->name }}</option>
+                                    <option value="{{ $staff->name }}">{{ $staff->name }}</option>
                                 @endforeach
                             </select>
                         </div>
-                    </div>
-
-                    <!-- Note inputs start -->
-                    <div class="row">
-                        <div class="col-4 col-md-2">
-                            <input type="number" id="note_500" class="form-control form-control-sm note-input" placeholder="500" data-denomination="500000" />
-                        </div>
-                        <div class="col-4 col-md-2">
-                            <input type="number" id="note_200" class="form-control form-control-sm note-input" placeholder="200" data-denomination="200000"/>
-                        </div>
-                        <div class="col-4 col-md-2">
-                            <input type="number" id="note_100" class="form-control form-control-sm note-input" placeholder="100" data-denomination="100000"/>
-                        </div>
-                        <div class="col-4 col-md-2">
-                            <input type="number" id="note_50" class="form-control form-control-sm note-input" placeholder="50" data-denomination="50000"/>
-                        </div>
-                        <div class="col-4 col-md-2">
-                            <input type="number" id="note_20" class="form-control form-control-sm note-input" placeholder="20" data-denomination="20000"/>
-                        </div>
-                        <div class="col-4 col-md-2">
-                            <input type="number" id="note_10" class="form-control form-control-sm note-input" placeholder="10" data-denomination="10000"/>
+                        <div class="col-md-6">
+                            <label for="pay_date">Ngày báo cáo:</label>
+                            <div id="pay_date"></div>
                         </div>
                     </div>
-
-                    <div class="row mt-3">
-                        <div class="col-4 col-md-2">
-                            <input type="number" id="note_5" class="form-control form-control-sm note-input" placeholder="5" data-denomination="5000"/>
-                        </div>
-                        <div class="col-4 col-md-2">
-                            <input type="number" id="note_2" class="form-control form-control-sm note-input" placeholder="2" data-denomination="2000"/>
-                        </div>
-                        <div class="col-4 col-md-2">
-                            <input type="number" id="note_1" class="form-control form-control-sm note-input" placeholder="1" data-denomination="1000"/>
-                        </div>
-                    </div>
-                    <!-- Note inputs end -->
 
                     <div class="row mt-3">
                         <div class="col">
                             <textarea id="notes" rows=1 class="form-control" placeholder="Ghi chú"></textarea>
                         </div>
-                    </div>
-                    <!-- Thêm phần tử để hiển thị tổng số tiền -->
-                    <div id="totalsDisplay" class="mb-3">
-                        <p><strong>Chuyển khoản:</strong> <span id="transferTotal">0</span></p>
-                        <p><strong>Tiền mặt:</strong> <span id="notesTotal">0</span></p>
-                        <p><strong>Tổng nhận:</strong> <span id="combinedTotal">0</span></p>
                     </div>
                 </div>
                 
@@ -201,6 +177,10 @@
 @push('scripts')
 <script>
 $(document).ready(function() {
+    // Xử lý form tìm kiếm
+    let currentSearchParams = "";
+    let currentPerPage = "";
+    let perPage = $('#perPage').val();
     var summaryOrders = @json($summaryOrders)['data'];
     console.log(summaryOrders);
     function fetchData(url) {
@@ -208,7 +188,7 @@ $(document).ready(function() {
             url: url,
             type: 'GET',
             success: function(response) {
-                //console.log(response.summaryOrders);
+                // console.log(response.summaryOrders);
                 $('#ordersTable tbody').html(response.table);
                 $('#pagination-links').html(response.links);
             },
@@ -221,11 +201,11 @@ $(document).ready(function() {
     // Gọi hàm fetchData khi trang được tải để tải dữ liệu ban đầu
     fetchData('{{ route('summary_orders') }}');
 
-    // Xử lý form tìm kiếm
-    let currentSearchParams = "";
+    
     $('#searchForm').on('submit', function(e) {
         e.preventDefault();
-        currentSearchParams = $(this).serialize(); // Lưu trữ các tham số tìm kiếm
+        //currentSearchParams = $(this).serialize(); // Lưu trữ các tham số tìm kiếm
+        currentSearchParams = updateSearchParams('per_page', perPage, $(this).serialize());
         fetchData('{{ route('summary_orders') }}?' + currentSearchParams);
     });
 
@@ -235,6 +215,22 @@ $(document).ready(function() {
         var href = $(this).attr('href');
         fetchData(href + '&' + currentSearchParams); // Thêm tham số tìm kiếm vào URL phân trang
     });
+
+    $('#checkAll').on('click', function() {
+        var isChecked = $(this).prop('checked');
+        $('.checkItem').prop('checked', isChecked);
+    });
+
+    $('#perPage').on('change', function() {
+        perPage = $(this).val();
+        currentSearchParams = updateSearchParams('per_page', perPage, currentSearchParams);
+        fetchData('{{ route('summary_orders') }}?' + currentSearchParams);
+    });
+    function updateSearchParams(key, value, paramsString) {
+        var searchParams = new URLSearchParams(paramsString);
+        searchParams.set(key, value);
+        return searchParams.toString();
+    }
 
     // Xử lý nút mở rộng để hiển thị chi tiết đơn hàng
     $('#ordersTable').on('click', '.expand-button', function() {
@@ -250,16 +246,70 @@ $(document).ready(function() {
     });
 
     function loadGroupedProducts(summaryOrder) {
+        bodyHtml = ``;
         const groupedProducts = {};
+        const groupedSpecial = {};
         //console.log(summaryOrder);
-        // Duyệt qua từng groupOrder trong summaryOrder
-        summaryOrder.group_order.forEach(groupOrder => {
-            // Duyệt qua từng accountingOrder trong groupOrder
-            groupOrder.accounting_orders.forEach(accountingOrder => {
-                // Duyệt qua từng orderDetail trong accountingOrder
-                accountingOrder.order_details.forEach(detail => {
-                    // Bỏ qua sản phẩm đặc biệt
-                    if (!detail.is_special) {
+        if(summaryOrder.is_recovery == 0 ){
+            summaryOrder.group_order.forEach(groupOrder => { // Duyệt qua từng groupOrder trong summaryOrder
+                groupOrder.accounting_orders.forEach(accountingOrder => { // Duyệt qua từng accountingOrder trong groupOrder
+                    accountingOrder.order_details.forEach(detail => { // Duyệt qua từng orderDetail trong accountingOrder
+                        if (!detail.is_special) { // Bỏ qua sản phẩm đặc biệt
+                            const key = detail.product_code;
+                            //console.log(detail);
+                            // Nếu sản phẩm chưa có trong đối tượng, thêm vào
+                            if (!groupedProducts[key]) {
+                                groupedProducts[key] = {
+                                    product_code: detail.product_code,
+                                    product_name: detail.product_name,
+                                    quantity: 0, // Khởi tạo số lượng là 0
+                                    discount: 0,
+                                    payable: 0,
+                                };
+                            }
+                            // Cộng dồn số lượng
+                            groupedProducts[key].quantity += (detail.packing * detail.thung) + detail.le;
+                            groupedProducts[key].discount += detail.discount;
+                            groupedProducts[key].payable += detail.payable;
+                        }
+                        else{ // trường hợp đặt biệt là khuyến mãi, mỗi SP chỉ có 1 hàng
+                            const special_key = detail.product_code;
+                            groupedSpecial[special_key] = {
+                                product_code: detail.product_code,
+                                product_name: detail.product_name,
+                                quantity: (detail.packing * detail.thung) + detail.le,
+                            };
+                        }
+                    });
+                });
+            });
+            //console.log(groupedSpecial);
+            // Duyệt qua từng sản phẩm trong đối tượng groupedProducts và tạo hàng mới trong bảng
+            Object.values(groupedProducts).forEach(product => {
+                bodyHtml += `
+                    <tr>
+                        <td>${product.product_code}</td>
+                        <td>${product.product_name}</td>
+                        <td>${product.quantity}</td>
+                        <td>${product.discount}</td>
+                        <td>${product.payable}</td>`;
+            });
+            if (Object.keys(groupedSpecial).length > 0) {
+                Object.values(groupedSpecial).forEach(product => {
+                    bodyHtml += `
+                        <tr>
+                            <td>${product.product_code}</td>
+                            <td>${product.product_name}</td>
+                            <td>${product.quantity}</td>
+                        </tr>`;
+                });
+            }
+            bodyHtml += `</tr>`;
+        }
+        else {// nếu là đơn thu hồi
+            summaryOrder.group_order.forEach(groupOrder => { // Duyệt qua từng groupOrder trong summaryOrder
+                groupOrder.recovery_orders.forEach(recoveryOrder => { // Duyệt qua từng accountingOrder trong groupOrder
+                    recoveryOrder.recovery_details.forEach(detail => { // Duyệt qua từng orderDetail trong accountingOrder
                         const key = detail.product_code;
                         //console.log(detail);
                         // Nếu sản phẩm chưa có trong đối tượng, thêm vào
@@ -267,19 +317,27 @@ $(document).ready(function() {
                             groupedProducts[key] = {
                                 product_code: detail.product_code,
                                 product_name: detail.product_name,
-                                quantity: 0, // Khởi tạo số lượng là 0
-                                discount: 0,
-                                payable: 0,
+                                quantity: detail.quantity,
+                                discount: detail.discount,
+                                payable: detail.payable,
                             };
                         }
-                        // Cộng dồn số lượng
-                        groupedProducts[key].quantity += (detail.packing * detail.thung) + detail.le;
-                        groupedProducts[key].discount += detail.discount;
-                        groupedProducts[key].payable += detail.payable;
-                    }
+                    });
                 });
             });
-        });
+            // Duyệt qua từng sản phẩm trong đối tượng groupedProducts và tạo hàng mới trong bảng
+            Object.values(groupedProducts).forEach(product => {
+                bodyHtml += `
+                    <tr>
+                        <td>${product.product_code}</td>
+                        <td>${product.product_name}</td>
+                        <td>${product.quantity}</td>
+                        <td>${product.discount}</td>
+                        <td>${product.payable}</td>
+                    </tr>`;
+            });
+        }//end if
+
         // ID container để cập nhật thông tin chi tiết sản phẩm
         const containerId = 'productDetails' + summaryOrder.id;
         let contentHtml = `<table class="table">
@@ -293,18 +351,7 @@ $(document).ready(function() {
                 </tr>
             </thead>
             <tbody>`;
-        // Duyệt qua từng sản phẩm trong đối tượng groupedProducts và tạo hàng mới trong bảng
-        Object.values(groupedProducts).forEach(product => {
-            contentHtml += `
-                <tr>
-                    <td>${product.product_code}</td>
-                    <td>${product.product_name}</td>
-                    <td>${product.quantity}</td>
-                    <td>${product.discount}</td>
-                    <td>${product.payable}</td>
-                </tr>`;
-        });
-        contentHtml += `</tbody></table>`;
+        contentHtml += bodyHtml + `</tbody></table>`;
         // Cập nhật container với thông tin sản phẩm đã gộp
         document.getElementById(containerId).innerHTML = contentHtml;
     }
@@ -312,20 +359,16 @@ $(document).ready(function() {
     $('#showSummaryBtn').click(function() {
         // Khởi tạo và bắt đầu nội dung HTML của bảng
         var tableContent = buildTableContent();
-        
-        // Cập nhật nội dung cho modal và hiển thị modal
         //$('#summaryModalBody').html(tableContent);
         // Thêm tableContent vào container
         $('#tableContainer').html(tableContent);
         $('#summaryModal').modal('show');
-
-        // Cập nhật tổng số khi hiển thị modal
-        updateTotals(); 
     });
     
     function buildTableContent() {
         var totalDiscount = 0;
         var totalAmount = 0;
+        var array_report_date = [];
 
         var tableContent = `
             <table class="table">
@@ -334,30 +377,45 @@ $(document).ready(function() {
                         <th>#</th>
                         <th>NVBH</th>
                         <th>Số HĐ</th>
-                        <th>Chiết khấu</th>
-                        <th>Thành tiền</th>
+                        <th>cKhấu</th>
+                        <th>tTiền</th>
+                        <th>GD</th>
                     </tr>
                 </thead>
                 <tbody>`;
 
+        var firstCheckedCheckbox = $(".order-checkbox:checked").first();
+        if (firstCheckedCheckbox.length > 0) { // Kiểm tra để đảm bảo rằng có ít nhất một checkbox được chọn
+            var staffName = firstCheckedCheckbox.closest("tr"); // Lấy giá trị của checkbox thẻ tr
+            $('#staff_id').val(staffName.find("td:eq(3)").text().trim());//chọn NV
+        }
         // Duyệt qua mỗi hàng có checkbox được tích
         $(".order-checkbox:checked").each(function(index) {
             var summaryOrderId = $(this).data('id');
             var row = $(this).closest("tr");
             var chietKhau = parseInt(row.find("td:eq(6)").text().replace(/,/g, '')) || 0;
-            var thanhTien = parseInt(row.find("td:eq(7)").text().replace(/,/g, '')) || 0;
+            if(row.find("td:eq(8)").text().trim() == 'Thu hồi'){
+                var thanhTien = -1 * parseInt(row.find("td:eq(7)").text().replace(/,/g, '')) || 0;
+            }else{
+                var thanhTien = parseInt(row.find("td:eq(7)").text().replace(/,/g, '')) || 0;
+            }
+            array_report_date.push(row.find("td:eq(2)").text());
 
             totalDiscount += chietKhau;
             totalAmount += thanhTien;
 
+            var transaction = row.find("td:eq(5)").text();
             tableContent += `
                 <tr>
-                    <td style="display: none;" data-id="${summaryOrderId}"></td>    
+                    <td style="display: none;" data-id="${summaryOrderId}"></td>  
                     <td>${index + 1}</td>
                     <td><span class="staff-cell">${row.find("td:eq(3)").text()}</span></td>
                     <td>${row.find("td:eq(4)").text()}</td>
                     <td>${chietKhau.toLocaleString()}</td>
                     <td>${thanhTien.toLocaleString()}</td>
+                    <td data-transaction="${transaction}">${
+                        (transaction !== '' && transaction !== '_') ? '<span style="color: green;">✔</span>' : ''
+                    }</td>
                 </tr>`;
         });
 
@@ -371,28 +429,17 @@ $(document).ready(function() {
                 </tbody>
             </table>`;
 
+        const firstElement = array_report_date[0];// Lấy giá trị đầu tiên của mảng để so sánh
+        // Sử dụng phương thức every để kiểm tra mọi phần tử có giống nhau không
+        const allSame = array_report_date.every(element => element === firstElement);
+        if (allSame) {
+            $('#pay_date').text(firstElement.trim());
+        } else {
+            $('#pay_date').text('Không cùng ngày');
+        }
+        
         return tableContent;
     }
-
-    function updateTotals() {
-        var totalNotes = 0;
-        var transferAmount = parseInt($('#transfer_amount').val()) || 0;
-
-        // Chỉ lựa chọn các input có class="note-input"
-        $('#summaryForm input.note-input').each(function() {
-            var denomination = $(this).data('denomination');
-            var quantity = parseInt($(this).val(), 10) || 0;
-            totalNotes += denomination * quantity;
-        });
-
-        var combinedTotal = transferAmount + totalNotes;
-
-        $('#transferTotal').text(transferAmount.toLocaleString());
-        $('#notesTotal').text(totalNotes.toLocaleString());
-        $('#combinedTotal').text(combinedTotal.toLocaleString());
-    }
-    // Gắn sự kiện 'input' vào tất cả các input trong form để cập nhật tổng số tiền mỗi khi giá trị thay đổi
-    $('#summaryForm input').on('input', updateTotals);
 
 
     $('#addSummaryBtn').click(function() {
@@ -413,49 +460,46 @@ $(document).ready(function() {
         if (!allSame) {
             alert("Không cùng nhân viên.");
         } else {
-            // Thu thập dữ liệu cơ bản
-            var transferAmount = parseInt($('#transfer_amount').val()) || 0;
-            var submitterId = $('#submitter_id').val();
-            var notes = $('#notes').val();
-
-            // Thu thập dữ liệu về các note
-            var notesData = {};
-            $('#summaryForm input.note-input').each(function() {
-                var denomination = $(this).data('denomination');
-                var quantity = parseInt($(this).val(), 10) || 0;
-                notesData['note_' + denomination] = quantity; // Tạo một key dựa trên mệnh giá và lưu số lượng
-            });
-
-            // Tính tổng số tiền
-            var totalAmount = transferAmount;
-            for (var denomination in notesData) {
-                totalAmount += parseInt(denomination.split('_')[1]) * notesData[denomination];
-            }
-
+            var notes = $('#notes').val();//lấy giá trị ô nhập notes
+            var payDate = $('#pay_date').text();//lấy giá trị ngày báo cáo, cũng là ngày trả
+            var staffId = $('#staff_id').val();//lấy tên nhân viên
+            var totalAmountText = $("#tableContainer table tbody tr:last-child").find("td:last-child").text();//lấy số tổng
+            var cleanAmountText = totalAmountText.replace(/[^\d.-]/g, ''); // Xóa bất kỳ ký tự nào không phải là số, dấu trừ, hoặc dấu chấm
+            var totalAmount = parseFloat(cleanAmountText);
+            //console.log(totalAmount);
             // Thu thập ID của summary_orders được chọn
             var summaryOrderIds = [];
+            var shouldStop = false;  // Cờ để kiểm tra xem có nên dừng toàn bộ sự kiện hay không
             // Duyệt qua mỗi hàng trong tbody của bảng, loại trừ hàng tổng kết
             $("#tableContainer table tbody tr:not(:last-child)").each(function() {
                 // Lấy giá trị data-id từ <td> ẩn đầu tiên trong mỗi hàng
                 var summaryOrderId = $(this).find("td:first-child").data('id');
+                var transaction = $(this).find("td:eq(6)").data('transaction');//tìm cột thứ 7
+                if (transaction !== '' && transaction !== '_') {
+                    alert("Không tạo được do có đơn có phiếu thu rồi.");
+                    shouldStop = true;  // Đặt cờ thành true để dừng các hành động tiếp theo
+                    return false; //thoát each
+                }
+                //console.log(transaction);
                 // Thêm ID vào mảng nếu nó tồn tại
                 if (summaryOrderId) {
                     summaryOrderIds.push(summaryOrderId);
                 }
             });
-            //console.log(summaryOrderIds); // Mảng chứa các ID thu thập được
-
+            if (shouldStop) {
+                event.preventDefault();  // Ngăn không cho bất kỳ hành động mặc định nào, như submit form
+                return;  // Thoát khỏi hàm sự kiện click
+            }
+            //console.log(staffId); // Mảng chứa các ID thu thập được
             // Tạo một object để chứa tất cả dữ liệu
             var transactionData = {
-                staff_id: staffIds[0],
-                transfer_amount: transferAmount,
+                staff_id: staffId,
                 total_amount: totalAmount,
-                submitter_id: submitterId,
                 notes: notes,
+                pay_date: payDate,
                 summary_order_ids: summaryOrderIds,
-                ...notesData // Sử dụng spread syntax để thêm các key của notesData vào object này
             };
-            //console.log(transactionData);
+            console.log(transactionData);
             // Gọi hàm để gửi dữ liệu
             $.ajaxSetup({
                 headers: {

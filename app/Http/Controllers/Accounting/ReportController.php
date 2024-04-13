@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Accounting;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Accounting\Transaction;
+use App\Models\Accounting\TransactionDetail;
 use App\Models\Accounting\AccountingOrder; 
 use App\Models\Accounting\AccountingOrderDetail; 
 use App\Models\Accounting\RecoveryOrder;
@@ -17,18 +18,13 @@ class ReportController extends Controller
 {
     public function transactions(Request $request)
     {
+        $perPage = $request->input('per_page', 3);
         $saleStaffs = SaleStaff::all();
         // Đảm bảo rằng bạn tải mối quan hệ 'staff' và 'submitter'
-        $query = Transaction::with(['staff', 'submitter']);
-        // Sửa lại điều kiện để sử dụng 'staff_id' và 'submitter_id' (giả sử đó là tên trường)
-        if ($request->filled('submitter')) {
-            $query->whereHas('submitter', function($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->submitter . '%');
-            });
-        }
+        $query = Transaction::with(['staff', 'details']);
         
-        if ($request->filled('submit_date')) {
-            $query->whereDate('created_at', $request->submit_date);
+        if ($request->filled('pay_date')) {
+            $query->whereDate('pay_date', $request->pay_date);
         }
         
         if ($request->filled('staff')) {
@@ -37,8 +33,8 @@ class ReportController extends Controller
             });
         }
         
-        $query->orderBy('created_at', 'desc');
-        $transactions = $query->paginate(3); // Hoặc số lượng bạn muốn hiển thị trên mỗi trang
+        $query->orderBy('pay_date', 'desc');
+        $transactions = $query->paginate($perPage); // Hoặc số lượng bạn muốn hiển thị trên mỗi trang
         if ($request->ajax()) {
             $view = view('accounting.partials.transactions_table', compact('transactions'))->render();
             $links = $transactions->links()->toHtml(); // Lấy HTML của links phân trang
@@ -51,6 +47,7 @@ class ReportController extends Controller
 
     public function summaryOrders(Request $request)
     {
+        $perPage = $request->input('per_page',3); // Số lượng mặc định là 3 nếu không có tham số per_page
         $saleStaffs = SaleStaff::all();
         $query = SummaryOrder::query()
             ->with(['groupOrder.accountingOrders'])
@@ -58,19 +55,33 @@ class ReportController extends Controller
                 $q->whereDate('report_date', $request->report_date);
             })
             ->when($request->filled('staff'), function ($q) use ($request) {
-                // Tìm kiếm dựa trên trường staff trong AccountingOrder thông qua GroupOrder
-                $q->whereHas('groupOrder.accountingOrders', function ($q) use ($request) {
-                    $q->where('staff', 'like', '%' . $request->staff . '%');
-                    //$q->where('staff_id', $request->staff);
+                // Tìm kiếm dựa trên trường staff trong cả AccountingOrder và RecoveryOrder thông qua GroupOrder
+                $q->where(function ($q) use ($request) {
+                    $q->whereHas('groupOrder.accountingOrders', function ($q) use ($request) {
+                        $q->where('staff', 'like', '%' . $request->staff . '%');
+                    })
+                    ->orWhereHas('groupOrder.recoveryOrders', function ($q) use ($request) {
+                        $q->where('staff', 'like', '%' . $request->staff . '%');
+                    });
                 });
-            })
+            })            
             ->when($request->filled('transaction_id'), function ($q) use ($request) {
                 // Giả sử transaction_id là một trường trong bảng summary_orders
                 $q->where('transaction_id', $request->transaction_id);
             })
             ->when($request->filled('is_group'), function ($q) use ($request) {
-                $q->where('is_group', $request->is_group);
-            })
+                switch ($request->is_group) {
+                    case '1':
+                        $q->where('is_group', 1); // 'is_group = 1' đại diện cho "giao ngay"
+                        break;
+                    case '2':
+                        $q->where('is_group', 0)->where('is_recovery', 0); // 'is_group = 0' và 'is_recovery = 0' đại diện cho "giao sau"
+                        break;
+                    case '3':
+                        $q->where('is_recovery', 1); // 'is_recovery = 1' đại diện cho "thu hồi"
+                        break;
+                }
+            })            
             // Lọc theo có transaction_id hay không
             ->when($request->filled('has_transaction_id'), function ($q) use ($request) {
                 if ($request->has_transaction_id == '1') {
@@ -81,14 +92,18 @@ class ReportController extends Controller
             })
             ->orderBy('report_date', 'desc'); // Sắp xếp theo report_date giảm dần
 
-        $summaryOrders = $query->paginate(3);
+        $summaryOrders = $query->paginate($perPage);
         // Lấy thông tin chi tiết cho mỗi summaryOrder có group_id
-        $summaryOrders->load(['groupOrder.accountingOrders.orderDetails']);//lấy các accounting_order trong groupOrder, nhưng chỉ lấy được 1 sản phẩm trong đơn
+        $summaryOrders->load([
+            'groupOrder.accountingOrders.orderDetails',
+            'groupOrder.recoveryOrders.recoveryDetails'
+        ]);        
+        //$summaryOrders->load(['groupOrder.accountingOrders.orderDetails']);//lấy các accounting_order trong groupOrder, nhưng chỉ lấy được 1 sản phẩm trong đơn
 
         if ($request->ajax()) {
             $view = view('accounting.partials.summary_orders_table', compact('summaryOrders'))->render();
             $links = $summaryOrders->links()->toHtml();
-            return response()->json(['table' => $view, 'links' => $links]);
+            return response()->json(['table' => $view, 'links' => $links]);//, 'summaryOrders' => $summaryOrders
         }
 
         $header = 'Tổng hợp';
@@ -97,36 +112,12 @@ class ReportController extends Controller
 
     public function saveTransaction(Request $request)
     {
-        //$transaction = $request->all(); // Lấy toàn bộ dữ liệu yêu cầu
-        // Tìm ID nhân viên dựa trên tên
         $staff = SaleStaff::where('name', $request->input('staff_id'))->first();
-        $submitter = SaleStaff::where('name', $request->input('submitter_id'))->first();
-
-        // Kiểm tra xem nhân viên và người nộp có tồn tại không
-        if (!$staff || !$submitter) {
-            //return response()->json(['message' => 'Không tìm thấy tên trong bảng nhân viên'], 404);
-        }
-
-        $now = Carbon::now();
-        // Tạo ID với định dạng thời gian mdYHis
-        $id = $now->format('mdYHis');
-
-        // Tạo giao dịch mới với ID nhân viên và người nộp
-        $transactionData = Transaction::create([
-            'id' => $id,
+        $transactionData = Transaction::create([//nếu thêm đơn vào giao dịch thì cập nhật mã giao dịch vào đơn và sửa lại total_amount transaction
             'staff_id' => $staff->id,
-            'transfer_amount' => $request->input('transfer_amount'),
-            'note_500' => $request->input('note_500000'),
-            'note_200' => $request->input('note_200000'),
-            'note_100' => $request->input('note_100000'),
-            'note_50' => $request->input('note_50000'),
-            'note_20' => $request->input('note_20000'),
-            'note_10' => $request->input('note_10000'),
-            'note_5' => $request->input('note_5000'),
-            'note_2' => $request->input('note_2000'),
-            'note_1' => $request->input('note_1000'),
             'total_amount' => $request->input('total_amount'),
-            'submitter_id' => 1,//$submitter->id,
+            'diff_amount' => $request->input('total_amount'),
+            'pay_date' => $request->input('pay_date'),
             'notes' => $request->input('notes'),
         ]);
 
@@ -134,6 +125,41 @@ class ReportController extends Controller
         // Cập nhật các hàng trong summary_orders với transaction_id mới
         SummaryOrder::whereIn('id', $summaryOrderIds)
                     ->update(['transaction_id' => $transactionData->id]);
+
+        // Phản hồi cho client rằng giao dịch đã được lưu thành công
+        return response()->json(['message' => 'Success'], 200);
+    }
+
+    public function addTransactionDetail(Request $request)
+    {
+        $now = Carbon::now();
+        // Tạo ID với định dạng thời gian mdYHis
+        $id = $now->format('mdYHis');
+
+        // Tạo giao dịch mới với ID nhân viên và người nộp
+        $transactionData = TransactionDetail::create([
+            'id' => $id,
+            'transaction_id' => $request->input('transaction_id'),
+            'staff_id' => $request->input('staff_id'),
+            'transfer_amount' => $request->input('transferTotal'),
+            'note_500' => $request->input('note_500'),
+            'note_200' => $request->input('note_200'),
+            'note_100' => $request->input('note_100'),
+            'note_50' => $request->input('note_50'),
+            'note_20' => $request->input('note_20'),
+            'note_10' => $request->input('note_10'),
+            'note_5' => $request->input('note_5'),
+            'note_2' => $request->input('note_2'),
+            'note_1' => $request->input('note_1'),
+            'total_amount' => $request->input('combinedTotal'),
+            'notes' => $request->input('notes'),
+        ]);
+        
+        $transaction = Transaction::find($request->input('transaction_id'));
+        if ($transaction) {
+            $diff_amount = $transaction->diff_amount - $transactionData->total_amount;
+            $transaction->update(['diff_amount' => $diff_amount]);
+        }
 
         // Phản hồi cho client rằng giao dịch đã được lưu thành công
         return response()->json(['message' => 'Success'], 200);

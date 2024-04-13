@@ -15,6 +15,10 @@ class CreateTransactionDetailsTable extends Migration
     {
         Schema::create('transaction_details', function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary();//transaction_code
+            $table->unsignedInteger('transaction_id');
+            $table->foreign('transaction_id')->references('id')->on('transactions')->onDelete('cascade');
+            $table->unsignedTinyInteger('staff_id')->nullable();//nhân viên phụ trách 
+            $table->foreign('staff_id')->references('id')->on('sale_staffs')->onDelete('set null');
             $table->unsignedMediumInteger('transfer_amount')->nullable();//chuyển khoản
             $table->unsignedSmallInteger('note_500')->nullable();
             $table->unsignedSmallInteger('note_200')->nullable();

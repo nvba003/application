@@ -18,7 +18,7 @@ class CreateTransactionsTable extends Migration
             $table->unsignedTinyInteger('staff_id')->nullable();//nhân viên phụ trách 
             $table->foreign('staff_id')->references('id')->on('sale_staffs')->onDelete('set null');
             $table->unsignedMediumInteger('total_amount')->nullable();
-            $table->unsignedSmallInteger('diff_amount')->nullable();//different amount
+            $table->MediumInteger('diff_amount')->nullable();//different amount
             $table->date('pay_date')->nullable();//ngày trả tiền = ngày báo cáo
             $table->text('notes')->nullable();
             $table->timestamps();

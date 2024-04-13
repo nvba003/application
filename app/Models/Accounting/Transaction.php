@@ -8,17 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 class Transaction extends Model
 {
     use HasFactory;
-    protected $guarded = [];
-    public $incrementing = false;
+    protected $guarded = ['id'];
     // Mối quan hệ với SaleStaff cho 'staff'
     public function staff()
     {
         return $this->belongsTo(SaleStaff::class, 'staff_id');
     }
 
-    // Mối quan hệ với SaleStaff cho 'submitter'
-    public function submitter()
+    public function details()
     {
-        return $this->belongsTo(SaleStaff::class, 'submitter_id');
+        return $this->hasMany(TransactionDetail::class);
     }
 }

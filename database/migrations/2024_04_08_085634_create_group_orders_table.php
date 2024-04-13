@@ -17,10 +17,10 @@ class CreateGroupOrdersTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('group_id');//số nhóm
             $table->foreign('group_id')->references('id')->on('summary_orders')->onDelete('cascade');
-            $table->unsignedInteger('order_id');
-            $table->foreign('order_id')->references('id')->on('accounting_orders')->onDelete('cascade');
-            $table->unsignedInteger('recovery_id');
-            $table->foreign('recovery_id')->references('id')->on('recovery_orders')->onDelete('cascade');
+            $table->unsignedInteger('order_id')->nullable();
+            $table->foreign('order_id')->references('id')->on('accounting_orders')->onDelete('set null');
+            $table->unsignedInteger('recovery_id')->nullable();
+            $table->foreign('recovery_id')->references('id')->on('recovery_orders')->onDelete('set null');
             $table->timestamps();
         });
     }

@@ -18,11 +18,8 @@
         <div class="form-group mb-2">
             <select class="form-control" id="status" name="status">
                 <option value="">Trạng Thái</option>
-                <option value="Đơn mới">Đơn mới</option>
-                <option value="Đã xuất kho">Đã xuất kho</option>
-                <option value="Đang giao hàng">Đang giao hàng</option>
-                <option value="Đã hoàn thành">Đã hoàn thành</option>
-                <option value="Đã hủy">Đã hủy</option>
+                <option value="Chờ duyệt">Chờ duyệt</option>
+                <option value="Đã duyệt">Đã duyệt</option>
             </select>
         </div>
         <div class="form-group mx-sm-3 mb-2">
@@ -37,9 +34,9 @@
             <table class="table" id="ordersTable">
                 <thead>
                     <tr>
-                        <th>
+                        <!-- <th>
                             <input type="checkbox" id="checkAll">
-                        </th>
+                        </th> -->
                         <th>STT</th> <!-- Cột cho nút mở rộng -->
                         <th>Ngày Đặt</th>
                         <th>Mã Đơn Hàng</th>
@@ -121,7 +118,7 @@
                 <thead>
                     <tr>
                         <th>STT</th>
-                        <th>Mã Đơn Hàng</th>
+                        <th>Mã Phiếu</th>
                         <th>NVBH</th>
                         <th>Chiết Khấu</th>
                         <th>Thành Tiền</th>
@@ -133,17 +130,17 @@
         if (selectedRows.length > 0) {
             selectedRows.each(function(index) {
                 let order = JSON.parse($(this).attr('data-order'));
-                totalDiscount += order.discount; // order.discount là số nguyên
-                totalAmount += order.total_amount; // order.total_amount là số nguyên
+                totalDiscount += order.total_discount;
+                totalAmount += order.total_discounted_amount;
 
                 // Thêm hàng cho mỗi đơn hàng được chọn
                 summaryContent += `
                     <tr>
                         <td>${index + 1}</td>
-                        <td>${order.order_code}</td>
+                        <td>${order.recovery_code}</td>
                         <td>${order.staff}</td>
-                        <td>${order.discount}</td> <!-- Không cần parseFloat và .toFixed -->
-                        <td>${order.total_amount}</td> <!-- Không cần parseFloat và .toFixed -->
+                        <td>${order.total_discount}</td> <!-- Không cần parseFloat và .toFixed -->
+                        <td>${order.total_discounted_amount}</td> <!-- Không cần parseFloat và .toFixed -->
                     </tr>
                 `;
             });
@@ -185,12 +182,14 @@
         selectedRows.each(function() {
             let order = JSON.parse($(this).attr('data-order'));
             staffNames.push(order.staff);
+            console.log(order.orderDetail);
             ordersData.push({
                 order_id: order.id,
-                order_code: order.order_code,
+                order_code: order.recovery_code,
                 staff: order.staff,
-                discount: order.discount,
-                total_amount: order.total_amount
+                discount: order.total_discount,
+                total_amount: order.total_discounted_amount,
+                order_detail: order.orderDetail
             });
         });
 
@@ -208,11 +207,11 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
-        //console.log(invoiceCode);
-        //console.log(reportDate);
-        //console.log(ordersData);
+        // console.log(invoiceCode);
+        // console.log(reportDate);
+        // console.log(ordersData);
         $.ajax({
-            url: 'add-summary-order-for-immediate', 
+            url: 'add-summary-order-for-recovery', 
             type: 'POST',
             data: {
                 invoice_code: invoiceCode,
@@ -227,7 +226,7 @@
                 $('.order-checkbox:checked').each(function() {
                     $(this).closest('.checkbox-container').html('<i class="fas fa-check text-success"></i>');
                 });
-                $('#checkAll').prop('checked', false);//bỏ checkall
+                //$('#checkAll').prop('checked', false);//bỏ checkall
             },
             error: function(xhr, status, error) {
                 console.error('Error:', error);
@@ -236,13 +235,16 @@
         });
     });
 
-
 $(document).ready(function() {
+    $(document).on('click', '.checkItem', function() {
+        $('.checkItem').not(this).prop('checked', false);//chỉ chọn 1 item/lần
+    });
     function fetchData(url) {
         $.ajax({
             url: url,
             type: 'GET',
             success: function(response) {
+                //console.log(response.recoveryOrders['data']);
                 $('#ordersTable tbody').html(response.table);
                 $('#pagination-links').html(response.links);
             },
@@ -268,10 +270,11 @@ $(document).ready(function() {
         fetchData(href + '&' + currentSearchParams); // Thêm tham số tìm kiếm vào URL phân trang
     });
 
-    $('#checkAll').on('click', function() {
-        var isChecked = $(this).prop('checked');
-        $('.checkItem').prop('checked', isChecked);
-    });
+    // $('#checkAll').on('click', function() {
+    //     var isChecked = $(this).prop('checked');
+    //     $('.checkItem').prop('checked', isChecked);
+    // });
+    
 
     $('#perPage').on('change', function() {
         var perPage = $(this).val();

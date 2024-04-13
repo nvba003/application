@@ -9,4 +9,8 @@ class ProductDiscount extends Model
 {
     use HasFactory;
     protected $guarded = ['id'];
+    public function recoveryOrderDetails()
+    {
+        return $this->hasMany(RecoveryOrderDetail::class, 'product_code', 'product_code');
+    }
 }

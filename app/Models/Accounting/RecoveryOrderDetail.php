@@ -13,4 +13,8 @@ class RecoveryOrderDetail extends Model
     {
         return $this->belongsTo(RecoveryOrder::class,'recovery_order_id');
     }
+    public function productDiscount()
+    {
+        return $this->hasOne(ProductDiscount::class, 'product_code', 'product_code');
+    }
 }

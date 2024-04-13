@@ -9,7 +9,7 @@
     <td>{{ $order->recovery_code }}</td>
     <td>{{ $order->staff }}</td>
     <td>{{ $order->status }}</td>
-    <td>{{ number_format($order->recovery_code) }}</td>
-    <td>{{ number_format($order->recovery_code) }}</td>
+    <td>{{ number_format($order->total_discount) }}</td>
+    <td>{{ number_format($order->total_discounted_amount) }}</td>
 </tr>
 @endforeach
