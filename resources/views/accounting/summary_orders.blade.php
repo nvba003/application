@@ -453,13 +453,13 @@ $(document).ready(function() {
         }).get();
 
         // Kiểm tra xem tất cả các staff ID có giống nhau không
-        var allSame = staffIds.every(function(staffId) {
-            return staffId === staffIds[0];
-        });
+        // var allSame = staffIds.every(function(staffId) {
+        //     return staffId === staffIds[0];
+        // });
 
-        if (!allSame) {
-            alert("Không cùng nhân viên.");
-        } else {
+        // if (!allSame) {
+        //     alert("Không cùng nhân viên.");
+        // } else {
             var notes = $('#notes').val();//lấy giá trị ô nhập notes
             var payDate = $('#pay_date').text();//lấy giá trị ngày báo cáo, cũng là ngày trả
             var staffId = $('#staff_id').val();//lấy tên nhân viên
@@ -527,7 +527,7 @@ $(document).ready(function() {
                     alert("Error saving transaction.");
                 }
             });//end ajax
-        }
+        // }//end else
     });
 
     $('#ordersTable').on('click', '.btn-edit', function() {
