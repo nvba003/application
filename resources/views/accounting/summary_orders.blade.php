@@ -172,6 +172,21 @@
     </div>
 </div>
 
+<!-- Modal thông báo -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="successModalLabel">Thành công!</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Thao tác thành công!
+      </div>
+    </div>
+  </div>
+</div>
+
 @endsection
 
 @push('scripts')
@@ -463,9 +478,10 @@ $(document).ready(function() {
             var notes = $('#notes').val();//lấy giá trị ô nhập notes
             var payDate = $('#pay_date').text();//lấy giá trị ngày báo cáo, cũng là ngày trả
             var staffId = $('#staff_id').val();//lấy tên nhân viên
-            var totalAmountText = $("#tableContainer table tbody tr:last-child").find("td:last-child").text();//lấy số tổng
-            var cleanAmountText = totalAmountText.replace(/[^\d.-]/g, ''); // Xóa bất kỳ ký tự nào không phải là số, dấu trừ, hoặc dấu chấm
-            var totalAmount = parseFloat(cleanAmountText);
+            var totalAmountText = $("#tableContainer table tbody tr:last-child").find("td:last-child").text(); // Lấy số tổng
+            var cleanAmountText = totalAmountText.replace(/,/g, '').replace(/[^\d.-]/g, ''); // Xóa dấu phẩy và bất kỳ ký tự nào không phải là số, dấu trừ, hoặc dấu chấm
+            var totalAmount = parseFloat(cleanAmountText); // Chuyển thành số thực
+
             //console.log(totalAmount);
             // Thu thập ID của summary_orders được chọn
             var summaryOrderIds = [];
@@ -514,7 +530,11 @@ $(document).ready(function() {
                 success: function(response) {
                     // Xử lý khi dữ liệu được gửi thành công
                     console.log("Transaction saved successfully.", response);
-                    alert("Giao dịch thành công.");
+                    $('#successModal').modal('show');
+                    // Đặt timeout để ẩn modal sau 3 giây
+                    setTimeout(function() {
+                        $('#successModal').modal('hide');
+                    }, 3000);
                     $('#summaryModal').modal('hide'); // Đóng modal
                     // Thay thế checkbox bằng icon tick màu xanh cho các hàng được chọn
                     $('.order-checkbox:checked').each(function() {
