@@ -37,7 +37,10 @@
             </div>
             <button type="submit" class="btn btn-primary mb-2">Tìm kiếm</button>
         </form>
-        <button id="showSummaryBtn" class="btn btn-warning">Tạo phiếu thu</button>
+        <div class="d-flex align-items-center">
+            <button id="showSummaryBtn" class="btn btn-warning mr-3">Tạo phiếu thu</button>
+            <div>Đã chọn: <span class="badge badge-primary" id="selectedCount">0</span> hàng</div>
+        </div>
     </div>
 
     <div id="ordersTable">
@@ -51,10 +54,11 @@
                     <th>Ngày BC</th>
                     <th>NVBH</th>
                     <th>Số HĐ</th>
-                    <th>Số giao dịch</th>
-                    <th>Chiết khấu</th>
-                    <th>Thành tiền</th>
+                    <th>Số GD</th>
+                    <th>C.Khấu</th>
+                    <th>T.Tiền</th>
                     <th>Loại</th>
+                    <th>Khách hàng</th>
                     <th>Ghi chú</th>
                 </tr>
             </thead>
@@ -65,14 +69,14 @@
     </div>
 
     <div class="d-flex flex-row-reverse align-items-center"> <!-- flex-row-reverse đảo ngược thứ tự hiển thị các phần tử con -->
-        <div class="form-inline">
+        <div class="form-inline w-25">
             <label for="perPage" class="ml-2">Số hàng:</label>
-            <select id="perPage" class="form-control form-control-sm">
+            <select id="perPage" class="form-control form-control-sm w-25">
                 <option value="10">10</option>
                 <option value="100">100</option>
             </select>
         </div>
-        <div id="pagination-links" class="d-flex align-items-center">
+        <div id="pagination-links" class="d-flex align-items-center w-100">
             <!-- Nội dung của pagination-links -->
         </div>
     </div>
@@ -232,6 +236,7 @@ $(document).ready(function() {
     $('#checkAll').on('click', function() {
         var isChecked = $(this).prop('checked');
         $('.checkItem').prop('checked', isChecked);
+        updateCount();
     });
 
     $('#perPage').on('change', function() {
@@ -298,22 +303,24 @@ $(document).ready(function() {
             });
             //console.log(groupedSpecial);
             // Duyệt qua từng sản phẩm trong đối tượng groupedProducts và tạo hàng mới trong bảng
-            Object.values(groupedProducts).forEach(product => {
+            Object.values(groupedProducts).forEach((product, index) => {
                 bodyHtml += `
                     <tr>
+                        <td>${index + 1}</td>    
                         <td>${product.product_code}</td>
                         <td>${product.product_name}</td>
-                        <td>${product.quantity}</td>
-                        <td>${product.discount}</td>
-                        <td>${product.payable}</td>`;
+                        <td class="text-right">${product.quantity}</td>
+                        <td class="text-right">${product.discount.toLocaleString()}</td>
+                        <td class="text-right">${product.payable.toLocaleString()}</td>`;
             });
             if (Object.keys(groupedSpecial).length > 0) {
-                Object.values(groupedSpecial).forEach(product => {
+                Object.values(groupedSpecial).forEach((product, index) => {
                     bodyHtml += `
                         <tr>
+                            <td></td>    
                             <td>${product.product_code}</td>
                             <td>${product.product_name}</td>
-                            <td>${product.quantity}</td>
+                            <td class="text-right">${product.quantity}</td>
                         </tr>`;
                 });
             }
@@ -339,14 +346,15 @@ $(document).ready(function() {
                 });
             });
             // Duyệt qua từng sản phẩm trong đối tượng groupedProducts và tạo hàng mới trong bảng
-            Object.values(groupedProducts).forEach(product => {
+            Object.values(groupedProducts).forEach((product, index) => {
                 bodyHtml += `
                     <tr>
+                        <td>${index + 1}</td>
                         <td>${product.product_code}</td>
                         <td>${product.product_name}</td>
-                        <td>${product.quantity}</td>
-                        <td>${product.discount}</td>
-                        <td>${product.payable}</td>
+                        <td class="text-right">${product.quantity}</td>
+                        <td class="text-right">${product.discount.toLocaleString()}</td>
+                        <td class="text-right">${product.payable.toLocaleString()}</td>
                     </tr>`;
             });
         }//end if
@@ -356,11 +364,12 @@ $(document).ready(function() {
         let contentHtml = `<table class="table">
             <thead>
                 <tr>
+                    <th>STT</th>    
                     <th>Mã SP</th>
                     <th>Tên sản phẩm</th>
-                    <th>Số lượng</th>
-                    <th>Chiếu khấu</th>
-                    <th>Thành tiền</th>
+                    <th class="text-right">Số lượng</th>
+                    <th class="text-right">Chiếu khấu</th>
+                    <th class="text-right">Thành tiền</th>
                 </tr>
             </thead>
             <tbody>`;
@@ -448,7 +457,15 @@ $(document).ready(function() {
         // Sử dụng phương thức every để kiểm tra mọi phần tử có giống nhau không
         const dateSame = array_report_date.every(element => element === firstElement);
         if (dateSame) {
-            $('#pay_date').text(firstElement.trim());
+            var parts = firstElement.trim().split('/'); // Tách ngày và tháng
+            var day = parts[0];
+            var month = parts[1];
+            var year = parts[2];
+            var date = new Date(year, month - 1, day); // month - 1 vì JavaScript đếm tháng từ 0
+            // Định dạng lại ngày tháng sang Y-m-d
+            var formattedDate = date.toISOString().substring(0, 10); // Cắt chuỗi để lấy định dạng Y-m-d
+            //$('#dateInput').val(formattedDate);
+            $('#pay_date').text(formattedDate);
         } else {
             $('#pay_date').text('Không cùng ngày');
         }
@@ -643,9 +660,14 @@ $(document).ready(function() {
         }, 500);
     }
 
-
-
-
+    function updateCount() {
+        var count = $('.checkItem:checked').length;
+        $('#selectedCount').text(count);
+    }
+    $(document).on('click', '.checkItem', function() {
+        updateCount();
+    });
+    updateCount();  
 
 
 

@@ -20,22 +20,30 @@ class ReportController extends Controller
     {
         $perPage = $request->input('per_page', 10);
         $saleStaffs = SaleStaff::all();
-        // Đảm bảo rằng bạn tải mối quan hệ 'staff' và 'submitter'
         $query = Transaction::with(['staff', 'details']);
         
-        if ($request->filled('pay_date')) {
-            $query->whereDate('pay_date', $request->pay_date);
-        }
+        $query->when($request->filled('pay_date'), function ($q) use ($request) {
+            return $q->whereDate('pay_date', $request->pay_date);
+        });
         
-        if ($request->filled('staff')) {
-            $query->whereHas('staff', function($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->staff . '%');
+        $query->when($request->filled('staff'), function ($q) use ($request) {
+            return $q->whereHas('staff', function ($subQuery) use ($request) {
+                $subQuery->where('name', 'like', '%' . $request->staff . '%');
             });
-        }
+        });
+        
+        $query->when($request->filled('difference_amount') && in_array($request->difference_amount, [1, 0]), function ($q) use ($request) {
+            if ($request->difference_amount == 1) {
+                return $q->where('diff_amount', '>', 0);
+            } else {
+                return $q->where('diff_amount', '<=', 0);
+            }
+        });
         
         $query->orderBy('pay_date', 'desc');
         $transactions = $query->paginate($perPage); // Hoặc số lượng bạn muốn hiển thị trên mỗi trang
         if ($request->ajax()) {
+            //dd($request->all());
             $view = view('accounting.partials.transactions_table', compact('transactions'))->render();
             $links = $transactions->links()->toHtml(); // Lấy HTML của links phân trang
             return response()->json(['table' => $view, 'links' => $links]);
@@ -79,6 +87,9 @@ class ReportController extends Controller
                         break;
                     case '3':
                         $q->where('is_recovery', 1); // 'is_recovery = 1' đại diện cho "thu hồi"
+                        break;
+                    case '4':
+                        $q->where('is_group', 0); // 'is_group = 1' đại diện cho "giao sau và thu hồi"
                         break;
                 }
             })            

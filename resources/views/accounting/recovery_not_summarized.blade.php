@@ -236,6 +236,9 @@ $(document).ready(function() {
     $(document).on('click', '.checkItem', function() {
         $('.checkItem').not(this).prop('checked', false);//chỉ chọn 1 item/lần
     });
+    let currentSearchParams = "";
+    let currentPerPage = "";
+    let perPage = $('#perPage').val();
     function fetchData(url) {
         $.ajax({
             url: url,
@@ -253,11 +256,10 @@ $(document).ready(function() {
 
     fetchData('{{ route('orders.recovery_not_summarized') }}');
 
-    let currentSearchParams = "";
-    let currentPerPage = "";
     $('#searchForm').on('submit', function(e) {
         e.preventDefault();
-        currentSearchParams = $(this).serialize(); // Lưu trữ các tham số tìm kiếm
+        // currentSearchParams = $(this).serialize(); // Lưu trữ các tham số tìm kiếm
+        currentSearchParams = updateSearchParams('per_page', perPage, $(this).serialize());
         fetchData('{{ route('orders.recovery_not_summarized') }}?' + currentSearchParams);
     });
 
@@ -282,6 +284,13 @@ $(document).ready(function() {
         var searchParams = new URLSearchParams(paramsString);
         searchParams.set(key, value);
         return searchParams.toString();
+    }
+
+    function notify500(){
+        $('#successModal').modal('show');
+        setTimeout(function() {
+            $('#successModal').modal('hide');
+        }, 500);
     }
 
     // $('#recoveryOrdersTable').on('click', '.expand-button', function() {

@@ -30,7 +30,11 @@
         </div>
         <button type="submit" class="btn btn-primary mb-2">Tìm Kiếm</button>
     </form>
-    <button id="showSummaryBtn" class="btn btn-warning">Tổng hợp</button>
+    
+    <div class="d-flex align-items-center">
+        <button id="showSummaryBtn" class="btn btn-warning mr-2">Tổng hợp</button>
+        <div>Đã chọn: <span class="badge badge-primary" id="selectedCount">0</span> hàng</div>
+    </div>
 
     <div class="row">
         <div class="col-md-12">
@@ -101,6 +105,21 @@
             </div>
         </div>
     </div>
+</div>
+
+<!-- Modal thông báo -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="successModalLabel">Thành công!</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Thao tác thành công!
+      </div>
+    </div>
+  </div>
 </div>
 
 @endsection
@@ -218,7 +237,7 @@
             },
             success: function(response) {
                 // Xử lý phản hồi từ server
-                alert('Đã thêm thành công vào Summary Orders.');
+                notify500();
                 $('#summaryModal').modal('hide'); // Đóng modal
                 // Thay thế checkbox bằng icon tick màu xanh cho các hàng được chọn
                 $('.order-checkbox:checked').each(function() {
@@ -270,6 +289,7 @@ $(document).ready(function() {
     $('#checkAll').on('click', function() {
         var isChecked = $(this).prop('checked');
         $('.checkItem').prop('checked', isChecked);
+        updateCount(); 
     });
 
     $('#perPage').on('change', function() {
@@ -282,6 +302,22 @@ $(document).ready(function() {
         searchParams.set(key, value);
         return searchParams.toString();
     }
+
+    function notify500(){
+        $('#successModal').modal('show');
+        setTimeout(function() {
+            $('#successModal').modal('hide');
+        }, 500);
+    }
+
+    function updateCount() {
+        var count = $('.checkItem:checked').length;
+        $('#selectedCount').text(count);
+    }
+    $(document).on('click', '.checkItem', function() {
+        updateCount();
+    });
+    updateCount();  
 
     // $('#recoveryOrdersTable').on('click', '.expand-button', function() {
     //     var targetId = $(this).data('target');

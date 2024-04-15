@@ -49,13 +49,37 @@
                     @include('accounting.partials.scheduled_not_summarized_tbody', ['orders' => $orders])
                 </tbody>
             </table>
-            <div id="pagination-links" class="mt-3">
-                
+            <div class="d-flex flex-row-reverse align-items-center"> <!-- flex-row-reverse đảo ngược thứ tự hiển thị các phần tử con -->
+                <div class="form-inline">
+                    <label for="perPage" class="ml-2">Số hàng:</label>
+                    <select id="perPage" class="form-control form-control-sm">
+                        <option value="10">10</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+                <div id="pagination-links" class="d-flex align-items-center">
+                    <!-- Nội dung của pagination-links -->
+                </div>
             </div>
 
         </div>
     </div>
 </div>
+<!-- Modal thông báo -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="successModalLabel">Thành công!</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Thao tác thành công!
+      </div>
+    </div>
+  </div>
+</div>
+
 @include('accounting.partials.add_summary_order_modal')
 
 @endsection
@@ -78,7 +102,7 @@ function submitSummaryOrder() {
         success: function(response) {
             console.log(response);
             $('#addSummaryOrderModal').modal('hide');
-            alert('Thêm Summary Order thành công!');
+            notify500();
             // Cập nhật trạng thái của button
             var orderId = $('#modalOrderId').val();
             $('#addButton-' + orderId).hide(); // Ẩn button "Thêm"
@@ -133,6 +157,13 @@ $(document).ready(function() {
         var searchParams = new URLSearchParams(paramsString);
         searchParams.set(key, value);
         return searchParams.toString();
+    }
+
+    function notify500(){
+        $('#successModal').modal('show');
+        setTimeout(function() {
+            $('#successModal').modal('hide');
+        }, 500);
     }
 
     // $('#recoveryOrdersTable').on('click', '.expand-button', function() {

@@ -5,24 +5,49 @@
     <h3>Báo cáo thanh toán</h3>
     <div class="filter-section">
         <form id="searchForm">
-            <div class="form-group">
-                <label for="staff">NV phụ trách:</label>
-                <select id="staff" name="staff" class="form-control">
-                    <option value="">Chọn nhân viên</option>
-                    @foreach($saleStaffs as $staff)
-                        <option value="{{ $staff->name }}">{{ $staff->name }}</option>
-                    @endforeach
-                </select>
+            <div class="row">
+                <!-- NV phụ trách -->
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="staff" class="mr-2">NV phụ trách:</label>
+                        <select id="staff" name="staff" class="form-control">
+                            <option value="">Chọn nhân viên</option>
+                            @foreach($saleStaffs as $staff)
+                                <option value="{{ $staff->name }}">{{ $staff->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Ngày báo cáo -->
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="pay_date" class="mr-2">Ngày báo cáo:</label>
+                        <input type="date" id="pay_date" name="pay_date" class="form-control">
+                    </div>
+                </div>
+
+                <!-- Chênh lệch -->
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="difference" class="mr-2">Chênh lệch:</label>
+                        <select id="difference" name="difference_amount" class="form-control">
+                            <option value="">Chọn</option>
+                            <option value="0">Đã trả đủ</option>
+                            <option value="1">Nợ chưa trả</option>
+                        </select>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="pay_date">Ngày báo cáo:</label>
-                <input type="date" id="pay_date" name="pay_date" class="form-control">
+            <!-- Các nút -->
+            <div class="d-flex">
+                <button id="showSummaryBtn" class="btn btn-warning mr-2">Xem</button>
+                <button type="submit" class="btn btn-primary">Tìm Kiếm</button>
             </div>
-            <button id="showSummaryBtn" class="btn btn-warning">Xem</button>
-            <button type="submit" class="btn btn-primary">Tìm Kiếm</button>
         </form>
-        
     </div>
+
+
 
     <div class="transactions-section mt-4">
         <table class="table" id="transactionsTable">
@@ -38,7 +63,7 @@
                     <th>Tổng tiền</th>
                     <th>Chênh lệch</th>
                     <th>Ghi chú</th>
-                    <th>Số giao dịch</th>
+                    <th>Số GD</th>
                 </tr>
             </thead>
             <tbody>
@@ -49,6 +74,20 @@
 
         </div>
     </div>
+
+    <div class="d-flex flex-row-reverse align-items-center"> <!-- flex-row-reverse đảo ngược thứ tự hiển thị các phần tử con -->
+        <div class="form-inline w-25">
+            <label for="perPage" class="ml-2">Số hàng:</label>
+            <select id="perPage" class="form-control form-control-sm w-25">
+                <option value="10">10</option>
+                <option value="100">100</option>
+            </select>
+        </div>
+        <div id="pagination-links" class="d-flex align-items-center w-100">
+            <!-- Nội dung của pagination-links -->
+        </div>
+    </div>
+
     <!-- Modal xem đơn-->
     <div class="modal fade" id="summaryModal" tabindex="-1" role="dialog" aria-labelledby="summaryModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -174,11 +213,34 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal thông báo -->
+    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">Thành công!</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Thao tác thành công!
+            </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 @endsection
 
 @push('scripts')
 <script>
+    function notify500(){
+        $('#successModal').modal('show');
+        setTimeout(function() {
+            $('#successModal').modal('hide');
+        }, 1000);
+    }
+
     function showAddTransactionModal(transaction) {
         console.log(transaction);
         $('#staff_id').val(transaction.staff_id);//lựa chọn NV
@@ -187,7 +249,6 @@
         // Logic để hiển thị modal và điền dữ liệu vào form
         $('#transaction_id').val(transaction.id);
         $('#addTransactionModal').modal('show');
-        
     }
 
     $('#addTransactionBtn').click(function() {
@@ -205,8 +266,10 @@
             success: function(response) {
                 console.log(response);
                 $('#addTransactionModal').modal('hide');
-                alert('Thêm giao dịch thành công!');
-                location.reload();
+                notify500();
+                setTimeout(function() {
+                    location.reload();
+                }, 1000); // Trì hoãn 10 giây
             },
             error: function(xhr, status, error) {
                 console.error('Error:', error);
@@ -215,8 +278,8 @@
         });
     });
 
-
-    $(document).ready(function() {
+    
+$(document).ready(function() {
     let currentSearchParams = "";
     let currentPerPage = "";
     let perPage = $('#perPage').val();
@@ -261,7 +324,7 @@
     $('#perPage').on('change', function() {
         perPage = $(this).val();
         currentSearchParams = updateSearchParams('per_page', perPage, currentSearchParams);
-        fetchData('{{ route('summary_orders') }}?' + currentSearchParams);
+        fetchData('{{ route('transactions') }}?' + currentSearchParams);
     });
     function updateSearchParams(key, value, paramsString) {
         var searchParams = new URLSearchParams(paramsString);
@@ -307,6 +370,8 @@
             var row = $(this).closest("tr");
             var tongTien = parseInt(row.find("td:eq(5)").text().replace(/,/g, '')) || 0;
             var chenhLech = parseInt(row.find("td:eq(6)").text().replace(/,/g, '')) || 0;
+            console.log(tongTien);
+            console.log(chenhLech);
 
             totalTongtien += tongTien;
             totalChenhLech += chenhLech;
@@ -358,6 +423,22 @@
 
     // Gắn sự kiện 'input' vào tất cả các input trong form để cập nhật tổng số tiền mỗi khi giá trị thay đổi
     $('#addTransactionForm input').on('input', updateTotals);
+
+    updateColors();
+    $(document).ajaxComplete(function() {// gọi lại sau khi dữ liệu được tải lại qua AJAX
+        updateColors();
+    });
+    function updateColors() {
+        $('.diff-amount').each(function() {
+            var value = parseInt($(this).text().replace(/,/g, ''), 10);
+            if (value >= 0) {
+                $(this).css('color', 'red');
+            } else {
+                $(this).css('color', 'green');
+            }
+        });
+    }
+
 
 
 });

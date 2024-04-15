@@ -10,10 +10,10 @@
         <button class="btn btn-info btn-sm expand-button" data-target="#details{{ $transaction->id }}">+</button>
     </td>
     <td>{{ $loop->iteration }}</td>
-    <td>{{ $transaction->created_at->format('Y-m-d') }}</td>
+    <td>{{ \Carbon\Carbon::parse($transaction->pay_date)->format('d/m/Y') }}</td>
     <td>{{ $transaction->staff->name ?? '_' }}</td>
     <td>{{ number_format($transaction->total_amount) }}</td>
-    <td>{{ number_format($transaction->diff_amount) }}</td>
+    <td class="diff-amount">{{ number_format($transaction->diff_amount) }}</td>
     <td>{{ $transaction->notes ?? '_' }}</td>
     <td>{{ $transaction->id }}</td>
     <td>
@@ -22,11 +22,12 @@
 </tr>
 <!-- Thêm ID tương ứng với data-target của nút vào đây -->
 <tr class="transaction-detail" id="details{{ $transaction->id }}" style="display:none;">
-    <td colspan="8">
+    <td colspan="10">
         <table class="table">
             <thead>
                 <tr>
-                    <th>STT</th>    
+                    <th>STT</th>   
+                    <th>Ngày ghi</th> 
                     <th>Số GD</th>
                     <th>Người nộp</th>
                     <th>Chuyển khoản</th>
@@ -39,11 +40,12 @@
                 @foreach ($transaction->details as $index => $detail)
                     <tr>
                         <td>{{ $index + 1 }}</td>
+                        <td>{{ $detail->created_at }}</td>
                         <td>{{ $detail->id }}</td>
                         <td>{{ $detail->staff->name }}</td>
-                        <td>{{ number_format($detail->transfer_amount) }}</td>
-                        <td>{{ number_format($detail->total_amount - $detail->transfer_amount) }}</td>
-                        <td>{{ number_format($detail->total_amount) }}</td>
+                        <td class="text-right">{{ number_format($detail->transfer_amount) }}</td>
+                        <td class="text-right">{{ number_format($detail->total_amount - $detail->transfer_amount) }}</td>
+                        <td class="text-right">{{ number_format($detail->total_amount) }}</td>
                         <td>{{ $detail->notes }}</td>
                     </tr>
                 @endforeach
