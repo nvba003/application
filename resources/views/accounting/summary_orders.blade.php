@@ -409,7 +409,7 @@ $(document).ready(function() {
             var summaryOrderId = $(this).data('id');
             var row = $(this).closest("tr");
             var chietKhau = parseInt(row.find("td:eq(6)").text().replace(/,/g, '')) || 0;
-            var type = row.find("td:eq(8)").text();
+            var type = row.find("td:eq(8)").text().trim();
             if(type == 'Thu hồi'){
                 var thanhTien = -1 * parseInt(row.find("td:eq(7)").text().replace(/,/g, '')) || 0;
             }else{
