@@ -18,7 +18,7 @@ class ReportController extends Controller
 {
     public function transactions(Request $request)
     {
-        $perPage = $request->input('per_page', 3);
+        $perPage = $request->input('per_page', 10);
         $saleStaffs = SaleStaff::all();
         // Đảm bảo rằng bạn tải mối quan hệ 'staff' và 'submitter'
         $query = Transaction::with(['staff', 'details']);

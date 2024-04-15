@@ -217,6 +217,10 @@
 
 
     $(document).ready(function() {
+    let currentSearchParams = "";
+    let currentPerPage = "";
+    let perPage = $('#perPage').val();
+
     function fetchData(url) {
         $.ajax({
             url: url,
@@ -235,10 +239,10 @@
     fetchData('{{ route('transactions') }}');
 
     // Xử lý form tìm kiếm
-    let currentSearchParams = "";
     $('#searchForm').on('submit', function(e) {
         e.preventDefault();
-        currentSearchParams = $(this).serialize(); // Lưu trữ các tham số tìm kiếm
+        //currentSearchParams = $(this).serialize(); // Lưu trữ các tham số tìm kiếm
+        currentSearchParams = updateSearchParams('per_page', perPage, $(this).serialize());
         fetchData('{{ route('transactions') }}?' + currentSearchParams);
     });
 

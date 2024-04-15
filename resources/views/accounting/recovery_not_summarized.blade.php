@@ -38,7 +38,7 @@
                             <!-- <input type="checkbox" id="checkAll"> -->
                         </th>
                         <th>STT</th> <!-- Cột cho nút mở rộng -->
-                        <th>Ngày Đặt</th>
+                        <th>Ngày Thu</th>
                         <th>Mã Phiếu</th>
                         <th>NVBH</th>
                         <th>Trạng Thái</th>

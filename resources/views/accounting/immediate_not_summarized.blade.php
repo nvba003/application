@@ -57,10 +57,7 @@
                 <div class="form-inline">
                     <label for="perPage" class="ml-2">Số hàng:</label>
                     <select id="perPage" class="form-control form-control-sm">
-                        <option value="5">5</option>
                         <option value="10">10</option>
-                        <option value="20">20</option>
-                        <option value="50">50</option>
                         <option value="100">100</option>
                     </select>
                 </div>
@@ -238,6 +235,9 @@
 
 
 $(document).ready(function() {
+    let currentSearchParams = "";
+    let currentPerPage = "";
+    let perPage = $('#perPage').val();
     function fetchData(url) {
         $.ajax({
             url: url,
@@ -254,11 +254,10 @@ $(document).ready(function() {
 
     fetchData('{{ route('orders.immediate_not_summarized') }}');
 
-    let currentSearchParams = "";
-    let currentPerPage = "";
     $('#searchForm').on('submit', function(e) {
         e.preventDefault();
-        currentSearchParams = $(this).serialize(); // Lưu trữ các tham số tìm kiếm
+        //currentSearchParams = $(this).serialize(); // Lưu trữ các tham số tìm kiếm
+        currentSearchParams = updateSearchParams('per_page', perPage, $(this).serialize());
         fetchData('{{ route('orders.immediate_not_summarized') }}?' + currentSearchParams);
     });
 

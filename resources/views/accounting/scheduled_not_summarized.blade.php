@@ -92,6 +92,9 @@ function submitSummaryOrder() {
 }
 
 $(document).ready(function() {
+    let currentSearchParams = "";
+    let currentPerPage = "";
+    let perPage = $('#perPage').val();
     function fetchData(url) {
         $.ajax({
             url: url,
@@ -108,10 +111,10 @@ $(document).ready(function() {
 
     fetchData('{{ route('orders.scheduled_not_summarized') }}');
 
-    let currentSearchParams = "";
     $('#searchForm').on('submit', function(e) {
         e.preventDefault();
-        currentSearchParams = $(this).serialize(); // Lưu trữ các tham số tìm kiếm
+        //currentSearchParams = $(this).serialize(); // Lưu trữ các tham số tìm kiếm
+        currentSearchParams = updateSearchParams('per_page', perPage, $(this).serialize());
         fetchData('{{ route('orders.scheduled_not_summarized') }}?' + currentSearchParams);
     });
 
@@ -120,6 +123,17 @@ $(document).ready(function() {
         var href = $(this).attr('href');
         fetchData(href + '&' + currentSearchParams); // Thêm tham số tìm kiếm vào URL phân trang
     });
+
+    $('#perPage').on('change', function() {
+        var perPage = $(this).val();
+        currentSearchParams = updateSearchParams('per_page', perPage, currentSearchParams);
+        fetchData('{{ route('orders.scheduled_not_summarized') }}?' + currentSearchParams);
+    });
+    function updateSearchParams(key, value, paramsString) {
+        var searchParams = new URLSearchParams(paramsString);
+        searchParams.set(key, value);
+        return searchParams.toString();
+    }
 
     // $('#recoveryOrdersTable').on('click', '.expand-button', function() {
     //     var targetId = $(this).data('target');
