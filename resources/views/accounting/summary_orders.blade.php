@@ -25,6 +25,7 @@
                     <option value="1">Giao Ngay</option>
                     <option value="2">Giao Sau</option>
                     <option value="3">Thu hồi</option>
+                    <option value="4">Giao Sau & Thu hồi</option>
                 </select>
             </div>
             <div class="form-group mx-sm-3 mb-2">
@@ -67,10 +68,7 @@
         <div class="form-inline">
             <label for="perPage" class="ml-2">Số hàng:</label>
             <select id="perPage" class="form-control form-control-sm">
-                <option value="5">5</option>
                 <option value="10">10</option>
-                <option value="20">20</option>
-                <option value="50">50</option>
                 <option value="100">100</option>
             </select>
         </div>
@@ -477,90 +475,93 @@ $(document).ready(function() {
             return $.trim($(this).data('type'));  // Sử dụng phương thức .data() của jQuery để lấy giá trị của data attribute
         }).get();  // Chuyển kết quả từ jQuery object thành mảng JavaScript
         // console.log(types);
-        var hasType = types.some(function(type) {
+        var hasImmediate = types.some(function(type) {
             return type === "Giao ngay";
         });
+        var hasScheduled = types.some(function(type) {
+            return type === "Giao sau";
+        });
         
-        if (!allSame && hasType) {//nếu có đơn Giao ngay thì cùng nhân viên mới thực hiện tiếp
+        if (!allSame && hasImmediate) {//nếu có đơn Giao ngay thì cùng nhân viên mới thực hiện tiếp
             alert("Không cùng nhân viên.");
-        } else {
-            var notes = $('#notes').val();//lấy giá trị ô nhập notes
-            var payDate = $('#pay_date').text();//lấy giá trị ngày báo cáo, cũng là ngày trả
-            var staffId = $('#staff_id').val();//lấy tên nhân viên
-            // var totalAmountText = $("#tableContainer table tbody tr:last-child").find("td:last-child").text();//lấy số tổng
-            // var cleanAmountText = totalAmountText.replace(/[^\d.-]/g, ''); // Xóa bất kỳ ký tự nào không phải là số, dấu trừ, hoặc dấu chấm
-            // var totalAmount = parseFloat(cleanAmountText);
-            var totalAmountText = $("#tableContainer table tbody tr:last-child").find("td:last-child").text(); // Lấy số tổng
-            var cleanAmountText = totalAmountText.replace(/,/g, '').replace(/[^\d.-]/g, ''); // Xóa dấu phẩy và bất kỳ ký tự nào không phải là số, dấu trừ, hoặc dấu chấm
-            var totalAmount = parseFloat(cleanAmountText); // Chuyển thành số thực
+        } else if(hasScheduled && $('#staff_id').val()!= 'Anh Hưng'){
+            alert("Giao sau phải chọn Anh Hưng. Chọn lại!");
+        }
+            else {
+                var notes = $('#notes').val();//lấy giá trị ô nhập notes
+                var payDate = $('#pay_date').text();//lấy giá trị ngày báo cáo, cũng là ngày trả
+                var staffId = $('#staff_id').val();//lấy tên nhân viên
+                // var totalAmountText = $("#tableContainer table tbody tr:last-child").find("td:last-child").text();//lấy số tổng
+                // var cleanAmountText = totalAmountText.replace(/[^\d.-]/g, ''); // Xóa bất kỳ ký tự nào không phải là số, dấu trừ, hoặc dấu chấm
+                // var totalAmount = parseFloat(cleanAmountText);
+                var totalAmountText = $("#tableContainer table tbody tr:last-child").find("td:last-child").text(); // Lấy số tổng
+                var cleanAmountText = totalAmountText.replace(/,/g, '').replace(/[^\d.-]/g, ''); // Xóa dấu phẩy và bất kỳ ký tự nào không phải là số, dấu trừ, hoặc dấu chấm
+                var totalAmount = parseFloat(cleanAmountText); // Chuyển thành số thực
 
-            //console.log(totalAmount);
-            // Thu thập ID của summary_orders được chọn
-            var summaryOrderIds = [];
-            var shouldStop = false;  // Cờ để kiểm tra xem có nên dừng toàn bộ sự kiện hay không
-            // Duyệt qua mỗi hàng trong tbody của bảng, loại trừ hàng tổng kết
-            $("#tableContainer table tbody tr:not(:last-child)").each(function() {
-                // Lấy giá trị data-id từ <td> ẩn đầu tiên trong mỗi hàng
-                var summaryOrderId = $(this).find("td:first-child").data('id');
-                var transaction = $(this).find("td:eq(7)").data('transaction');//tìm cột thứ 8
-                if (transaction !== '' && transaction !== '_' && transaction !== undefined) {
-                    alert("Không tạo được do có đơn có phiếu thu rồi.");
-                    //alert(transaction);
-                    shouldStop = true;  // Đặt cờ thành true để dừng các hành động tiếp theo
-                    return false; //thoát each
+                //console.log(totalAmount);
+                // Thu thập ID của summary_orders được chọn
+                var summaryOrderIds = [];
+                var shouldStop = false;  // Cờ để kiểm tra xem có nên dừng toàn bộ sự kiện hay không
+                // Duyệt qua mỗi hàng trong tbody của bảng, loại trừ hàng tổng kết
+                $("#tableContainer table tbody tr:not(:last-child)").each(function() {
+                    // Lấy giá trị data-id từ <td> ẩn đầu tiên trong mỗi hàng
+                    var summaryOrderId = $(this).find("td:first-child").data('id');
+                    var transaction = $(this).find("td:eq(7)").data('transaction');//tìm cột thứ 8
+                    if (transaction !== '' && transaction !== '_' && transaction !== undefined) {
+                        alert("Không tạo được do có đơn có phiếu thu rồi.");
+                        //alert(transaction);
+                        shouldStop = true;  // Đặt cờ thành true để dừng các hành động tiếp theo
+                        return false; //thoát each
+                    }
+                    //console.log(transaction);
+                    // Thêm ID vào mảng nếu nó tồn tại
+                    if (summaryOrderId) {
+                        summaryOrderIds.push(summaryOrderId);
+                    }
+                });
+                if (shouldStop) {
+                    event.preventDefault();  // Ngăn không cho bất kỳ hành động mặc định nào, như submit form
+                    return;  // Thoát khỏi hàm sự kiện click
                 }
-                //console.log(transaction);
-                // Thêm ID vào mảng nếu nó tồn tại
-                if (summaryOrderId) {
-                    summaryOrderIds.push(summaryOrderId);
-                }
-            });
-            if (shouldStop) {
-                event.preventDefault();  // Ngăn không cho bất kỳ hành động mặc định nào, như submit form
-                return;  // Thoát khỏi hàm sự kiện click
-            }
-            //console.log(staffId); // Mảng chứa các ID thu thập được
-            // Tạo một object để chứa tất cả dữ liệu
-            var transactionData = {
-                staff_id: staffId,
-                total_amount: totalAmount,
-                notes: notes,
-                pay_date: payDate,
-                summary_order_ids: summaryOrderIds,
-            };
-            console.log(transactionData);
-            // Gọi hàm để gửi dữ liệu
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            });
-            $.ajax({
-                type: "POST",
-                url: "save-transaction",
-                contentType: "application/json",
-                data: JSON.stringify(transactionData),
-                success: function(response) {
-                    // Xử lý khi dữ liệu được gửi thành công
-                    console.log("Transaction saved successfully.", response);
-                    $('#successModal').modal('show');
-                    // Đặt timeout để ẩn modal sau 3 giây
-                    setTimeout(function() {
-                        $('#successModal').modal('hide');
-                    }, 1000);
-                    $('#summaryModal').modal('hide'); // Đóng modal
-                    // Thay thế checkbox bằng icon tick màu xanh cho các hàng được chọn
-                    $('.order-checkbox:checked').each(function() {
-                        $(this).closest('.checkbox-container').html('<i class="fas fa-check text-success"></i>');
-                    });
-                },
-                error: function(xhr, status, error) {
-                    // Xử lý khi có lỗi
-                    console.error("Error saving transaction.", error);
-                    alert("Error saving transaction.");
-                }
-            });//end ajax
-        }//end else
+                //console.log(staffId); // Mảng chứa các ID thu thập được
+                // Tạo một object để chứa tất cả dữ liệu
+                var transactionData = {
+                    staff_id: staffId,
+                    total_amount: totalAmount,
+                    notes: notes,
+                    pay_date: payDate,
+                    summary_order_ids: summaryOrderIds,
+                };
+                console.log(transactionData);
+                // Gọi hàm để gửi dữ liệu
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+                $.ajax({
+                    type: "POST",
+                    url: "save-transaction",
+                    contentType: "application/json",
+                    data: JSON.stringify(transactionData),
+                    success: function(response) {
+                        // Xử lý khi dữ liệu được gửi thành công
+                        console.log("Transaction saved successfully.", response);
+                        notify500();
+                        $('#summaryModal').modal('hide'); // Đóng modal
+                        // Thay thế checkbox bằng icon tick màu xanh cho các hàng được chọn
+                        $('.order-checkbox:checked').each(function() {
+                            $(this).closest('.checkbox-container').html('<i class="fas fa-check text-success"></i>');
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        // Xử lý khi có lỗi
+                        console.error("Error saving transaction.", error);
+                        alert("Error saving transaction.");
+                    }
+                });//end ajax
+            }//end else
+        
     });
 
     $('#ordersTable').on('click', '.btn-edit', function() {
@@ -579,7 +580,7 @@ $(document).ready(function() {
             }
         });
         $.ajax({
-            url: 'update-is-entered/' + id, // Thay thế đường dẫn bằng đường dẫn thực tế của bạn
+            url: 'update-is-entered/' + id,
             type: 'PUT',
             success: function(response) {
                 location.reload();
@@ -624,7 +625,7 @@ $(document).ready(function() {
             method: 'PUT',
             data: editedData,
             success: function(response) {
-                alert("Cập nhật thành công.");
+                notify500();
                 $('#editModal').modal('hide');
                 location.reload();
             },
@@ -634,6 +635,13 @@ $(document).ready(function() {
             }
         });
     });
+
+    function notify500(){
+        $('#successModal').modal('show');
+        setTimeout(function() {
+            $('#successModal').modal('hide');
+        }, 500);
+    }
 
 
 

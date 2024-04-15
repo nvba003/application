@@ -5,7 +5,7 @@
     <h3>Danh Sách Đơn Hàng Chưa Tổng Hợp</h3>
     <form id="searchForm" method="GET" class="form-inline">
         <div class="form-group mb-2">
-            <input type="text" class="form-control" id="recovery_code" name="recovery_code" placeholder="Mã Đơn Hàng">
+            <input type="text" class="form-control" id="recovery_code" name="recovery_code" placeholder="Mã Phiếu">
         </div>
         <div class="form-group mx-sm-3 mb-2">
             <select id="staff" name="staff" class="form-control">
@@ -23,7 +23,7 @@
             </select>
         </div>
         <div class="form-group mx-sm-3 mb-2">
-            <input type="date" class="form-control" id="recovery_creation_date" name="recovery_creation_date" placeholder="Ngày Đặt">
+            <input type="date" class="form-control" id="recovery_date" name="recovery_date" placeholder="Ngày thu hồi">
         </div>
         <button type="submit" class="btn btn-primary mb-2">Tìm Kiếm</button>
     </form>
@@ -34,12 +34,12 @@
             <table class="table" id="ordersTable">
                 <thead>
                     <tr>
-                        <!-- <th>
-                            <input type="checkbox" id="checkAll">
-                        </th> -->
+                        <th>
+                            <!-- <input type="checkbox" id="checkAll"> -->
+                        </th>
                         <th>STT</th> <!-- Cột cho nút mở rộng -->
                         <th>Ngày Đặt</th>
-                        <th>Mã Đơn Hàng</th>
+                        <th>Mã Phiếu</th>
                         <th>NVBH</th>
                         <th>Trạng Thái</th>
                         <th>Chiết Khấu</th>
@@ -54,10 +54,7 @@
                 <div class="form-inline">
                     <label for="perPage" class="ml-2">Số hàng:</label>
                     <select id="perPage" class="form-control form-control-sm">
-                        <option value="5">5</option>
                         <option value="10">10</option>
-                        <option value="20">20</option>
-                        <option value="50">50</option>
                         <option value="100">100</option>
                     </select>
                 </div>

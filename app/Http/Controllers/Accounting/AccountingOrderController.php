@@ -59,7 +59,7 @@ class AccountingOrderController extends Controller
         }        
 
         $query->orderBy('order_date', 'desc');
-        return $query->paginate(3); // Số "10" là số lượng bản ghi trên mỗi trang
+        return $query->paginate(10); // Số "10" là số lượng bản ghi trên mỗi trang
     }
 
     //==================================================================
@@ -104,19 +104,19 @@ class AccountingOrderController extends Controller
         }
 
         // Lọc theo ngày tạo phiếu
-        if ($request->filled('recovery_creation_date')) {
-            $query->whereDate('recovery_creation_date', $request->input('recovery_creation_date'));
+        if ($request->filled('recovery_date')) {
+            $query->whereDate('recovery_date', $request->input('recovery_date'));
         }
 
-        $query->orderBy('recovery_creation_date', 'desc');
-        return $query->paginate(3);
+        $query->orderBy('recovery_date', 'desc');
+        return $query->paginate(10);
     }
 
 //==================================================================
 
     public function immediateNotSummarized(Request $request)
     {
-        $perPage = $request->input('per_page', 3); // Số lượng mặc định là 3 nếu không có tham số per_page
+        $perPage = $request->input('per_page', 10); // Số lượng mặc định là 3 nếu không có tham số per_page
         $saleStaffs = SaleStaff::all();
         $query = AccountingOrder::where('type', 'Đơn bán / Giao ngay')->whereDoesntHave('groupOrder');
 
@@ -186,7 +186,7 @@ class AccountingOrderController extends Controller
 
     public function recoveryNotSummarized(Request $request)
     {
-        $perPage = $request->input('per_page', 3); // Số lượng mặc định là 3 nếu không có tham số per_page
+        $perPage = $request->input('per_page', 10); // Số lượng mặc định là 3 nếu không có tham số per_page
         $saleStaffs = SaleStaff::all();
         $query = RecoveryOrder::whereDoesntHave('groupOrder')
                             ->with(['recoveryDetails.productDiscount']);  // Eager load ở đây
@@ -202,11 +202,11 @@ class AccountingOrderController extends Controller
         }
 
         // Lọc theo ngày tạo phiếu
-        if ($request->filled('recovery_creation_date')) {
-            $query->whereDate('recovery_creation_date', $request->input('recovery_creation_date'));
+        if ($request->filled('recovery_date')) {
+            $query->whereDate('recovery_date', $request->input('recovery_date'));
         }
 
-        $query->orderBy('recovery_creation_date', 'desc');
+        $query->orderBy('recovery_date', 'desc');
         $recoveryOrders = $query->paginate($perPage); // Hoặc số lượng bạn muốn hiển thị trên mỗi trang
 
         // Tính toán tổng số tiền sau khi đã phân trang
