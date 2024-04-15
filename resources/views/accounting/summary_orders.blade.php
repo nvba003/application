@@ -409,7 +409,8 @@ $(document).ready(function() {
             var summaryOrderId = $(this).data('id');
             var row = $(this).closest("tr");
             var chietKhau = parseInt(row.find("td:eq(6)").text().replace(/,/g, '')) || 0;
-            if(row.find("td:eq(8)").text().trim() == 'Thu hồi'){
+            var type = row.find("td:eq(8)").text();
+            if(type == 'Thu hồi'){
                 var thanhTien = -1 * parseInt(row.find("td:eq(7)").text().replace(/,/g, '')) || 0;
             }else{
                 var thanhTien = parseInt(row.find("td:eq(7)").text().replace(/,/g, '')) || 0;
@@ -422,7 +423,8 @@ $(document).ready(function() {
             var transaction = row.find("td:eq(5)").text();
             tableContent += `
                 <tr>
-                    <td style="display: none;" data-id="${summaryOrderId}"></td>  
+                    <td style="display: none;" data-id="${summaryOrderId}"></td>   
+                    <td style="display: none;" data-type="${type}"></td>
                     <td>${index + 1}</td>
                     <td><span class="staff-cell">${row.find("td:eq(3)").text()}</span></td>
                     <td>${row.find("td:eq(4)").text()}</td>
@@ -446,8 +448,8 @@ $(document).ready(function() {
 
         const firstElement = array_report_date[0];// Lấy giá trị đầu tiên của mảng để so sánh
         // Sử dụng phương thức every để kiểm tra mọi phần tử có giống nhau không
-        const allSame = array_report_date.every(element => element === firstElement);
-        if (allSame) {
+        const dateSame = array_report_date.every(element => element === firstElement);
+        if (dateSame) {
             $('#pay_date').text(firstElement.trim());
         } else {
             $('#pay_date').text('Không cùng ngày');
@@ -466,18 +468,28 @@ $(document).ready(function() {
             var cleanedText = trimmedText.replace(/\s+/g, ' ');
             return cleanedText;
         }).get();
-
         // Kiểm tra xem tất cả các staff ID có giống nhau không
-        // var allSame = staffIds.every(function(staffId) {
-        //     return staffId === staffIds[0];
-        // });
+        var allSame = staffIds.every(function(staffId) {
+            return staffId === staffIds[0];
+        });
 
-        // if (!allSame) {
-        //     alert("Không cùng nhân viên.");
-        // } else {
+        var types = $('#tableContainer td[data-type]').map(function() {
+            return $.trim($(this).data('type'));  // Sử dụng phương thức .data() của jQuery để lấy giá trị của data attribute
+        }).get();  // Chuyển kết quả từ jQuery object thành mảng JavaScript
+        // console.log(types);
+        var hasType = types.some(function(type) {
+            return type === "Giao ngay";
+        });
+        
+        if (!allSame && hasType) {//nếu có đơn Giao ngay thì cùng nhân viên mới thực hiện tiếp
+            alert("Không cùng nhân viên.");
+        } else {
             var notes = $('#notes').val();//lấy giá trị ô nhập notes
             var payDate = $('#pay_date').text();//lấy giá trị ngày báo cáo, cũng là ngày trả
             var staffId = $('#staff_id').val();//lấy tên nhân viên
+            // var totalAmountText = $("#tableContainer table tbody tr:last-child").find("td:last-child").text();//lấy số tổng
+            // var cleanAmountText = totalAmountText.replace(/[^\d.-]/g, ''); // Xóa bất kỳ ký tự nào không phải là số, dấu trừ, hoặc dấu chấm
+            // var totalAmount = parseFloat(cleanAmountText);
             var totalAmountText = $("#tableContainer table tbody tr:last-child").find("td:last-child").text(); // Lấy số tổng
             var cleanAmountText = totalAmountText.replace(/,/g, '').replace(/[^\d.-]/g, ''); // Xóa dấu phẩy và bất kỳ ký tự nào không phải là số, dấu trừ, hoặc dấu chấm
             var totalAmount = parseFloat(cleanAmountText); // Chuyển thành số thực
@@ -490,9 +502,10 @@ $(document).ready(function() {
             $("#tableContainer table tbody tr:not(:last-child)").each(function() {
                 // Lấy giá trị data-id từ <td> ẩn đầu tiên trong mỗi hàng
                 var summaryOrderId = $(this).find("td:first-child").data('id');
-                var transaction = $(this).find("td:eq(6)").data('transaction');//tìm cột thứ 7
-                if (transaction !== '' && transaction !== '_') {
+                var transaction = $(this).find("td:eq(7)").data('transaction');//tìm cột thứ 8
+                if (transaction !== '' && transaction !== '_' && transaction !== undefined) {
                     alert("Không tạo được do có đơn có phiếu thu rồi.");
+                    //alert(transaction);
                     shouldStop = true;  // Đặt cờ thành true để dừng các hành động tiếp theo
                     return false; //thoát each
                 }
@@ -534,7 +547,7 @@ $(document).ready(function() {
                     // Đặt timeout để ẩn modal sau 3 giây
                     setTimeout(function() {
                         $('#successModal').modal('hide');
-                    }, 3000);
+                    }, 1000);
                     $('#summaryModal').modal('hide'); // Đóng modal
                     // Thay thế checkbox bằng icon tick màu xanh cho các hàng được chọn
                     $('.order-checkbox:checked').each(function() {
@@ -547,7 +560,7 @@ $(document).ready(function() {
                     alert("Error saving transaction.");
                 }
             });//end ajax
-        // }//end else
+        }//end else
     });
 
     $('#ordersTable').on('click', '.btn-edit', function() {
