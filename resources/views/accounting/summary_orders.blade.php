@@ -296,8 +296,9 @@ $(document).ready(function() {
                             groupedSpecial[special_key] = {
                                 product_code: detail.product_code,
                                 product_name: detail.product_name,
-                                quantity: (detail.packing * detail.thung) + detail.le,
+                                quantity: 0,
                             };
+                            groupedSpecial[special_key].quantity += detail.le;
                         }
                     });
                 });
