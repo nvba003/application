@@ -151,6 +151,7 @@ class AccountingOrderController extends Controller
     
     public function scheduledNotSummarized(Request $request)
     {
+        $perPage = $request->input('per_page', 10); // Số lượng mặc định là 3 nếu không có tham số per_page
         $saleStaffs = SaleStaff::all();
         // Xây dựng truy vấn dựa trên các bộ lọc
         $query = AccountingOrder::where('type', 'Đơn bán / Giao sau')->whereDoesntHave('groupOrder');
@@ -172,7 +173,7 @@ class AccountingOrderController extends Controller
         }
 
         $query->orderBy('order_date', 'desc');
-        $orders = $query->paginate(3); // Hoặc số lượng bạn muốn hiển thị trên mỗi trang
+        $orders = $query->paginate($perPage); // Hoặc số lượng bạn muốn hiển thị trên mỗi trang
 
         if ($request->ajax()) {
             $view = view('accounting.partials.scheduled_not_summarized_tbody', compact('orders'))->render();
