@@ -252,6 +252,13 @@
         });
     });
 
+    function notify500(){
+        $('#successModal').modal('show');
+        setTimeout(function() {
+            $('#successModal').modal('hide');
+        }, 500);
+    }
+
 
 $(document).ready(function() {
     let currentSearchParams = "";
@@ -301,13 +308,6 @@ $(document).ready(function() {
         var searchParams = new URLSearchParams(paramsString);
         searchParams.set(key, value);
         return searchParams.toString();
-    }
-
-    function notify500(){
-        $('#successModal').modal('show');
-        setTimeout(function() {
-            $('#successModal').modal('hide');
-        }, 500);
     }
 
     function updateCount() {

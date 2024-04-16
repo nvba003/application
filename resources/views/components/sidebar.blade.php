@@ -1,6 +1,6 @@
 <aside id="sidebar" class="sidebar">
     <!-- Button để toggle sidebar, thêm aria-expanded cho truy cập tốt hơn -->
-    <button class="toggle-sidebar" onclick="toggleSidebar()" aria-label="Toggle Sidebar">
+    <button class="toggle-sidebar" id="toggle-sidebar" aria-label="Toggle Sidebar">
         <span class="button-text">Menu Application</span>
         <i class="fas fa-bars"></i>
     </button>
