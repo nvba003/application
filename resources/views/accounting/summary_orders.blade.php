@@ -515,10 +515,6 @@ $(document).ready(function() {
                 var tdElement = $('#tableContainer table tbody tr:last-child td[data-totalAmount]')[0]; // Lấy phần tử DOM
                 var totalAmount = tdElement.dataset.totalamount; // Truy cập dataset và lấy giá trị
 
-                // var totalAmountText = $("#tableContainer table tbody tr:last-child").find("td:last-child").text(); // Lấy số tổng
-                // var cleanAmountText = totalAmountText.replace(/,/g, '').replace(/[^\d.-]/g, ''); // Xóa dấu phẩy và bất kỳ ký tự nào không phải là số, dấu trừ, hoặc dấu chấm
-                // var totalAmount = parseFloat(cleanAmountText); // Chuyển thành số thực
-
                 // console.log(totalAmount);
                 // Thu thập ID của summary_orders được chọn
                 var summaryOrderIds = [];
