@@ -34,7 +34,7 @@
                         <select id="difference" name="difference_amount" class="form-control">
                             <option value="">Chọn</option>
                             <option value="0">Nợ chưa trả</option>
-                            <option value="1">Đã trên 1k</option>
+                            <option value="1">Nợ trên 1k</option>
                         </select>
                     </div>
                 </div>
