@@ -89,7 +89,7 @@ class ReportController extends Controller
                         $q->where('is_recovery', 1); // 'is_recovery = 1' đại diện cho "thu hồi"
                         break;
                     case '4':
-                        $q->where('is_group', 0); // 'is_group = 1' đại diện cho "giao sau và thu hồi"
+                        $q->where('is_group', 1)->where('is_recovery', 0); // 'is_group = 1' và 'is_recovery = 0' đại diện cho "giao ngay và thu hồi"
                         break;
                 }
             })            
