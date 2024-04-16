@@ -34,9 +34,9 @@ class ReportController extends Controller
         
         $query->when($request->filled('difference_amount') && in_array($request->difference_amount, [1, 0]), function ($q) use ($request) {
             if ($request->difference_amount == 1) {
-                return $q->where('diff_amount', '<=', 1000);
+                return $q->where('diff_amount', '>=', 1000);
             } else {
-                return $q->where('diff_amount', '<=', 0);
+                return $q->where('diff_amount', '>=', 0);
             }
         });
         
