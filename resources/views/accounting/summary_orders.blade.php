@@ -293,11 +293,13 @@ $(document).ready(function() {
                         }
                         else{ // trường hợp đặt biệt là khuyến mãi, mỗi SP chỉ có 1 hàng
                             const special_key = detail.product_code;
-                            groupedSpecial[special_key] = {
-                                product_code: detail.product_code,
-                                product_name: detail.product_name,
-                                quantity: 0,
-                            };
+                            if (!groupedSpecial[special_key]) {
+                                groupedSpecial[special_key] = {
+                                    product_code: detail.product_code,
+                                    product_name: detail.product_name,
+                                    quantity: 0,
+                                };
+                            }
                             groupedSpecial[special_key].quantity += detail.le;
                         }
                     });
