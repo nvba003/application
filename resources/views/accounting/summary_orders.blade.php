@@ -53,7 +53,7 @@
                     <th></th>
                     <th>Ngày BC</th>
                     <th>NVBH</th>
-                    <th>Số HĐ</th>
+                    <!-- <th>Số HĐ</th> -->
                     <th>Số GD</th>
                     <th>C.Khấu</th>
                     <th>T.Tiền</th>
