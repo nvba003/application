@@ -463,9 +463,11 @@ $(document).ready(function() {
             var month = parts[1];
             var year = parts[2];
             var date = new Date(year, month - 1, day); // month - 1 vì JavaScript đếm tháng từ 0
+            date.setHours(date.getHours() + 7); // Thêm 7 giờ cho múi giờ GMT+0700
             // Định dạng lại ngày tháng sang Y-m-d
             var formattedDate = date.toISOString().substring(0, 10); // Cắt chuỗi để lấy định dạng Y-m-d
             //$('#dateInput').val(formattedDate);
+            //console.log(formattedDate);
             $('#pay_date').text(formattedDate);
         } else {
             $('#pay_date').text('Không cùng ngày');
@@ -516,7 +518,7 @@ $(document).ready(function() {
                 var cleanAmountText = totalAmountText.replace(/,/g, '').replace(/[^\d.-]/g, ''); // Xóa dấu phẩy và bất kỳ ký tự nào không phải là số, dấu trừ, hoặc dấu chấm
                 var totalAmount = parseFloat(cleanAmountText); // Chuyển thành số thực
 
-                //console.log(totalAmount);
+                // console.log(totalAmount);
                 // Thu thập ID của summary_orders được chọn
                 var summaryOrderIds = [];
                 var shouldStop = false;  // Cờ để kiểm tra xem có nên dừng toàn bộ sự kiện hay không
