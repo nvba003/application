@@ -33,8 +33,8 @@
                         <label for="difference" class="mr-2">Chênh lệch:</label>
                         <select id="difference" name="difference_amount" class="form-control">
                             <option value="">Chọn</option>
-                            <option value="0">Chênh lệch dưới 1k</option>
-                            <option value="1">Nợ chưa trả</option>
+                            <option value="0">Nợ chưa trả</option>
+                            <option value="1">Đã trả còn dưới 1k</option>
                         </select>
                     </div>
                 </div>
