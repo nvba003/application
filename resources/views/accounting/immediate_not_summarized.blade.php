@@ -282,6 +282,7 @@ $(document).ready(function() {
 
     $('#searchForm').on('submit', function(e) {
         e.preventDefault();
+        perPage = $('#perPage').val();
         //currentSearchParams = $(this).serialize(); // Lưu trữ các tham số tìm kiếm
         currentSearchParams = updateSearchParams('per_page', perPage, $(this).serialize());
         fetchData('{{ route('orders.immediate_not_summarized') }}?' + currentSearchParams);
