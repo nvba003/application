@@ -50,6 +50,7 @@ html,
 body {
   margin: 0; /* 1 */
   line-height: inherit; /* 2 */
+  font-size: 15px;
 }
 
 /*
@@ -160,6 +161,7 @@ table {
   text-indent: 0; /* 1 */
   border-color: inherit; /* 2 */
   border-collapse: collapse; /* 3 */
+  font-size: 15px;
 }
 
 /*
