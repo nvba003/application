@@ -2,7 +2,7 @@
 <meta name="csrf-token" content="{{ csrf_token() }}">
 @section('content')
 <div class="container mt-3">
-    <h3>Danh Sách Đơn Hàng Chưa Tổng Hợp</h3>
+    <h3>Danh Sách Thu Hồi Chưa Tổng Hợp</h3>
     <form id="searchForm" method="GET" class="form-inline">
         <div class="form-group mb-2">
             <input type="text" class="form-control" id="recovery_code" name="recovery_code" placeholder="Mã Phiếu">

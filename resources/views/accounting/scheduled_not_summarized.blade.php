@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container mt-3">
-    <h3>Danh Sách Đơn Hàng Chưa Tổng Hợp</h3>
+    <h3>Danh Sách Giao Sau Chưa Tổng Hợp</h3>
     <form id="searchForm" method="GET" class="form-inline">
         <div class="form-group mb-2">
             <input type="text" class="form-control" id="order_code" name="order_code" placeholder="Mã Đơn Hàng">
