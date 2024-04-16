@@ -5,7 +5,7 @@
             <!-- Navigation Text -->
             <div class="flex">
                 <!-- Navigation Placeholder for Alignment -->
-                <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                <div class="hidden space-x-8 sm:-my-px sm:ml-2 sm:flex">
                     <div class="flex items-center text-sm font-medium text-gray-500">
                         {{ $header }} <!-- Biến $header được truyền từ Controller -->
                     </div>
