@@ -449,7 +449,7 @@ $(document).ready(function() {
                 <tr>
                     <td colspan="3"><strong>Tổng</strong></td>
                     <td><strong>${totalDiscount.toLocaleString()}</strong></td>
-                    <td><strong>${totalAmount.toLocaleString()}</strong></td>
+                    <td data-totalAmount="${totalAmount}"><strong>${totalAmount.toLocaleString()}</strong></td>
                 </tr>
                 </tbody>
             </table>`;
@@ -511,14 +511,16 @@ $(document).ready(function() {
                 var notes = $('#notes').val();//lấy giá trị ô nhập notes
                 var payDate = $('#pay_date').text();//lấy giá trị ngày báo cáo, cũng là ngày trả
                 var staffId = $('#staff_id').val();//lấy tên nhân viên
-                // var totalAmountText = $("#tableContainer table tbody tr:last-child").find("td:last-child").text();//lấy số tổng
-                // var cleanAmountText = totalAmountText.replace(/[^\d.-]/g, ''); // Xóa bất kỳ ký tự nào không phải là số, dấu trừ, hoặc dấu chấm
-                // var totalAmount = parseFloat(cleanAmountText);
-                var totalAmountText = $("#tableContainer table tbody tr:last-child").find("td:last-child").text(); // Lấy số tổng
-                var cleanAmountText = totalAmountText.replace(/,/g, '').replace(/[^\d.-]/g, ''); // Xóa dấu phẩy và bất kỳ ký tự nào không phải là số, dấu trừ, hoặc dấu chấm
-                var totalAmount = parseFloat(cleanAmountText); // Chuyển thành số thực
+
+                var tdElement = $('#tableContainer table tbody tr:last-child td[data-totalAmount]')[0]; // Lấy phần tử DOM
+                var totalAmount = tdElement.dataset.totalamount; // Truy cập dataset và lấy giá trị
+
+                // var totalAmountText = $("#tableContainer table tbody tr:last-child").find("td:last-child").text(); // Lấy số tổng
+                // var cleanAmountText = totalAmountText.replace(/,/g, '').replace(/[^\d.-]/g, ''); // Xóa dấu phẩy và bất kỳ ký tự nào không phải là số, dấu trừ, hoặc dấu chấm
+                // var totalAmount = parseFloat(cleanAmountText); // Chuyển thành số thực
 
                 // console.log(totalAmount);
+                return;
                 // Thu thập ID của summary_orders được chọn
                 var summaryOrderIds = [];
                 var shouldStop = false;  // Cờ để kiểm tra xem có nên dừng toàn bộ sự kiện hay không
