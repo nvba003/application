@@ -34,6 +34,12 @@
     transition: width 0.3s ease;
   }
 
+  .top-bar {
+    display: flex;
+    width: calc(100% - 250px);
+    justify-content: flex-end; /* Đặt các thành phần con vào cuối (bên phải) của container */
+    align-items: center; /* Tùy chọn: căn giữa các items theo chiều dọc nếu cần */
+}
 
 /* .flex {
     display: flex;
