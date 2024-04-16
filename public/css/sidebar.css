@@ -13,6 +13,11 @@
     transition: width 0.5s ease; /* Hiệu ứng chuyển đổi nếu bạn muốn thay đổi chiều rộng */
     background-color: #000d1a; /* Màu xanh dương đậm */
     color: #d4d4d4;
+
+    position: fixed;  /* Giữ sidebar cố định trong viewport */
+    top: 0;           /* Đặt ở phía trên cùng của viewport */
+    left: 0;          /* Đặt sang bên trái của viewport */
+    overflow-y: auto; /* Cho phép scroll bên trong nếu nội dung dài hơn chiều cao */
 }
 
 .sidebar.collapsed {

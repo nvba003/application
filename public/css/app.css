@@ -1482,3 +1482,12 @@ select {
   }
 }
 
+.container {
+  /*max-height: 500px;  /* Hoặc bất kỳ chiều cao nào bạn muốn */
+  overflow-y: auto;   /* Cho phép cuộn dọc nếu nội dung quá dài */
+  /*padding: 10px;      /* Khoảng cách bên trong cho nội dung */
+  /*border: 1px solid #ccc; /* Đường viền cho container, tùy chọn */
+  /*margin: 20px;       /* Khoảng cách xung quanh container */
+}
+
+
