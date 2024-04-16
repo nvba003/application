@@ -100,6 +100,21 @@
     </div>
 </div>
 
+<!-- Modal thông báo -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="successModalLabel">Thành công!</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Thao tác thành công!
+      </div>
+    </div>
+  </div>
+</div>
+
 @endsection
 @push('scripts')
 <script>
@@ -217,7 +232,7 @@
             },
             success: function(response) {
                 // Xử lý phản hồi từ server
-                alert('Đã thêm thành công vào Summary Orders.');
+                notify500();
                 $('#summaryModal').modal('hide'); // Đóng modal
                 // Thay thế checkbox bằng icon tick màu xanh cho các hàng được chọn
                 $('.order-checkbox:checked').each(function() {
@@ -231,6 +246,13 @@
             }
         });
     });
+
+    function notify500(){
+        $('#successModal').modal('show');
+        setTimeout(function() {
+            $('#successModal').modal('hide');
+        }, 500);
+    }
 
 $(document).ready(function() {
     $(document).on('click', '.checkItem', function() {
@@ -284,13 +306,6 @@ $(document).ready(function() {
         var searchParams = new URLSearchParams(paramsString);
         searchParams.set(key, value);
         return searchParams.toString();
-    }
-
-    function notify500(){
-        $('#successModal').modal('show');
-        setTimeout(function() {
-            $('#successModal').modal('hide');
-        }, 500);
     }
 
     // $('#recoveryOrdersTable').on('click', '.expand-button', function() {
