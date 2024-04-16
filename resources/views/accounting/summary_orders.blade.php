@@ -520,7 +520,6 @@ $(document).ready(function() {
                 // var totalAmount = parseFloat(cleanAmountText); // Chuyển thành số thực
 
                 // console.log(totalAmount);
-                return;
                 // Thu thập ID của summary_orders được chọn
                 var summaryOrderIds = [];
                 var shouldStop = false;  // Cờ để kiểm tra xem có nên dừng toàn bộ sự kiện hay không
