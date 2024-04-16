@@ -26,26 +26,40 @@
 
     </head>
     <body class="font-sans antialiased">
+    
         <div class="min-h-screen bg-gray-100">
-            <div class="flex"> <!-- Wrapper for sidebar and content -->
-                @include('components.sidebar') <!-- Sidebar component -->
+        
 
-                <div class="content w-full"> <!-- Content wrapper -->
+            <div class="wrapper d-flex"> <!-- Wrapper for sidebar and content -->
+                
+                @include('components.sidebar') <!-- Sidebar component -->
+                
+                <div class="content"> <!-- Content wrapper adjusts based on sidebar -->
                 <div class="navigation"> <!-- Navigation bar -->
                     @include('layouts.navigation') <!-- Include your navigation view -->
                 </div>
-                    <!-- Page Content -->
                     <main>
-                        @yield('content')
+                    
+                        @yield('content') <!-- Dynamic page content -->
                     </main>
                 </div>
             </div>
         </div>
 
+
         <!-- jQuery -->
         <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
         <!-- Bootstrap JS -->
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                document.getElementById('toggleSidebar').addEventListener('click', function () {
+                    var sidebar = document.querySelector('.sidebar');
+                    sidebar.classList.toggle('collapsed');
+                });
+            });
+        </script>
 
         <!-- Địa điểm cho các scripts tùy chỉnh từ view con -->
         @stack('scripts')

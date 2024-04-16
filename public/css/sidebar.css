@@ -1,15 +1,14 @@
 /* Layout chung */
-.flex {
+.wrapper {
     display: flex;
-}
+    flex-direction: row;
+  }
 
-/* Sidebar styles */
+  /* Sidebar styles */
 .sidebar {
-    max-width: 200px;  /*Chiếm tối đa width khi hiện */
+    max-width: 250px;  /*Chiếm tối đa width khi hiện */
     height: 100vh; /* Chiều cao 100% của viewport */
     /*position: fixed;  Để sidebar cố định */
-    left: 0;
-    top: 0;
     transition: width 0.5s ease; /* Hiệu ứng chuyển đổi nếu bạn muốn thay đổi chiều rộng */
     background-color: #000d1a; /* Màu xanh dương đậm */
     color: #d4d4d4;
@@ -19,17 +18,39 @@
     left: 0;          /* Đặt sang bên trái của viewport */
     overflow-y: auto; /* Cho phép scroll bên trong nếu nội dung dài hơn chiều cao */
 }
+  
+  /* .sidebar {
+    width: 250px;
+    height: 100vh;
+    position: fixed; 
+  } */
+  
+  .content {
+    flex-grow: 1;
+    /*margin-left: 250px; /* Đẩy nội dung chính ra phía bên phải của sidebar */
+    width: calc(100% - 250px); /* Giảm chiều rộng của nội dung để không tràn ra ngoài màn hình */
+    height: 100vh;
+    overflow-y: auto; /* Thêm thanh cuộn nếu nội dung dài */
+    transition: width 0.3s ease;
+  }
+
+
+/* .flex {
+    display: flex;
+} */
+
+
 
 .sidebar.collapsed {
     width: 60px; /* Chiều rộng khi chỉ còn icon */
 }
 
 /* Content styles */
-.content {
-    /*width: 90%;  /*Chiếm phần còn lại khi sidebar hiện */
-    flex: 1; /* Chiếm mọi không gian còn lại sau khi sidebar đã được đặt chiều rộng */
+/* .content {
+    /*width: 90%;  /*Chiếm phần còn lại khi sidebar hiện *
+    flex: 1; /* Chiếm mọi không gian còn lại sau khi sidebar đã được đặt chiều rộng *
     transition: width 0.3s ease;
-}
+} */
 
 .sidebar.collapsed ~ .content {
     width: calc(100% - 50px); /* Chiếm phần còn lại khi sidebar chỉ còn icon */
@@ -37,7 +58,7 @@
 
 /* Khi sidebar không bị collapse */
 .navigation {
-    /* width: 100%; */
+    width: calc(100% - 250px);
     transition: width 0.3s ease;
 }
 
@@ -117,3 +138,60 @@
     color: #FFFFFF; /* Màu trắng cho text khi hover */
     background-color: #343434; /* Màu nền khi hover */
 }
+
+/* Style cho các nút toggle và menu items */
+.nav button {
+    width: 100%; /* Chiều rộng tối đa cho button */
+    background: none; /* Không background */
+    border: none; /* Không viền */
+    color: inherit; /* Kế thừa màu từ parent */
+    text-align: left; /* Căn trái text */
+    padding: 15px; /* Padding cho button */
+    font-size: 16px; /* Kích thước font */
+    transition: background-color 0.3s ease; /* Hiệu ứng khi hover */
+}
+
+.nav button:hover {
+    background-color: #495057; /* Màu khi hover */
+}
+
+/* Icon chỉ mục */
+.nav i {
+    margin-right: 10px; /* Khoảng cách giữa icon và text */
+}
+
+/* Sub-menu */
+.sub-menu {
+    display: none; /* Mặc định là ẩn */
+    background-color: #23272b; /* Màu nền cho sub-menu */
+}
+
+.nav-item:hover .sub-menu {
+    display: block; /* Hiển thị sub-menu khi hover vào item */
+}
+
+/* Link trong sub-menu */
+.sub-menu a {
+    color: #adb5bd; /* Màu cho link */
+    display: block; /* Hiển thị dạng block để chiếm toàn bộ chiều rộng */
+    padding: 10px 30px; /* Padding cho link */
+    text-decoration: none; /* Bỏ gạch chân */
+}
+
+.sub-menu a:hover {
+    background-color: #495057; /* Màu nền khi hover link */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%; /* Chiều rộng toàn màn hình trên thiết bị nhỏ */
+        height: auto; /* Chiều cao tự do */
+        position: relative; /* Không cố định */
+    }
+    .nav-item {
+        display: block; /* Hiển thị dạng block */
+    }
+}
+
+
