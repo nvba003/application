@@ -91,7 +91,7 @@
                 @if($groupOrder->accountingOrders->isNotEmpty() && !$summaryOrder->is_group && !$summaryOrder->is_recovery)
                     @php
                         $customerName = $groupOrder->accountingOrders->first()->customer_name;
-                        $displayedName = $customerName ? (strlen($customerName) > 10 ? substr($customerName, 0, 10) . '..' : $customerName) : '';
+                        $displayedName = $customerName ? (strlen($customerName) > 15 ? substr($customerName, 0, 15) . '..' : $customerName) : '';
                     @endphp
                     {{ $displayedName }}
                 @else
