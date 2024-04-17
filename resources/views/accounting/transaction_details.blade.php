@@ -216,7 +216,6 @@ $(document).ready(function() {
                         <th>CK</th>
                         <th>TM</th>
                         <th>Tổng tiền</th>
-                        <th>Ghi chú</th>
                     </tr>
                 </thead>
                 <tbody>`;
