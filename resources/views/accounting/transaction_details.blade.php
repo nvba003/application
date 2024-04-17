@@ -249,7 +249,7 @@ $(document).ready(function() {
         // Đóng thẻ tbody và thêm hàng tổng số
         tableContent += `
                 <tr>
-                    <td colspan="3"><strong>Tổng</strong></td>
+                    <td colspan="2"><strong>Tổng</strong></td>
                     <td class="text-right"><strong>${totalTransfer.toLocaleString()}</strong></td>
                     <td class="text-right"><strong>${totalCash.toLocaleString()}</strong></td>
                     <td class="text-right"><strong>${totalAmount.toLocaleString()}</strong></td>
