@@ -1,3 +1,6 @@
+@php
+    $detailIndex = 1;
+@endphp
 @foreach ($transactions as $transaction)
     @foreach ($transaction['details'] as $detail)
         <tr>
@@ -6,7 +9,7 @@
                     <input type="checkbox" class="order-checkbox checkItem" value="{{ $transaction->id }}" data-id="{{ $transaction->id }}">
                 </div>
             </td> 
-            <td>{{ $loop->iteration }}</td>
+            <td>{{ $detailIndex }}</td>
             <td>{{ \Carbon\Carbon::parse($transaction->pay_date)->format('d/m/Y') }}</td>
             <td>{{ $transaction->staff->name ?? '_' }}</td>
             <td>{{ $transaction->id }}</td>
@@ -15,6 +18,9 @@
             <td class="text-right">{{ number_format($detail->total_amount) }}</td>
             <td>{{ $detail->notes ?? '_' }}</td>
         </tr>
+        @php
+            $detailIndex++;
+        @endphp
     @endforeach
 @endforeach
 
