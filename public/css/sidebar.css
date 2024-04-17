@@ -36,10 +36,11 @@
 }
 
 /* Khi sidebar không bị collapse */
-.navigation {
-    width: calc(100% - 250px);
+/* .navigation {
+    width: calc(100% - 500px);
     transition: width 0.3s ease;
-}
+} */
+
 
 /* Khi sidebar bị collapse */
 .sidebar.collapsed ~ .navigation {
@@ -186,8 +187,15 @@
     .navigation-text {
         display: none;
     }
+    .settings-dropdown {
+        margin-right: auto; /* Đẩy dropdown về phía bên phải */
+    }
     .sidebar.collapsed {
         width: 50px; /* Chiều rộng toàn màn hình trên thiết bị nhỏ */
+    }
+    .sidebar.collapsed ~ .content {
+        margin-left: 50px; /* No margin when sidebar is full width */
+        width: 100%; /* Full width */
     }
 }
 
@@ -195,9 +203,14 @@
 @media (min-width: 641px) {
     .navigation-text {
         display: block; /* Hoặc 'flex' tùy vào layout của bạn */
+        align-content: right;
     }
     .sidebar.collapsed {
         width: 50px; /* Chiều rộng toàn màn hình trên thiết bị nhỏ */
+    }
+    .sidebar.collapsed ~ .content {
+        margin-left: 50px; /* No margin when sidebar is full width */
+        width: 100%; /* Full width */
     }
 }
 
@@ -221,6 +234,7 @@
     background: #ffffff;
     overflow-x: auto;
 }
+
 
 
 

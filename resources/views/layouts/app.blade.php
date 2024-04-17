@@ -25,7 +25,7 @@
 
     </head>
     <body class="font-sans antialiased">
-        <div class="navigation">
+        <div class="flex navigation">
             @include('layouts.navigation')
         </div>
         <div class="min-h-screen bg-gray-100">

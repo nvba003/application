@@ -138,17 +138,6 @@
         }, 1000);
     }
 
-    function showAddTransactionModal(transaction) {
-        console.log(transaction);
-        $('#staff_id').val(transaction.staff_id);//lựa chọn NV
-        $('#total_amount').text(transaction.total_amount ? transaction.total_amount.toLocaleString() : 0);
-        $('#diff_amount').text(transaction.diff_amount ? transaction.diff_amount.toLocaleString() : 0);
-        // Logic để hiển thị modal và điền dữ liệu vào form
-        $('#transaction_id').val(transaction.id);
-        $('#addTransactionModal').modal('show');
-    }
-
-    
 $(document).ready(function() {
     let currentSearchParams = "";
     let currentPerPage = "";
@@ -270,46 +259,6 @@ $(document).ready(function() {
 
         return tableContent;
     }
-
-    function updateTotals() {
-        var totalNotes = 0;
-        var transferAmount = parseInt($('#transfer_amount').val()) || 0;
-
-        $('#addTransactionForm input.note-input').each(function() {
-            var denomination = $(this).data('denomination');
-            var quantity = parseInt($(this).val(), 10) || 0;
-            totalNotes += denomination * quantity;
-        });
-
-        var combinedTotal = transferAmount + totalNotes;
-
-        $('#transferTotal').text(transferAmount.toLocaleString());
-        $('#notesTotal').text(totalNotes.toLocaleString());
-        $('#combinedTotal').text(combinedTotal.toLocaleString());
-
-        // Cập nhật giá trị vào các trường ẩn
-        $('#hiddenTransferTotal').val(transferAmount);
-        $('#hiddenCombinedTotal').val(combinedTotal);
-    }
-
-    // Gắn sự kiện 'input' vào tất cả các input trong form để cập nhật tổng số tiền mỗi khi giá trị thay đổi
-    $('#addTransactionForm input').on('input', updateTotals);
-
-    updateColors();
-    $(document).ajaxComplete(function() {// gọi lại sau khi dữ liệu được tải lại qua AJAX
-        updateColors();
-    });
-    function updateColors() {
-        $('.diff-amount').each(function() {
-            var value = parseInt($(this).text().replace(/,/g, ''), 10);
-            if (value >= 0) {
-                $(this).css('color', 'red');
-            } else {
-                $(this).css('color', 'green');
-            }
-        });
-    }
-
 
 
 });
