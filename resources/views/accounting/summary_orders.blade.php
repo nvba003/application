@@ -606,7 +606,9 @@ $(document).ready(function() {
             url: 'update-is-entered/' + id,
             type: 'PUT',
             success: function(response) {
-                location.reload();
+                setTimeout(function() {
+                    location.reload();
+                }, 500);
                 //$btn.text('Đã nhập').data('entered', true);
             },
             error: function(xhr, status, error) {
@@ -650,7 +652,9 @@ $(document).ready(function() {
             success: function(response) {
                 notify500();
                 $('#editModal').modal('hide');
-                location.reload();
+                setTimeout(function() {
+                    location.reload();
+                }, 500);
             },
             error: function(error) {
                 // Xử lý lỗi

@@ -67,16 +67,15 @@ class ReportController extends Controller
                 $subQuery->where('name', 'like', '%' . $request->staff . '%');
             });
         });
-        
-        $query->when($request->filled('difference_amount') && in_array($request->difference_amount, [1, 0]), function ($q) use ($request) {
-            if ($request->difference_amount == 1) {
-                return $q->where('diff_amount', '>=', 1000);
-            } else {
-                return $q->where('diff_amount', '>=', 0);
-            }
+
+        $query->when($request->filled('transactionDetail_id'), function ($q) use ($request) {
+            $q->whereHas('details', function ($subQuery) use ($request) {
+                $subQuery->where('id', $request->transactionDetail_id);
+            });
         });
-        
+
         $query->orderBy('pay_date', 'desc');
+
         $transactions = $query->paginate($perPage); // Hoặc số lượng bạn muốn hiển thị trên mỗi trang
         if ($request->ajax()) {
             //dd($request->all());
@@ -214,6 +213,46 @@ class ReportController extends Controller
 
         // Phản hồi cho client rằng giao dịch đã được lưu thành công
         return response()->json(['message' => 'Success'], 200);
+    }
+    
+    public function updateTransaction(Request $request)
+    {
+        $validatedData = $request->validate([
+            'id' => 'required|integer|gt:0',
+            'total_amount' => 'nullable',
+            'diff_amount' => 'nullable',
+            'pay_date' => 'nullable|date',
+            'notes' => 'nullable|string',
+        ]);
+        $id = $validatedData['id'];
+        $transaction = Transaction::findOrFail($id);
+        $transaction->update($validatedData);
+        return response()->json(['message' => 'Cập nhật đơn hàng thành công'], 200);
+    }
+
+    public function updateTransactionDetail(Request $request)
+    {
+        $validatedData = $request->validate([
+            'id' => 'required|integer|gt:0',
+            'transfer_amount' => 'nullable',
+            'cash' => 'nullable',
+            'total_amount' => 'nullable|numeric',
+            'notes' => 'nullable|string',
+        ]);
+        $transactionId = $request->transaction_id;
+        $id = $validatedData['id'];
+        $transactionDetail = TransactionDetail::findOrFail($id);
+        $transactionDetailBefore = $transactionDetail->total_amount;//tổng tiền chi tiết trước đó
+        $transactionDetail->update($validatedData);
+
+        $transaction = Transaction::findOrFail($transactionId);
+        $change = $transactionDetailBefore - $validatedData['total_amount'];//số tiền thay đổi
+        $changeDiff = $transaction->diff_amount + $change;
+        $transaction->update([
+            'diff_amount' => $changeDiff
+        ]);
+
+        return response()->json(['message' => 'Cập nhật đơn hàng thành công'], 200);
     }
 
     public function updateSummary(Request $request)

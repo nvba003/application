@@ -27,15 +27,11 @@
                     </div>
                 </div>
 
-                <!-- Chênh lệch -->
+                <!-- Số giao dịch chi tiết -->
                 <div class="col-md-3">
                     <div class="form-group">
-                        <label for="difference" class="mr-2">Chênh lệch:</label>
-                        <select id="difference" name="difference_amount" class="form-control">
-                            <option value="">Chọn</option>
-                            <option value="0">Nợ chưa trả</option>
-                            <option value="1">Nợ trên 1k</option>
-                        </select>
+                        <label for="transactionDetail_id" class="mr-2">Số giao dịch:</label>
+                        <input type="number" class="form-control" id="transactionDetail_id" name="transactionDetail_id" placeholder="Số giao dịch" min="1">
                     </div>
                 </div>
             </div>
@@ -59,11 +55,12 @@
                     <th>STT</th>
                     <th>Ngày BC</th>
                     <th>NV phụ trách</th>
-                    <th>Số GD</th>
-                    <th>Chuyển Khoản</th>
-                    <th>Tiền Mặt</th>
-                    <th>Tổng Số Tiền</th>
+                    <th>Số GD chi tiết</th>
+                    <th class="text-right">Chuyển Khoản</th>
+                    <th class="text-right">Tiền Mặt</th>
+                    <th class="text-right">Tổng Số Tiền</th>
                     <th>Ghi Chú</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -106,6 +103,46 @@
                 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Chỉnh Sửa -->
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Chỉnh Sửa</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="editForm">
+                        <input type="hidden" id="edit-id">
+                        <input type="hidden" id="edit-transaction-id">
+                        <div class="form-group">
+                            <label for="edit-transfer-amount">Chuyển khoản</label>
+                            <input type="number" class="form-control" id="edit-transfer-amount">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-cash">Tiền mặt</label>
+                            <input type="number" class="form-control" id="edit-cash">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-total-amount">Tổng tiền:</label>
+                            <span id="edit-total-amount"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-notes">Ghi chú</label>
+                            <textarea class="form-control" id="edit-notes"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-primary" id="saveChanges">Lưu Thay Đổi</button>
                 </div>
             </div>
         </div>
@@ -260,6 +297,65 @@ $(document).ready(function() {
         return tableContent;
     }
 
+    $('#transactionsTable').on('click', '.btn-edit', function() {
+        var transaction = $(this).data('transaction');
+        console.log(transaction);
+        openEditForm(transaction);
+    });
+
+    function openEditForm(transaction) {
+        // Điền dữ liệu vào form
+        $('#edit-id').val(transaction.id);
+        $('#edit-transaction-id').val(transaction.transaction_id);
+        $('#edit-transfer-amount').val(transaction.transfer_amount);
+        $('#edit-cash').val(transaction.cash);
+        $('#edit-total-amount').text(transaction.total_amount.toLocaleString());
+        $('#edit-total-amount').val(transaction.total_amount);
+        $('#edit-notes').val(transaction.notes);
+
+        // Hiển thị modal
+        $('#editModal').modal('show');
+    }
+
+    $('#saveChanges').click(function() {
+        const editedData = {
+            id: $('#edit-id').val(),
+            transaction_id: $('#edit-transaction-id').val(),
+            transfer_amount: $('#edit-transfer-amount').val(),
+            cash: $('#edit-cash').val(),
+            total_amount: $('#edit-total-amount').val(),
+            notes: $('#edit-notes').val()
+        };
+        //console.log(editedData);
+        $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+        $.ajax({
+            url: 'update-transaction-detail',
+            method: 'PUT',
+            data: editedData,
+            success: function(response) {
+                notify500();
+                $('#editModal').modal('hide');
+                setTimeout(function() {
+                    location.reload();
+                }, 1000); // Trì hoãn 1 giây
+            },
+            error: function(error) {
+                // Xử lý lỗi
+                console.error("Có lỗi khi cập nhật: ", error);
+            }
+        });
+    });
+
+    $('#editForm input').on('input', updateTotals);
+    function updateTotals() {
+        var total_amount = Number($('#edit-transfer-amount').val()) +  Number($('#edit-cash').val());
+        $('#edit-total-amount').text(total_amount.toLocaleString());
+        $('#edit-total-amount').val(total_amount);
+    }
 
 });
 

@@ -18,6 +18,7 @@
     <td>{{ $transaction->id }}</td>
     <td>
         <button id="addButton-{{ $transaction->id }}" data-staff-id="{{ $transaction->staff_id }}" class="btn btn-primary btn-sm" onclick="showAddTransactionModal({{ json_encode($transaction) }})">Nộp thêm</button>
+        <button class="btn btn-secondary btn-sm btn-edit" data-transaction="{{ $transaction }}">Sửa</button>
     </td>
 </tr>
 <!-- Thêm ID tương ứng với data-target của nút vào đây -->
@@ -30,9 +31,9 @@
                     <th>Ngày ghi</th> 
                     <th>Số GD chi tiết</th>
                     <th>Người nộp</th>
-                    <th>Chuyển khoản</th>
-                    <th>Tiền mặt</th>
-                    <th>Tổng</th>
+                    <th class="text-right">Chuyển khoản</th>
+                    <th class="text-right">Tiền mặt</th>
+                    <th class="text-right">Tổng</th>
                     <th>Ghi chú</th>
                 </tr>
             </thead>

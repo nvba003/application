@@ -198,17 +198,73 @@
                         </div>
                         <!-- Thêm phần tử để hiển thị tổng số tiền -->
                         <div id="totalsDisplay" class="mb-3">
-                            <p><strong>Chuyển khoản:</strong> <span id="transferTotal">0</span></p>
-                            <p><strong>Tiền mặt:</strong> <span id="notesTotal">0</span></p>
-                            <p><strong>Tổng nhận:</strong> <span id="combinedTotal">0</span></p>
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label"><strong>Chuyển khoản:</strong></label>
+                                <div class="col-sm-8">
+                                    <p class="form-control-plaintext"><strong><span id="transferTotal">0</span></strong></p>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label"><strong>Tiền mặt:</strong></label>
+                                <div class="col-sm-8 d-flex align-items-center">
+                                    <span id="notesTotalValue" class="mr-2 align-self-center w-25">0</span>
+                                    <input type="number" class="form-control form-control-sm w-50 ml-2" id="notesTotal" name="notesTotal" value="" disabled>
+                                    <button type="button" class="btn btn-warning btn-sm" id="enableEditCash">Sửa</button>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label"><strong>Tổng nhận:</strong></label>
+                                <div class="col-sm-8">
+                                    <p class="form-control-plaintext"><strong><span id="combinedTotal">0</span></strong></p>
+                                </div>
+                            </div>
                         </div>
+
                     </div>
                 </form>
 
-                
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
                     <button type="button" class="btn btn-primary" id="addTransactionBtn">Thu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Chỉnh Sửa -->
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Chỉnh Sửa</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="editForm">
+                        <input type="hidden" id="edit-id">
+                        <div class="form-group">
+                            <label for="edit-report-date">Ngày báo cáo</label>
+                            <input type="date" class="form-control" id="edit-report-date">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-total-amount">Tổng tiền</label>
+                            <input type="number" class="form-control" id="edit-total-amount">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-diff-amount">Chênh lệch</label>
+                            <input type="number" class="form-control" id="edit-diff-amount">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-notes">Ghi chú</label>
+                            <textarea class="form-control" id="edit-notes"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-primary" id="saveChanges">Lưu Thay Đổi</button>
                 </div>
             </div>
         </div>
@@ -253,7 +309,7 @@
 
     $('#addTransactionBtn').click(function() {
         var formData = $('#addTransactionForm').serialize();
-        console.log(formData);
+        //console.log(formData);
         $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -264,7 +320,7 @@
             type: 'POST',
             data: formData,
             success: function(response) {
-                console.log(response);
+                //console.log(response);
                 $('#addTransactionModal').modal('hide');
                 notify500();
                 setTimeout(function() {
@@ -414,9 +470,9 @@ $(document).ready(function() {
         var combinedTotal = transferAmount + totalNotes;
 
         $('#transferTotal').text(transferAmount.toLocaleString());
-        $('#notesTotal').text(totalNotes.toLocaleString());
+        $('#notesTotalValue').text(totalNotes.toLocaleString());
         $('#combinedTotal').text(combinedTotal.toLocaleString());
-
+        
         // Cập nhật giá trị vào các trường ẩn
         $('#hiddenTransferTotal').val(transferAmount);
         $('#hiddenCashTotal').val(totalNotes);
@@ -424,7 +480,79 @@ $(document).ready(function() {
     }
 
     // Gắn sự kiện 'input' vào tất cả các input trong form để cập nhật tổng số tiền mỗi khi giá trị thay đổi
-    $('#addTransactionForm input').on('input', updateTotals);
+    //$('#addTransactionForm input').on('input', updateTotals);
+    $('#addTransactionForm input').not('#notesTotal').on('input', updateTotals);
+    $('#notesTotal').on('input', clearNoteIds);
+    function clearNoteIds() {
+        $('input[id^="note_"]').val('');
+        var notes_total = Number($('#notesTotal').val());
+        var transfer_total = Number($('#hiddenTransferTotal').val());
+        var combined_total = notes_total + transfer_total;
+        $('#notesTotalValue').text(notes_total.toLocaleString());
+        $('#combinedTotal').text(combined_total.toLocaleString());
+        $('#hiddenCombinedTotal').val(combined_total);
+        $('#hiddenCashTotal').val(notes_total);
+    }
+    $('#enableEditCash').click(function() {
+        var $inputField = $('#notesTotal');
+        if ($inputField.prop('disabled')) {
+            $inputField.prop('disabled', false); // Kích hoạt input
+            $(this).text('Khóa');               // Thay đổi text của button
+        } else {
+            $inputField.prop('disabled', true);  // Vô hiệu hóa input
+            $(this).text('Sửa');                // Trở lại text ban đầu
+        }
+    });
+
+    $('#transactionsTable').on('click', '.btn-edit', function() {
+        var transaction = $(this).data('transaction');
+        console.log(transaction);
+        openEditForm(transaction);
+    });
+
+    function openEditForm(transaction) {
+        // Điền dữ liệu vào form
+        $('#edit-id').val(transaction.id);
+        $('#edit-report-date').val(transaction.pay_date);
+        $('#edit-total-amount').val(transaction.total_amount);
+        $('#edit-diff-amount').val(transaction.diff_amount);
+        $('#edit-notes').val(transaction.notes);
+
+        // Hiển thị modal
+        $('#editModal').modal('show');
+    }
+
+    $('#saveChanges').click(function() {
+        const editedData = {
+            id: $('#edit-id').val(),
+            pay_date: $('#edit-report-date').val(),
+            total_amount: $('#edit-total-amount').val(),
+            diff_amount: $('#edit-diff-amount').val(),
+            notes: $('#edit-notes').val()
+        };
+        //console.log(editedData);
+        $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+        $.ajax({
+            url: 'update-transaction',
+            method: 'PUT',
+            data: editedData,
+            success: function(response) {
+                notify500();
+                $('#editModal').modal('hide');
+                setTimeout(function() {
+                    location.reload();
+                }, 1000); // Trì hoãn 10 giây
+            },
+            error: function(error) {
+                // Xử lý lỗi
+                console.error("Có lỗi khi cập nhật: ", error);
+            }
+        });
+    });
 
     updateColors();
     $(document).ajaxComplete(function() {// gọi lại sau khi dữ liệu được tải lại qua AJAX
