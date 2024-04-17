@@ -211,7 +211,7 @@ $(document).ready(function() {
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>Ngày BC</th>
+                        <th style="display: none;">Ngày BC</th>
                         <th>NV</th>
                         <th>CK</th>
                         <th>TM</th>

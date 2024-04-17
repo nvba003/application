@@ -7,12 +7,12 @@
                 </div>
             </td> 
             <td>{{ $loop->iteration }}</td>
-            <td>{{ \Carbon\Carbon::parse($transaction->pay_date)->format('d/m/Y') }}</td>
+            <td style="display: none;">{{ \Carbon\Carbon::parse($transaction->pay_date)->format('d/m/Y') }}</td>
             <td>{{ $transaction->staff->name ?? '_' }}</td>
             <td>{{ $transaction->id }}</td>
-            <td>{{ number_format($detail['transfer_amount']) }} ₫</td>
-            <td>{{ number_format($detail['cash'] ?? 0) }} ₫</td>
-            <td>{{ number_format($detail->total_amount) }}</td>
+            <td class="text-right">{{ number_format($detail['transfer_amount']) }}</td>
+            <td class="text-right">{{ number_format($detail['cash'] ?? 0) }}</td>
+            <td class="text-right">{{ number_format($detail->total_amount) }}</td>
             <td>{{ $detail->notes ?? '_' }}</td>
         </tr>
     @endforeach
