@@ -244,6 +244,7 @@
                 <div class="modal-body">
                     <form id="editForm">
                         <input type="hidden" id="edit-id">
+                        <span><strong>*Lưu ý: Nếu đổi số tiền, cần xóa chi tiết giao dịch trước</strong></span>
                         <div class="form-group">
                             <label for="edit-report-date">Ngày báo cáo</label>
                             <input type="date" class="form-control" id="edit-report-date">
