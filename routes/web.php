@@ -50,6 +50,7 @@ Route::post('/add-summary-order-for-scheduled', [AccountingOrderController::clas
 Route::post('/add-summary-order-for-immediate', [AccountingOrderController::class, 'addSummaryOrderForImmediate'])->name('add_summary_order_for_immediate');
 Route::post('/add-summary-order-for-recovery', [AccountingOrderController::class, 'addSummaryOrderForRecovery'])->name('add_summary_order_for_recovery');
 Route::get('/transactions', [ReportController::class, 'transactions'])->name('transactions');
+Route::get('/transaction-details', [ReportController::class, 'transactionDetails'])->name('transactionDetails');
 Route::get('/summary-orders', [ReportController::class, 'summaryOrders'])->name('summary_orders');
 Route::post('/save-transaction', [ReportController::class, 'saveTransaction']);
 Route::put('/update-summary-orders', [ReportController::class, 'updateSummary']);

@@ -48,8 +48,44 @@ class ReportController extends Controller
             $links = $transactions->links()->toHtml(); // Lấy HTML của links phân trang
             return response()->json(['table' => $view, 'links' => $links]);
         }
-        $header = 'Giao dịch';
+        $header = 'Thông tin thanh toán';
         return view('accounting.transactions', compact('transactions', 'header', 'saleStaffs'));
+    }
+
+    public function transactionDetails(Request $request)
+    {
+        $perPage = $request->input('per_page', 10);
+        $saleStaffs = SaleStaff::all();
+        $query = Transaction::with(['staff', 'details']);
+        
+        $query->when($request->filled('pay_date'), function ($q) use ($request) {
+            return $q->whereDate('pay_date', $request->pay_date);
+        });
+        
+        $query->when($request->filled('staff'), function ($q) use ($request) {
+            return $q->whereHas('staff', function ($subQuery) use ($request) {
+                $subQuery->where('name', 'like', '%' . $request->staff . '%');
+            });
+        });
+        
+        $query->when($request->filled('difference_amount') && in_array($request->difference_amount, [1, 0]), function ($q) use ($request) {
+            if ($request->difference_amount == 1) {
+                return $q->where('diff_amount', '>=', 1000);
+            } else {
+                return $q->where('diff_amount', '>=', 0);
+            }
+        });
+        
+        $query->orderBy('pay_date', 'desc');
+        $transactions = $query->paginate($perPage); // Hoặc số lượng bạn muốn hiển thị trên mỗi trang
+        if ($request->ajax()) {
+            //dd($request->all());
+            $view = view('accounting.partials.transaction_details_table', compact('transactions'))->render();
+            $links = $transactions->links()->toHtml(); // Lấy HTML của links phân trang
+            return response()->json(['table' => $view, 'links' => $links]);
+        }
+        $header = 'Chi tiết thanh toán';
+        return view('accounting.transaction_details', compact('transactions', 'header', 'saleStaffs'));
     }
 
 

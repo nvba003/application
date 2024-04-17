@@ -29,6 +29,7 @@ class CreateTransactionDetailsTable extends Migration
             $table->unsignedSmallInteger('note_5')->nullable();
             $table->unsignedSmallInteger('note_2')->nullable();
             $table->unsignedSmallInteger('note_1')->nullable();
+            $table->unsignedMediumInteger('cash')->nullable();//tiền mặt
             $table->unsignedMediumInteger('total_amount')->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();
