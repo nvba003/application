@@ -2,64 +2,37 @@
 .wrapper {
     display: flex;
     flex-direction: row;
-  }
+}
 
-  /* Sidebar styles */
+/* Sidebar styles */
 .sidebar {
-    max-width: 250px;  /*Chiếm tối đa width khi hiện */
-    height: 100vh; /* Chiều cao 100% của viewport */
-    /*position: fixed;  Để sidebar cố định */
-    transition: width 0.5s ease; /* Hiệu ứng chuyển đổi nếu bạn muốn thay đổi chiều rộng */
-    background-color: #000d1a; /* Màu xanh dương đậm */
+    max-width: 250px; /* Chiều rộng mặc định */
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #000d1a;
     color: #d4d4d4;
-
-    position: fixed;  /* Giữ sidebar cố định trong viewport */
-    top: 0;           /* Đặt ở phía trên cùng của viewport */
-    left: 0;          /* Đặt sang bên trái của viewport */
-    overflow-y: auto; /* Cho phép scroll bên trong nếu nội dung dài hơn chiều cao */
+    overflow-y: auto;
+    transition: width 0.5s ease;
 }
-  
-  /* .sidebar {
-    width: 250px;
-    height: 100vh;
-    position: fixed; 
-  } */
-  
-  .content {
-    flex-grow: 1;
-    /*margin-left: 250px; /* Đẩy nội dung chính ra phía bên phải của sidebar */
-    width: calc(100% - 250px); /* Giảm chiều rộng của nội dung để không tràn ra ngoài màn hình */
-    height: 100vh;
-    overflow-y: auto; /* Thêm thanh cuộn nếu nội dung dài */
-    transition: width 0.3s ease;
-  }
-
-  .top-bar {
-    display: flex;
-    width: calc(100% - 250px);
-    justify-content: flex-end; /* Đặt các thành phần con vào cuối (bên phải) của container */
-    align-items: center; /* Tùy chọn: căn giữa các items theo chiều dọc nếu cần */
-}
-
-/* .flex {
-    display: flex;
-} */
-
-
 
 .sidebar.collapsed {
-    width: 60px; /* Chiều rộng khi chỉ còn icon */
+    width: 50px; /* Chiều rộng khi thu nhỏ */
 }
 
 /* Content styles */
-/* .content {
-    /*width: 90%;  /*Chiếm phần còn lại khi sidebar hiện *
-    flex: 1; /* Chiếm mọi không gian còn lại sau khi sidebar đã được đặt chiều rộng *
-    transition: width 0.3s ease;
-} */
+.content {
+    margin-left: 250px; /* Đẩy nội dung ra phía bên phải của sidebar */
+    transition: margin-left 0.5s ease;
+    width: calc(100% - 250px); /* Giảm chiều rộng của nội dung */
+    height: 100vh;
+    overflow-y: auto;
+}
 
 .sidebar.collapsed ~ .content {
-    width: calc(100% - 50px); /* Chiếm phần còn lại khi sidebar chỉ còn icon */
+    margin-left: 50px;
+    width: calc(100% - 50px);
 }
 
 /* Khi sidebar không bị collapse */
@@ -190,14 +163,64 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .sidebar {
+    .sidebar,
+    .sidebar.expanded,
+    .sidebar.collapsed {
         width: 100%; /* Chiều rộng toàn màn hình trên thiết bị nhỏ */
-        height: auto; /* Chiều cao tự do */
-        position: relative; /* Không cố định */
+        height: 100vh; /* Chiều cao toàn màn hình */
+        position: fixed; /* Giữ cố định */
+        top: 0; /* Top cố định */
+        left: 0; /* Left cố định */
+        overflow-y: auto; /* Cho phép cuộn dọc nếu cần */
+        z-index: 1000; /* Đảm bảo sidebar ở trên các thành phần khác */
     }
-    .nav-item {
-        display: block; /* Hiển thị dạng block */
+
+    .content,
+    .sidebar.collapsed ~ .content {
+        margin-left: 0; /* No margin when sidebar is full width */
+        width: 100%; /* Full width */
     }
 }
+
+@media (max-width: 640px) {
+    .navigation-text {
+        display: none;
+    }
+    .sidebar.collapsed {
+        width: 50px; /* Chiều rộng toàn màn hình trên thiết bị nhỏ */
+    }
+}
+
+/* Sử dụng trên các màn hình lớn hơn 640px */
+@media (min-width: 641px) {
+    .navigation-text {
+        display: block; /* Hoặc 'flex' tùy vào layout của bạn */
+    }
+    .sidebar.collapsed {
+        width: 50px; /* Chiều rộng toàn màn hình trên thiết bị nhỏ */
+    }
+}
+
+/* Định nghĩa cho card */
+.card {
+    background: #ffffff;
+    padding: 14px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%; /* Ensure card stretches to fill content */
+    margin-bottom: 10px;
+}
+
+/* Định nghĩa cho card-body */
+.card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background: #ffffff;
+    overflow-x: auto;
+}
+
 
 

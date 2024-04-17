@@ -3,7 +3,6 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>{{ config('app.name', 'DOSANGTAO') }}</title>
 
@@ -26,16 +25,13 @@
 
     </head>
     <body class="font-sans antialiased">
-        <div class="top-bar">
-            <!-- Các thành phần khác có thể ở đây -->
-            <div class="navigation">
-                @include('layouts.navigation')
-            </div>
+        <div class="navigation">
+            @include('layouts.navigation')
         </div>
         <div class="min-h-screen bg-gray-100">
             <div class="wrapper d-flex"> <!-- Wrapper for sidebar and content -->
-                @include('components.sidebar') <!-- Sidebar component -->
-                <div class="content"> <!-- Content wrapper adjusts based on sidebar -->
+                    @include('components.sidebar') <!-- Sidebar component -->
+                <div class="content expanded"> <!-- Content wrapper adjusts based on sidebar -->
                     <main>
                         @yield('content') <!-- Dynamic page content -->
                     </main>
@@ -49,16 +45,14 @@
         <!-- Bootstrap JS -->
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 
-        <!-- <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                document.getElementById('toggle-sidebar').addEventListener('click', function () {
-                    var sidebar = document.querySelector('.sidebar');
-                    sidebar.classList.toggle('collapsed');
+        <script>
+            $(document).ready(function() {
+                $('.toggle-sidebar').on('click', function() {
+                    $('.sidebar, .content').toggleClass('expanded');
                 });
             });
-        </script> -->
+        </script>
 
-        <!-- Địa điểm cho các scripts tùy chỉnh từ view con -->
         @stack('scripts')
         
     </body>

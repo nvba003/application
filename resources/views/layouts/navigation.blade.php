@@ -3,11 +3,11 @@
     <div class="max-w-0xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-10">
             <!-- Navigation Text -->
-            <div class="flex">
+            <div class="flex navigation-text">
                 <!-- Navigation Placeholder for Alignment -->
-                <div class="hidden space-x-8 sm:-my-px sm:ml-2 sm:flex">
-                    <div class="flex items-center text-sm font-medium text-gray-500">
-                        {{ $header }} <!-- Biến $header được truyền từ Controller -->
+                <div class="hidden space-x-8 sm:-my-px sm:ml-4 sm:flex">
+                    <div class="content items-center text-sm font-medium text-gray-500 mt-2">
+                       <h5> {{ $header }} </h5><!-- Biến $header được truyền từ Controller -->
                     </div>
                 </div>
             </div>
