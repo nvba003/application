@@ -201,6 +201,7 @@ class ReportController extends Controller
             'note_5' => $request->input('note_5'),
             'note_2' => $request->input('note_2'),
             'note_1' => $request->input('note_1'),
+            'cash' => $request->input('cashTotal'),
             'total_amount' => $request->input('combinedTotal'),
             'notes' => $request->input('notes'),
         ]);

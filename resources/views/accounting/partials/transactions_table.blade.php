@@ -28,7 +28,7 @@
                 <tr>
                     <th>STT</th>   
                     <th>Ngày ghi</th> 
-                    <th>Số GD</th>
+                    <th>Số GD chi tiết</th>
                     <th>Người nộp</th>
                     <th>Chuyển khoản</th>
                     <th>Tiền mặt</th>

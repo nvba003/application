@@ -140,6 +140,7 @@
                         <!-- Thêm input ẩn để lưu transaction_id -->
                         <input type="hidden" id="transaction_id" name="transaction_id" value="">
                         <input type="hidden" id="hiddenTransferTotal" name="transferTotal" value="">
+                        <input type="hidden" id="hiddenCashTotal" name="cashTotal" value="">
                         <input type="hidden" id="hiddenCombinedTotal" name="combinedTotal" value="">
 
                         <div class="row mb-3">
@@ -418,6 +419,7 @@ $(document).ready(function() {
 
         // Cập nhật giá trị vào các trường ẩn
         $('#hiddenTransferTotal').val(transferAmount);
+        $('#hiddenCashTotal').val(totalNotes);
         $('#hiddenCombinedTotal').val(combinedTotal);
     }
 
