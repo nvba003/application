@@ -238,7 +238,7 @@ $(document).ready(function() {
                 <tr>
                     <td style="display: none;" data-id="${transactionId}"></td>    
                     <td>${index + 1}</td>
-                    <td>${row.find("td:eq(2)").text()}</td>
+                    <td style="display: none;">${row.find("td:eq(2)").text()}</td>
                     <td>${row.find("td:eq(3)").text()}</td>
                     <td class="text-right">${transfer.toLocaleString()}</td>
                     <td class="text-right">${cash.toLocaleString()}</td>

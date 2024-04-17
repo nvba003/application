@@ -7,7 +7,7 @@
                 </div>
             </td> 
             <td>{{ $loop->iteration }}</td>
-            <td style="display: none;">{{ \Carbon\Carbon::parse($transaction->pay_date)->format('d/m/Y') }}</td>
+            <td>{{ \Carbon\Carbon::parse($transaction->pay_date)->format('d/m/Y') }}</td>
             <td>{{ $transaction->staff->name ?? '_' }}</td>
             <td>{{ $transaction->id }}</td>
             <td class="text-right">{{ number_format($detail['transfer_amount']) }}</td>
