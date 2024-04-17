@@ -55,7 +55,7 @@ class ReportController extends Controller
 
     public function summaryOrders(Request $request)
     {
-        $perPage = $request->input('per_page',10); // Số lượng mặc định là 3 nếu không có tham số per_page
+        $perPage = $request->input('per_page',20); // Số lượng mặc định là 3 nếu không có tham số per_page
         $saleStaffs = SaleStaff::all();
         $query = SummaryOrder::query()
             ->with(['groupOrder.accountingOrders'])
@@ -120,7 +120,7 @@ class ReportController extends Controller
             return response()->json(['table' => $view, 'links' => $links]);//, 'summaryOrders' => $summaryOrders
         }
 
-        $header = 'Tổng hợp';
+        $header = 'Danh sách đơn hàng tổng hợp';
         return view('accounting.summary_orders', compact('summaryOrders', 'header', 'saleStaffs'));
     }
 

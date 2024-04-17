@@ -26,7 +26,7 @@
                 '_'
             @endif
         </td>
-        <!-- <td>{{ $summaryOrder->invoice_code ?? '_' }}</td> -->
+        <td style="display: none;">{{ $summaryOrder->invoice_code ?? '_' }}</td>
         <td>{{ $summaryOrder->transaction_id ?? '_' }}</td>
         <td>
             <!-- Tính toán tổng giá trị discount-->
