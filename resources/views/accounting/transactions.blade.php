@@ -125,11 +125,11 @@
                 <div class="container">
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="total_amount">Tổng tiền:</label>
+                            <label for="total_amount"><strong>Tổng tiền:</strong></label>
                             <div id="total_amount"></div>
                         </div>
                         <div class="col-md-6">
-                            <label for="diff_amount">Chênh lệch:</label>
+                            <label for="diff_amount"><strong>Còn nợ:</strong></label>
                             <div id="diff_amount"></div>
                         </div>
                     </div>
@@ -146,11 +146,11 @@
 
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label for="transfer_amount" class="mr-2">Số chuyển khoản:</label>
+                                <label for="transfer_amount" class="mr-2"><strong>Số chuyển khoản:</strong></label>
                                 <input type="number" name="transfer_amount" id="transfer_amount" class="form-control" placeholder="Số chuyển khoản" />
                             </div>
                             <div class="col-md-6">
-                                <label for="staff_id" class="mr-2">Người nộp:</label>
+                                <label for="staff_id" class="mr-2"><strong>Người nộp:</strong></label>
                                 <select name="staff_id" id="staff_id" class="form-control">
                                     @foreach($saleStaffs as $staff)
                                         <option value="{{ $staff->id }}">{{ $staff->name }}</option>
@@ -160,47 +160,96 @@
                         </div>
 
                         <!-- Note inputs start -->
-                        <div class="row">
-                            <div class="col-4 col-md-2">
-                                <input type="number" name="note_500" id="note_500" class="form-control form-control-sm note-input" placeholder="500" data-denomination="500000" />
-                            </div>
-                            <div class="col-4 col-md-2">
-                                <input type="number" name="note_200" id="note_200" class="form-control form-control-sm note-input" placeholder="200" data-denomination="200000"/>
-                            </div>
-                            <div class="col-4 col-md-2">
-                                <input type="number" name="note_100" id="note_100" class="form-control form-control-sm note-input" placeholder="100" data-denomination="100000"/>
-                            </div>
-                            <div class="col-4 col-md-2">
-                                <input type="number" name="note_50" id="note_50" class="form-control form-control-sm note-input" placeholder="50" data-denomination="50000"/>
-                            </div>
-                            <div class="col-4 col-md-2">
-                                <input type="number" name="note_20" id="note_20" class="form-control form-control-sm note-input" placeholder="20" data-denomination="20000"/>
-                            </div>
-                            <div class="col-4 col-md-2">
-                                <input type="number" name="note_10" id="note_10" class="form-control form-control-sm note-input" placeholder="10" data-denomination="10000"/>
-                            </div>
-                        </div>
-
-                        <div class="row mt-3">
-                            <div class="col-4 col-md-2">
-                                <input type="number" name="note_5" id="note_5" class="form-control form-control-sm note-input" placeholder="5" data-denomination="5000"/>
-                            </div>
-                            <div class="col-4 col-md-2">
-                                <input type="number" name="note_2" id="note_2" class="form-control form-control-sm note-input" placeholder="2" data-denomination="2000"/>
-                            </div>
-                            <div class="col-4 col-md-2">
-                                <input type="number" name="note_1" id="note_1" class="form-control form-control-sm note-input" placeholder="1" data-denomination="1000"/>
+                        <div class="mt-3">
+                            <div class="row">
+                                <!-- Cột 1 -->
+                                <div class="col-md-6">
+                                    <table class="table money-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Tờ</th>
+                                                <th>SL</th>
+                                                <th>Thành_tiền</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>500k</td>
+                                                <td style="padding:0px"><input type="number" name="note_500" id="note_500" class="mt-2 form-control form-control-sm note-input" data-denomination="500000" /></td>
+                                                <td id="subtotal_500"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>200k</td>
+                                                <td style="padding:0px"><input type="number" name="note_200" id="note_200" class="mt-2 form-control form-control-sm note-input" data-denomination="200000" /></td>
+                                                <td id="subtotal_200"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>100k</td>
+                                                <td style="padding:0px"><input type="number" name="note_100" id="note_100" class="mt-2 form-control form-control-sm note-input" data-denomination="100000" /></td>
+                                                <td id="subtotal_100"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>50k</td>
+                                                <td style="padding:0px"><input type="number" name="note_50" id="note_50" class="mt-2 form-control form-control-sm note-input" data-denomination="50000" /></td>
+                                                <td id="subtotal_50"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>20k</td>
+                                                <td style="padding:0px"><input type="number" name="note_20" id="note_20" class="mt-2 form-control form-control-sm note-input" data-denomination="20000" /></td>
+                                                <td id="subtotal_20"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- Cột 2 -->
+                                <div class="col-md-6">
+                                    <table class="table money-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Tờ</th>
+                                                <th>SL</th>
+                                                <th>Thành_tiền</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>10k</td>
+                                                <td style="padding:0px"><input type="number" name="note_10" id="note_10" class="mt-2 form-control form-control-sm note-input" data-denomination="10000" /></td>
+                                                <td id="subtotal_10"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>5k</td>
+                                                <td style="padding:0px"><input type="number" name="note_5" id="note_5" class="mt-2 form-control form-control-sm note-input" data-denomination="5000" /></td>
+                                                <td id="subtotal_5"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>2k</td>
+                                                <td style="padding:0px"><input type="number" name="note_2" id="note_2" class="mt-2 form-control form-control-sm note-input" data-denomination="2000" /></td>
+                                                <td id="subtotal_2"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>1k</td>
+                                                <td style="padding:0px"><input type="number" name="note_1" id="note_1" class="mt-2 form-control form-control-sm note-input" data-denomination="1000" /></td>
+                                                <td id="subtotal_1"></td>
+                                            </tr>
+                                            <tr>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                         <!-- Note inputs end -->
-
-                        <div class="row mt-3">
-                            <div class="col">
-                                <textarea name="notes" id="notes" rows="1" class="form-control" placeholder="Ghi chú"></textarea>
-                            </div>
-                        </div>
                         <!-- Thêm phần tử để hiển thị tổng số tiền -->
                         <div id="totalsDisplay" class="mb-3">
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label"><strong>Tiền mặt:</strong></label>
+                                <div class="col-sm-8 d-flex align-items-center">
+                                    <span id="notesTotalValue" style="color: green; font-weight: bold;" class="mr-2 align-self-center w-25">0</span>
+                                    <input type="number" class="form-control form-control-sm w-50 ml-2" id="notesTotal" name="notesTotal" value="" disabled>
+                                    <button type="button" class="btn btn-warning btn-sm" id="enableEditCash">Sửa</button>
+                                </div>
+                            </div>
                             <div class="form-group row">
                                 <label class="col-sm-4 col-form-label"><strong>Chuyển khoản:</strong></label>
                                 <div class="col-sm-8">
@@ -208,18 +257,16 @@
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label class="col-sm-4 col-form-label"><strong>Tiền mặt:</strong></label>
-                                <div class="col-sm-8 d-flex align-items-center">
-                                    <span id="notesTotalValue" class="mr-2 align-self-center w-25">0</span>
-                                    <input type="number" class="form-control form-control-sm w-50 ml-2" id="notesTotal" name="notesTotal" value="" disabled>
-                                    <button type="button" class="btn btn-warning btn-sm" id="enableEditCash">Sửa</button>
-                                </div>
-                            </div>
-                            <div class="form-group row">
                                 <label class="col-sm-4 col-form-label"><strong>Tổng nhận:</strong></label>
                                 <div class="col-sm-8">
                                     <p class="form-control-plaintext"><strong><span id="combinedTotal">0</span></strong></p>
                                 </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col">
+                                <textarea name="notes" id="notes" rows="1" class="form-control" placeholder="Ghi chú"></textarea>
                             </div>
                         </div>
 
@@ -465,6 +512,28 @@ $(document).ready(function() {
         return tableContent;
     }
 
+    // function updateTotals() {
+    //     var totalNotes = 0;
+    //     var transferAmount = parseInt($('#transfer_amount').val()) || 0;
+
+    //     $('#addTransactionForm input.note-input').each(function() {
+    //         var denomination = $(this).data('denomination');
+    //         var quantity = parseInt($(this).val(), 10) || 0;
+    //         totalNotes += denomination * quantity;
+    //     });
+
+    //     var combinedTotal = transferAmount + totalNotes;
+
+    //     $('#transferTotal').text(transferAmount.toLocaleString());
+    //     $('#notesTotalValue').text(totalNotes.toLocaleString());
+    //     $('#combinedTotal').text(combinedTotal.toLocaleString());
+        
+    //     // Cập nhật giá trị vào các trường ẩn
+    //     $('#hiddenTransferTotal').val(transferAmount);
+    //     $('#hiddenCashTotal').val(totalNotes);
+    //     $('#hiddenCombinedTotal').val(combinedTotal);
+    // }
+
     function updateTotals() {
         var totalNotes = 0;
         var transferAmount = parseInt($('#transfer_amount').val()) || 0;
@@ -472,7 +541,13 @@ $(document).ready(function() {
         $('#addTransactionForm input.note-input').each(function() {
             var denomination = $(this).data('denomination');
             var quantity = parseInt($(this).val(), 10) || 0;
-            totalNotes += denomination * quantity;
+            var subtotal = denomination * quantity;
+            totalNotes += subtotal;
+
+            // Cập nhật subtotal cho mỗi ghi chú
+            var inputId = $(this).attr('id');  // Ví dụ: note_500
+            var subtotalId = '#subtotal_' + inputId.split('_')[1];  // Ví dụ: #subtotal_500
+            $(subtotalId).text(subtotal.toLocaleString());  // Định dạng và cập nhật
         });
 
         var combinedTotal = transferAmount + totalNotes;
@@ -490,6 +565,9 @@ $(document).ready(function() {
     // Gắn sự kiện 'input' vào tất cả các input trong form để cập nhật tổng số tiền mỗi khi giá trị thay đổi
     //$('#addTransactionForm input').on('input', updateTotals);
     $('#addTransactionForm input').not('#notesTotal').on('input', updateTotals);
+    // $('#addTransactionForm').on('input', 'input:not(#notesTotal)', function() {
+    //     updateTotals();
+    // });
     $('#notesTotal').on('input', clearNoteIds);
     function clearNoteIds() {
         $('input[id^="note_"]').val('');

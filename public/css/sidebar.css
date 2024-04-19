@@ -235,6 +235,31 @@
     overflow-x: auto;
 }
 
+.money-table {
+    width: 100%; /* Đảm bảo bảng chiếm toàn bộ chiều rộng có thể */
+    border-collapse: collapse; /* Giúp viền của các ô liền kề nhau */
+    margin: 0px; /* Đảm bảo không có khoảng cách ngoài xung quanh bảng */
+    padding: 0px;
+    font-size: 15px;
+}
+
+.money-table th, .money-table td {
+    padding: 0px; /* Xóa bỏ khoảng cách padding trong các ô */
+    border: 1px solid #d4edd5; /* Áp dụng đường viền mỏng cho các ô */
+    background-color: #e9f3e9; /* Màu nền cho các ô */
+    text-align: right; /* Căn giữa nội dung trong các ô */
+}
+
+.money-table thead th {
+    background-color: #0d7e13; /* Màu nền cho tiêu đề bảng */
+    color: #f5f5f5; /* Màu chữ cho tiêu đề */
+    font-weight: bold; /* Font đậm cho tiêu đề */
+}
+
+.money-table tbody tr:nth-child(odd) {
+    background-color: #f2f2f2; /* Màu nền xen kẽ cho các hàng */
+}
+
 
 
 
