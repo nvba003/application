@@ -20,6 +20,7 @@ class CreateTransactionsTable extends Migration
             $table->unsignedMediumInteger('total_amount')->nullable();
             $table->MediumInteger('diff_amount')->nullable();//different amount
             $table->date('pay_date')->nullable();//ngày trả tiền = ngày báo cáo
+            $table->string('customer_name')->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();
         });

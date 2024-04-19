@@ -522,11 +522,13 @@ $(document).ready(function() {
             return type === "Giao sau";
         });
         
+        var allowedStaff = ['Anh Hưng', 'Anh Kiều', 'Anh Hùng']; // Danh sách các nhân viên được phép
+ 
         if (!allSame && hasImmediate) {//nếu có đơn Giao ngay thì cùng nhân viên mới thực hiện tiếp
             alert("Không cùng nhân viên.");
-        } else if(hasScheduled && $('#staff_id').val()!= 'Anh Hưng'){
-            alert("Giao sau phải chọn Anh Hưng. Chọn lại!");
-        }
+        } else if(hasScheduled && !allowedStaff.includes($('#staff_id').val())){
+                alert("Phải chọn Anh Hưng, Anh Kiều hoặc Anh Hùng!");
+            }
             else {
                 var notes = $('#notes').val();//lấy giá trị ô nhập notes
                 var payDate = $('#pay_date').text();//lấy giá trị ngày báo cáo, cũng là ngày trả
