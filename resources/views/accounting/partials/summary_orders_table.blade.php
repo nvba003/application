@@ -82,18 +82,14 @@
                 Giao sau
             @endif
         </td>
-        <td>
+        <td class="max-width-td">
             <!-- Hiển thị thông tin khách hàng dựa trên group_order -->
             @if($summaryOrder->groupOrder)
                 @php
                     $groupOrder = $summaryOrder->groupOrder->first();
                 @endphp
                 @if($groupOrder->accountingOrders->isNotEmpty() && !$summaryOrder->is_group && !$summaryOrder->is_recovery)
-                    @php
-                        $customerName = $groupOrder->accountingOrders->first()->customer_name;
-                        $displayedName = $customerName ? (strlen($customerName) > 15 ? substr($customerName, 0, 15) . '..' : $customerName) : '';
-                    @endphp
-                    {{ $displayedName }}
+                    {{ $groupOrder->accountingOrders->first()->customer_name }}
                 @else
                     _
                 @endif
@@ -102,11 +98,11 @@
         <td>{{ $summaryOrder->notes }}</td>
         <td>
             <button class="btn btn-primary btn-sm btn-edit" data-order="{{ $summaryOrder }}">Sửa</button>
-            @if($summaryOrder->is_entered == false)
+            <!-- @if($summaryOrder->is_entered == false)
                 <button class="btn btn-success btn-sm btn-enter" data-id="{{ $summaryOrder->id }}" data-entered="{{ $summaryOrder->is_entered }}">Nhập</button>
             @else
                 <span>Đã nhập</span>
-            @endif
+            @endif -->
         </td>
     </tr>
     <!-- Chi tiết đơn hàng -->

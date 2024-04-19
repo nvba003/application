@@ -46,7 +46,7 @@
 
     <div class="card-body">
         <div id="ordersTable">
-            <table class="table">
+            <table class="table table-auto w-full">
                 <thead>
                     <tr>
                         <th>
@@ -62,6 +62,7 @@
                         <th>Loại</th>
                         <th>Khách hàng</th>
                         <th>Ghi chú</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -116,6 +117,11 @@
                     <div class="row mt-3">
                         <div class="col">
                             <textarea id="notes" rows=1 class="form-control" placeholder="Ghi chú"></textarea>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col">
+                            <input type="text" id="customer" name="customer" class="form-control" placeholder="Tên khách hàng">
                         </div>
                     </div>
                 </div>
@@ -418,6 +424,13 @@ $(document).ready(function() {
             var staffName = firstCheckedCheckbox.closest("tr"); // Lấy giá trị của checkbox thẻ tr
             $('#staff_id').val(staffName.find("td:eq(3)").text().trim());//chọn NV
         }
+        if ($(".order-checkbox:checked").length == 1) { // Nếu chỉ chọn 1 đơn
+            var customer = $(".order-checkbox:checked").closest("tr"); // Lấy giá trị của checkbox thẻ tr
+            $('#customer').val(customer.find("td:eq(9)").text().trim());//chọn NV
+        }else{
+            $('#customer').val('');
+        }
+        
         // Duyệt qua mỗi hàng có checkbox được tích
         $(".order-checkbox:checked").each(function(index) {
             var summaryOrderId = $(this).data('id');
@@ -517,6 +530,7 @@ $(document).ready(function() {
                 var notes = $('#notes').val();//lấy giá trị ô nhập notes
                 var payDate = $('#pay_date').text();//lấy giá trị ngày báo cáo, cũng là ngày trả
                 var staffId = $('#staff_id').val();//lấy tên nhân viên
+                var customer = $('#customer').val();//lấy tên khách hàng
 
                 var tdElement = $('#tableContainer table tbody tr:last-child td[data-totalAmount]')[0]; // Lấy phần tử DOM
                 var totalAmount = tdElement.dataset.totalamount; // Truy cập dataset và lấy giá trị
@@ -550,6 +564,7 @@ $(document).ready(function() {
                 // Tạo một object để chứa tất cả dữ liệu
                 var transactionData = {
                     staff_id: staffId,
+                    customer: customer,
                     total_amount: totalAmount,
                     notes: notes,
                     pay_date: payDate,

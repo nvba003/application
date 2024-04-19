@@ -164,6 +164,7 @@ class ReportController extends Controller
         $staff = SaleStaff::where('name', $request->input('staff_id'))->first();
         $transactionData = Transaction::create([//nếu thêm đơn vào giao dịch thì cập nhật mã giao dịch vào đơn và sửa lại total_amount transaction
             'staff_id' => $staff->id,
+            'customer_name' => $request->input('customer'),
             'total_amount' => $request->input('total_amount'),
             'diff_amount' => $request->input('total_amount'),
             'pay_date' => $request->input('pay_date'),
@@ -222,6 +223,7 @@ class ReportController extends Controller
             'total_amount' => 'nullable',
             'diff_amount' => 'nullable',
             'pay_date' => 'nullable|date',
+            'customer_name' => 'nullable|string',
             'notes' => 'nullable|string',
         ]);
         $id = $validatedData['id'];

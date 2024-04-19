@@ -1490,6 +1490,11 @@ select {
   }
 }
 
-
+.max-width-td {
+  max-width: 150px; /* Độ rộng tối đa của cột */
+  white-space: nowrap; /* Ngăn chặn các dòng được tự động ngắt */
+  overflow: hidden; /* Ẩn phần dư thừa của nội dung */
+  text-overflow: ellipsis; /* Hiển thị dấu "..." khi nội dung bị ẩn */
+}
 
 

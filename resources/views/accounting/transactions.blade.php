@@ -62,6 +62,7 @@
                     <th>Tổng tiền</th>
                     <th>Chênh lệch</th>
                     <th>Ghi chú</th>
+                    <th>Khách hàng</th>
                     <th>Số GD</th>
                 </tr>
             </thead>
@@ -145,9 +146,11 @@
 
                         <div class="row mb-3">
                             <div class="col-md-6">
+                                <label for="transfer_amount" class="mr-2">Số chuyển khoản:</label>
                                 <input type="number" name="transfer_amount" id="transfer_amount" class="form-control" placeholder="Số chuyển khoản" />
                             </div>
                             <div class="col-md-6">
+                                <label for="staff_id" class="mr-2">Người nộp:</label>
                                 <select name="staff_id" id="staff_id" class="form-control">
                                     @foreach($saleStaffs as $staff)
                                         <option value="{{ $staff->id }}">{{ $staff->name }}</option>
@@ -256,6 +259,10 @@
                         <div class="form-group">
                             <label for="edit-diff-amount">Chênh lệch</label>
                             <input type="number" class="form-control" id="edit-diff-amount">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-customer-name">Khách hàng</label>
+                            <input type="text" class="form-control" id="edit-customer-name">
                         </div>
                         <div class="form-group">
                             <label for="edit-notes">Ghi chú</label>
@@ -517,6 +524,7 @@ $(document).ready(function() {
         $('#edit-report-date').val(transaction.pay_date);
         $('#edit-total-amount').val(transaction.total_amount);
         $('#edit-diff-amount').val(transaction.diff_amount);
+        $('#edit-customer-name').val(transaction.customer_name);
         $('#edit-notes').val(transaction.notes);
 
         // Hiển thị modal
@@ -529,6 +537,7 @@ $(document).ready(function() {
             pay_date: $('#edit-report-date').val(),
             total_amount: $('#edit-total-amount').val(),
             diff_amount: $('#edit-diff-amount').val(),
+            customer_name: $('#edit-customer-name').val(),
             notes: $('#edit-notes').val()
         };
         //console.log(editedData);
