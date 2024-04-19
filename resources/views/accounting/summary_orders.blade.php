@@ -121,6 +121,7 @@
                     </div>
                     <div class="row mt-3">
                         <div class="col">
+                            <label for="customer">Khách hàng:</label>
                             <input type="text" id="customer" name="customer" class="form-control" placeholder="Tên khách hàng">
                         </div>
                     </div>
