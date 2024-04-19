@@ -31,8 +31,8 @@
                 <div class="form-group mx-sm-3 mb-2">
                     <select class="form-control" id="has_transaction_id" name="has_transaction_id">
                         <option value="">Trạng thái</option>
-                        <option value="1">Đã thanh toán</option>
-                        <option value="0">Chưa thanh toán</option>
+                        <option value="1">Đã tạo phiếu</option>
+                        <option value="0">Chưa tạo phiếu</option>
                     </select>
                 </div>
                 <button type="submit" class="btn btn-primary mb-2">Tìm kiếm</button>
