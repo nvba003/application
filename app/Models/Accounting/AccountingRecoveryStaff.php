@@ -9,4 +9,5 @@ class AccountingRecoveryStaff extends Model
 {
     use HasFactory;
     protected $guarded = ['id'];
+    protected $table = 'accounting_recovery_staffs';
 }
