@@ -77,7 +77,11 @@
             @if ($summaryOrder->is_group)
                 Giao ngay
             @elseif ($summaryOrder->is_recovery)
-                Thu hồi
+                @if ($summaryOrder->recovery_type == 1)
+                    TH giao ngay
+                @else
+                    TH giao sau
+                @endif
             @else
                 Giao sau
             @endif
