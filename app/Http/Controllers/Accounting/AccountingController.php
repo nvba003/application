@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Accounting;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\Accounting\AccountingOrder; 
+use App\Models\Accounting\AccountingOrder;
 use App\Models\Accounting\AccountingOrderDetail; 
+use App\Models\Accounting\AccountingRecovery;
+use App\Models\Accounting\AccountingRecoveryDetail;
 use App\Models\Accounting\RecoveryOrder; 
 use App\Models\Accounting\RecoveryOrderDetail;
 use App\Models\Accounting\ProductPrice; 
@@ -109,7 +111,7 @@ class AccountingController extends Controller
     }
 
     //==================================================================
-    public function recovery(Request $request)//lưu đơn thu hồi từ extension
+    public function recovery(Request $request)//lưu thu hồi từ NVBH từ extension
     {
         $generalData = $request->input('generalData');
         $tableData = $request->input('tableData', []);
@@ -149,6 +151,46 @@ class AccountingController extends Controller
                 'recovery_reason' => $item['gia'] ?? null //lý do thu hồi ở cột gia
             ];
             RecoveryOrderDetail::updateOrCreate($detailAttributes, $detailValues);
+        }
+
+        return response()->json(['message' => 'Dữ liệu đã được cập nhật thành công']);
+    }
+
+    public function accountingRecovery(Request $request)//lưu đơn hàng thu hồi từ extension
+    {
+        $generalData = $request->input('generalData');
+        $tableData = $request->input('tableData', []);
+
+        $recovery_date_string = $generalData['ngayTraHang'] ?? null;
+        // Tạo một đối tượng Carbon từ chuỗi ngày giờ với định dạng cụ thể
+
+        if (!empty($recovery_date_string)) {
+            $recovery_date = Carbon::createFromFormat('d/m/Y H:i', $recovery_date_string, 'Asia/Ho_Chi_Minh');
+        }
+
+        $attributes = ['recovery_code' => $generalData['maDonHang'] ?? null];
+        $values = [
+            'customer_name' => $generalData['tenKhachHang'] ?? null,
+            'phone' => $generalData['phone'] ?? null,
+            'shop_name' => $generalData['shopName'] ?? null,
+            'type' => $generalData['returnType'] ?? null,
+            'recovery_reason' => $generalData['recoveryReason'] ?? null,
+            'address' => $generalData['address'] ?? null,
+            'recovery_date' => $recovery_date ?? null
+        ];
+        $recoveryOrder = AccountingRecovery::updateOrCreate($attributes, $values);
+
+        // Xử lý tableData
+        foreach ($tableData as $item) {
+            $detailAttributes = ['recovery_order_id' => $recoveryOrder->id, 'product_code' => $item['maSanPham'] ?? null];
+            $detailValues = [
+                'stt' => $item['stt'] ?? null,
+                'product_name' => $item['tenSanPham'] ?? null,
+                'packing' => $item['quyCach'] ?? null,
+                'thung' => $item['gia'] ?? null, //thùng ở cột gia
+                'le' => $item['thung'] ?? null,//lẻ ở cột thung
+            ];
+            AccountingRecoveryDetail::updateOrCreate($detailAttributes, $detailValues);
         }
 
         return response()->json(['message' => 'Dữ liệu đã được cập nhật thành công']);
@@ -223,6 +265,12 @@ class AccountingController extends Controller
     public function getRecoveryCodes()
     {
         $recoveryCodes = RecoveryOrder::pluck('recovery_code');
+        return response()->json($recoveryCodes);
+    }
+
+    public function getOrderRecovery()
+    {
+        $recoveryCodes = AccountingRecovery::pluck('recovery_code');
         return response()->json($recoveryCodes);
     }
 

@@ -21,6 +21,8 @@ class CreateRecoveryOrdersTable extends Migration
             $table->date('recovery_date')->nullable(); // Ngày thu hồi
             $table->date('recovery_creation_date')->nullable(); // Ngày tạo phiếu
             $table->string('status')->nullable(); // Trạng thái
+            $table->unsignedMediumInteger('discount')->nullable();
+            $table->unsignedMediumInteger('total_amount')->nullable();
             $table->timestamps();
         });
     }
