@@ -46,6 +46,7 @@ Route::get('/recovery', [AccountingOrderController::class, 'recovery'])->name('o
 Route::get('/immediate-not-summarized', [AccountingOrderController::class, 'immediateNotSummarized'])->name('orders.immediate_not_summarized');
 Route::get('/scheduled-not-summarized', [AccountingOrderController::class, 'scheduledNotSummarized'])->name('orders.scheduled_not_summarized');
 Route::get('/recovery-not-summarized', [AccountingOrderController::class, 'recoveryNotSummarized'])->name('orders.recovery_not_summarized');
+Route::get('/order-recovery-not-summarized', [AccountingOrderController::class, 'orderRecoveryNotSummarized'])->name('order_recovery_not_summarized');
 Route::post('/add-summary-order-for-scheduled', [AccountingOrderController::class, 'addSummaryOrderForScheduled'])->name('add_summary_order_for_scheduled');
 Route::post('/add-summary-order-for-immediate', [AccountingOrderController::class, 'addSummaryOrderForImmediate'])->name('add_summary_order_for_immediate');
 Route::post('/add-summary-order-for-recovery', [AccountingOrderController::class, 'addSummaryOrderForRecovery'])->name('add_summary_order_for_recovery');

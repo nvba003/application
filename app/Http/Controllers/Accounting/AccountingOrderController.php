@@ -252,6 +252,72 @@ class AccountingOrderController extends Controller
         return view('accounting.recovery_not_summarized', compact('recoveryOrders', 'header', 'saleStaffs'));
     }
 
+    public function orderRecoveryNotSummarized(Request $request)
+    {
+        $perPage = $request->input('per_page', 10); // Số lượng mặc định là 3 nếu không có tham số per_page
+        $saleStaffs = SaleStaff::all();
+        $query = RecoveryOrder::whereDoesntHave('groupOrder')
+                            ->with(['recoveryDetails.productDiscount']);  // Eager load ở đây
+
+        // Lọc theo mã phiếu
+        if ($request->filled('recovery_code')) {
+            $query->where('recovery_code', 'like', '%' . $request->input('recovery_code') . '%');
+        }
+
+        // Lọc theo nhân viên bán hàng
+        if ($request->filled('staff')) {
+            $query->where('staff', 'like', '%' . $request->input('staff') . '%');
+        }
+
+        // Lọc theo ngày tạo phiếu
+        if ($request->filled('recovery_date')) {
+            $query->whereDate('recovery_date', $request->input('recovery_date'));
+        }
+
+        $query->orderBy('recovery_date', 'desc');
+        $recoveryOrders = $query->paginate($perPage); // Hoặc số lượng bạn muốn hiển thị trên mỗi trang
+
+        // Tính toán tổng số tiền sau khi đã phân trang
+        $recoveryOrders->map(function ($order) {
+            $totalAmount = 0;
+            $totalDiscountedAmount = 0;
+            $orderDetail = [];
+            foreach ($order->recoveryDetails as $detail) {
+                if ($detail->productDiscount) {
+                    $price = $detail->productDiscount->price;
+                    $subtotal = $detail->quantity * $price;
+                    $payable = $detail->quantity * $detail->productDiscount->discounted_price;
+                    $discount = $subtotal - $payable;
+                    $orderDetail[] = [
+                        'id' => $detail->id,
+                        'price' => $price, 
+                        'subtotal' => $subtotal, 
+                        'discount' => $discount, 
+                        'payable' => $payable
+                    ];
+
+                    $totalAmount += $subtotal;
+                    $totalDiscountedAmount += $payable;
+                }
+            }
+
+            $order->orderDetail = $orderDetail;
+            $order->total_amount = $totalAmount;
+            $order->total_discounted_amount = $totalDiscountedAmount;
+            $order->total_discount = $totalAmount - $totalDiscountedAmount;
+
+            return $order;
+        });
+
+        if ($request->ajax()) {
+            $view = view('accounting.partials.order_recovery_not_summarized_tbody', compact('recoveryOrders'))->render();
+            $links = $recoveryOrders->links()->toHtml(); // Lấy HTML của links phân trang
+            return response()->json(['table' => $view, 'links' => $links]);
+        }
+
+        $header = 'Đơn thu hồi chưa tổng hợp';
+        return view('accounting.recovery_not_summarized', compact('recoveryOrders', 'header', 'saleStaffs'));
+    }
     //--------------------------------------------------
 
     public function addSummaryOrderForScheduled(Request $request)
