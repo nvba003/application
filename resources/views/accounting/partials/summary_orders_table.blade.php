@@ -91,7 +91,9 @@
                 @if($groupOrder->accountingOrders->isNotEmpty() && !$summaryOrder->is_group && !$summaryOrder->is_recovery)
                     {{ $groupOrder->accountingOrders->first()->customer_name }}
                 @elseif($summaryOrder->is_recovery)
-                    {{ $groupOrder->recoveryOrders->first()->customer_name }}
+                    @if($groupOrder->recoveryOrders && $groupOrder->recoveryOrders->isNotEmpty())
+                        {{ $groupOrder->recoveryOrders->first()->customer_name }}
+                    @endif
                 @endif
             @endif
         </td>
