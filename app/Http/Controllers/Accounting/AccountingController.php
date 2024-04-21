@@ -165,7 +165,7 @@ class AccountingController extends Controller
         // Tạo một đối tượng Carbon từ chuỗi ngày giờ với định dạng cụ thể
 
         if (!empty($recovery_date_string)) {
-            $recovery_date = Carbon::createFromFormat('d/m/Y H:i', $recovery_date_string, 'Asia/Ho_Chi_Minh');
+            $recovery_date = Carbon::createFromFormat('d/m/Y', $recovery_date_string, 'Asia/Ho_Chi_Minh');
         }
 
         $attributes = ['recovery_code' => $generalData['maDonHang'] ?? null];
