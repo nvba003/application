@@ -208,18 +208,16 @@ class AccountingController extends Controller
             ]);
 
             if ($validatedData->fails()) {
-                // Trả về lỗi nếu xác thực không thành công
                 return response()->json(['errors' => $validatedData->errors()], 422);
             }
 
-            // Cập nhật hoặc tạo mới dữ liệu dựa trên maDonHang
-            AccountingRecoveryStaff::updateOrCreate(
-                ['recovery_code' => $data['maDonHang']],
-                ['staff' => $data['staff']]
+            // updateOrCreate sử dụng để thêm mới hoặc cập nhật nếu đã tồn tại
+            $recoveryStaff = AccountingRecoveryStaff::updateOrCreate(
+                ['recovery_code' => $data['maDonHang']], // Tìm kiếm theo recovery_code
+                ['staff' => $data['staff']] // Cập nhật staff_id
             );
         }
 
-        // Trả về thông báo thành công sau khi xử lý tất cả dữ liệu
         return response()->json([
             'message' => 'Thông tin đã được lưu thành công'
         ]);
