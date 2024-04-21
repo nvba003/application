@@ -202,13 +202,9 @@ class AccountingController extends Controller
         $datas = $request->all(); // Lấy tất cả dữ liệu gửi đến
 
         foreach ($datas as $data) {
-            $validatedData = Validator::make($data, [
-                'maDonHang' => 'required|string',
-                'staff' => 'required|string'
-            ]);
-
-            if ($validatedData->fails()) {
-                return response()->json(['errors' => $validatedData->errors()], 422);
+            // Kiểm tra đơn giản các trường có dữ liệu hay không
+            if (empty($data['maDonHang']) || empty($data['staff'])) {
+                return response()->json(['error' => 'Mã đơn hàng và nhân viên là bắt buộc'], 422);
             }
 
             // updateOrCreate sử dụng để thêm mới hoặc cập nhật nếu đã tồn tại
@@ -222,7 +218,6 @@ class AccountingController extends Controller
             'message' => 'Thông tin đã được lưu thành công'
         ]);
     }
-
     
     public function updateProductPrice(Request $request)//cập nhật data từ extension vào product_prices
     {
