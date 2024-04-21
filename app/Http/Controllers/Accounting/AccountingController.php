@@ -8,6 +8,7 @@ use App\Models\Accounting\AccountingOrder;
 use App\Models\Accounting\AccountingOrderDetail; 
 use App\Models\Accounting\AccountingRecovery;
 use App\Models\Accounting\AccountingRecoveryDetail;
+use App\Models\Accounting\AccountingRecoveryStaff;
 use App\Models\Accounting\RecoveryOrder; 
 use App\Models\Accounting\RecoveryOrderDetail;
 use App\Models\Accounting\ProductPrice; 
@@ -194,6 +195,25 @@ class AccountingController extends Controller
         }
 
         return response()->json(['message' => 'Dữ liệu đã được cập nhật thành công']);
+    }
+    
+    public function saveInfoRecoveryStaff(Request $request)
+    {
+        $data = $request->validate([
+            'maDonHang' => 'required|string', // mã đơn thu hồi
+            'staff' => 'required|string'
+        ]);
+
+        // updateOrCreate sử dụng để thêm mới hoặc cập nhật nếu đã tồn tại
+        $recoveryStaff = AccountingRecoveryStaff::updateOrCreate(
+            ['recovery_code' => $data['maDonHang']], // Tìm kiếm theo recovery_code
+            ['staff' => $data['staff']] // Cập nhật staff_id
+        );
+
+        return response()->json([
+            'message' => 'Thông tin đã được lưu thành công',
+            'data' => $recoveryStaff
+        ]);
     }
     
     public function updateProductPrice(Request $request)//cập nhật data từ extension vào product_prices
