@@ -41,7 +41,7 @@
                         <th>Ngày Thu</th>
                         <th>Mã Phiếu</th>
                         <th>NVBH</th>
-                        <th>Trạng Thái</th>
+                        <th>Khách hàng</th>
                         <th>Chiết Khấu</th>
                         <th>Thành Tiền</th>
                     </tr>
@@ -82,11 +82,25 @@
                 <form id="summaryForm">
                     <div class="form-group">
                         <label for="invoice_code">Mã Hóa Đơn:</label>
-                        <input type="text" class="form-control" id="invoice_code" name="invoice_code" required>
+                        <input type="text" class="form-control" id="invoice_code" name="invoice_code">
                     </div>
-                    <div class="form-group">
-                        <label for="report_date">Ngày Báo Cáo:</label>
-                        <input type="date" class="form-control" id="report_date" name="report_date" required>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="report_date">Ngày Báo Cáo:</label>
+                                <input type="date" class="form-control" id="report_date" name="report_date" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="recovery_type">Loại đơn thu hồi:</label>
+                                <select class="form-control" id="recovery_type" name="recovery_type" required>
+                                    <option value="">Chọn</option>
+                                    <option value="1">Giao ngay</option>
+                                    <option value="0">Giao sau</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </form>
                 <!-- Đây là nơi hiển thị thông tin tóm tắt các đơn hàng đã chọn -->
@@ -142,6 +156,7 @@
         if (selectedRows.length > 0) {
             selectedRows.each(function(index) {
                 let order = JSON.parse($(this).attr('data-order'));
+                console.log(order);
                 totalDiscount += order.total_discount;
                 totalAmount += order.total_discounted_amount;
 
@@ -150,7 +165,7 @@
                     <tr>
                         <td>${index + 1}</td>
                         <td>${order.recovery_code}</td>
-                        <td>${order.staff}</td>
+                        <td>${order.staffs[0].staff}</td>
                         <td>${order.total_discount}</td> <!-- Không cần parseFloat và .toFixed -->
                         <td>${order.total_discounted_amount}</td> <!-- Không cần parseFloat và .toFixed -->
                     </tr>
@@ -184,6 +199,7 @@
         // Lấy dữ liệu từ form
         let invoiceCode = $('#invoice_code').val();
         let reportDate = $('#report_date').val();
+        let recoveryType = $('#recovery_type').val();
 
         if (selectedRows.length === 0) {
             alert('Vui lòng chọn ít nhất một đơn hàng.');
@@ -193,12 +209,12 @@
         // Lặp qua các hàng được chọn để kiểm tra tên nhân viên và thu thập dữ liệu
         selectedRows.each(function() {
             let order = JSON.parse($(this).attr('data-order'));
-            staffNames.push(order.staff);
+            staffNames.push(order.staffs[0].staff);
             console.log(order.orderDetail);
             ordersData.push({
                 order_id: order.id,
                 order_code: order.recovery_code,
-                staff: order.staff,
+                staff: order.staffs[0].staff,
                 discount: order.total_discount,
                 total_amount: order.total_discounted_amount,
                 order_detail: order.orderDetail
@@ -223,12 +239,13 @@
         // console.log(reportDate);
         // console.log(ordersData);
         $.ajax({
-            url: 'add-summary-order-for-recovery', 
+            url: 'add-summary-order-for-order-recovery', 
             type: 'POST',
             data: {
                 invoice_code: invoiceCode,
                 report_date: reportDate,
-                orders: ordersData
+                orders: ordersData,
+                recovery_type: recoveryType
             },
             success: function(response) {
                 // Xử lý phản hồi từ server
@@ -261,6 +278,8 @@ $(document).ready(function() {
     let currentSearchParams = "";
     let currentPerPage = "";
     let perPage = $('#perPage').val();
+    var recoveryOrders = @json($recoveryOrders)['data'];
+    console.log(recoveryOrders);
     function fetchData(url) {
         $.ajax({
             url: url,

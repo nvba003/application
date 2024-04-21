@@ -5,7 +5,7 @@
         </div>
     </td>
     <td>{{ $loop->iteration }}</td>
-    <td>{{ \Carbon\Carbon::parse($order->recovery_creation_date)->format('d/m/Y') }}</td>
+    <td>{{ \Carbon\Carbon::parse($order->recovery_date)->format('d/m/Y') }}</td>
     <td>{{ $order->recovery_code }}</td>
     <td>{{ $order->staff }}</td>
     <td>{{ $order->status }}</td>

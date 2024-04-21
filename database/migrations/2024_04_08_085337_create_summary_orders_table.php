@@ -18,6 +18,7 @@ class CreateSummaryOrdersTable extends Migration
             $table->string('invoice_code')->unique()->nullable();
             $table->boolean('is_group')->default(false);//là đơn hàng được nhóm lại, dành cho giao ngay
             $table->boolean('is_recovery')->default(false);//là thu hồi
+            $table->boolean('recovery_type')->default(false);//loại thu hồi giao ngay hay giao sau
             $table->unsignedInteger('transaction_id')->nullable();//mã phiếu thu
             $table->foreign('transaction_id')->references('id')->on('transactions')->onDelete('set null');
             $table->boolean('is_entered')->default(false);

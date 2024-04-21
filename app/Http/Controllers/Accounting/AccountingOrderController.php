@@ -9,6 +9,8 @@ use App\Models\Accounting\AccountingOrder;
 use App\Models\Accounting\AccountingOrderDetail; 
 use App\Models\Accounting\RecoveryOrder;
 use App\Models\Accounting\RecoveryOrderDetail;
+use App\Models\Accounting\AccountingRecovery;
+use App\Models\Accounting\AccountingRecoveryDetail;
 use App\Models\Accounting\SummaryOrder;
 use App\Models\Accounting\GroupOrder;
 use App\Models\Accounting\SaleStaff;
@@ -256,8 +258,8 @@ class AccountingOrderController extends Controller
     {
         $perPage = $request->input('per_page', 10); // Số lượng mặc định là 3 nếu không có tham số per_page
         $saleStaffs = SaleStaff::all();
-        $query = RecoveryOrder::whereDoesntHave('groupOrder')
-                            ->with(['recoveryDetails.productDiscount']);  // Eager load ở đây
+        $query = AccountingRecovery::whereDoesntHave('groupOrder')
+                            ->with(['recoveryDetails.productDiscount', 'staffs']);  // Eager load ở đây
 
         // Lọc theo mã phiếu
         if ($request->filled('recovery_code')) {
@@ -284,9 +286,10 @@ class AccountingOrderController extends Controller
             $orderDetail = [];
             foreach ($order->recoveryDetails as $detail) {
                 if ($detail->productDiscount) {
+                    $quantity = $detail->packing * $detail->thung + $detail->le;
                     $price = $detail->productDiscount->price;
-                    $subtotal = $detail->quantity * $price;
-                    $payable = $detail->quantity * $detail->productDiscount->discounted_price;
+                    $subtotal = $quantity * $price;
+                    $payable = $quantity * $detail->productDiscount->discounted_price;
                     $discount = $subtotal - $payable;
                     $orderDetail[] = [
                         'id' => $detail->id,
@@ -316,7 +319,7 @@ class AccountingOrderController extends Controller
         }
 
         $header = 'Đơn thu hồi chưa tổng hợp';
-        return view('accounting.recovery_not_summarized', compact('recoveryOrders', 'header', 'saleStaffs'));
+        return view('accounting.order_recovery_not_summarized', compact('recoveryOrders', 'header', 'saleStaffs'));
     }
     //--------------------------------------------------
 
@@ -427,6 +430,65 @@ class AccountingOrderController extends Controller
             return response()->json(['message' => 'Thêm thành công!'], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Có lỗi xảy ra'], 500);
+        }
+    }
+
+    public function addSummaryOrderForOrderRecovery(Request $request)
+    {
+        $validated = $request->validate([
+            'invoice_code' => 'nullable|string',
+            'report_date' => 'nullable|date',
+            'recovery_type' => 'nullable|string',
+        ]);
+        // Kiểm tra và lấy dữ liệu từ request
+        $invoiceCode = $validated['invoice_code'];
+        $reportDate = $validated['report_date'];
+        $recoveryType = $validated['recovery_type'];
+        $orders = $request->input('orders');
+
+        try {
+            // Tạo một SummaryOrder cho tất cả các orderIds
+            $summaryOrder = SummaryOrder::create([
+                'is_recovery' => true,
+                'invoice_code' => $invoiceCode,
+                'report_date' => $reportDate,
+                'recovery_type' => $recoveryType,
+            ]);
+            
+            foreach ($orders as $order) {
+                GroupOrder::create([
+                    'group_id' => $summaryOrder->id,
+                    'recovery_id' => $order['order_id'],
+                ]);
+                // Cập nhật discount và total_amount vào recovery_orders sau khi tổng hợp
+                $recoveryOrder = AccountingRecovery::find($order['order_id']);
+                if ($recoveryOrder) {
+                    $recoveryOrder->update([
+                        'staff' => $order['staff'],
+                        'discount' => $order['discount'],
+                        'total_amount' => $order['total_amount']
+                    ]);
+                }
+
+                $orderDetails = $order['order_detail'];
+                if ($orderDetails) {
+                    foreach ($orderDetails as $detail) {
+                        $recoveryOrderDetail = AccountingRecoveryDetail::find($detail['id']);// Cập nhật các con số vào recovery_order_details sau khi tổng hợp
+                        if ($recoveryOrderDetail) {
+                            $recoveryOrderDetail->update([
+                                'price' => $detail['price'],
+                                'subtotal' => $detail['subtotal'],
+                                'discount' => $detail['discount'],
+                                'payable' => $detail['payable'],
+                            ]);
+                        }
+                    }
+                }
+            }
+
+            return response()->json(['message' => 'Thêm thành công!'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e], 500);
         }
     }
 

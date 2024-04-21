@@ -5,10 +5,10 @@
         </div>
     </td>
     <td>{{ $loop->iteration }}</td>
-    <td>{{ \Carbon\Carbon::parse($order->recovery_creation_date)->format('d/m/Y') }}</td>
+    <td>{{ \Carbon\Carbon::parse($order->recovery_date)->format('d/m/Y') }}</td>
     <td>{{ $order->recovery_code }}</td>
-    <td>{{ $order->staff }}</td>
-    <td>{{ $order->status }}</td>
+    <td>{{ $order->staffs[0]->staff }}</td>
+    <td>{{ $order->customer_name }}</td>
     <td>{{ number_format($order->total_discount) }}</td>
     <td>{{ number_format($order->total_discounted_amount) }}</td>
 </tr>

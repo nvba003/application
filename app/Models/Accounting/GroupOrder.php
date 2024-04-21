@@ -14,9 +14,14 @@ class GroupOrder extends Model
         return $this->hasMany(AccountingOrder::class, 'id', 'order_id'); // Chú ý đến khóa ngoại và khóa chính
     }
 
+    // public function recoveryOrders() // bản cũ
+    // {
+    //     return $this->hasMany(RecoveryOrder::class, 'id', 'recovery_id');
+    // }
+
     public function recoveryOrders()
     {
-        return $this->hasMany(RecoveryOrder::class, 'id', 'recovery_id');
+        return $this->hasMany(AccountingRecovery::class, 'id', 'recovery_id');
     }
 
     public function summaryOrders()

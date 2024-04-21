@@ -351,7 +351,8 @@ $(document).ready(function() {
                             groupedProducts[key] = {
                                 product_code: detail.product_code,
                                 product_name: detail.product_name,
-                                quantity: detail.quantity,
+                                //quantity: detail.quantity, //bản cũ
+                                quantity: detail.packing * detail.thung + detail.le,
                                 discount: detail.discount,
                                 payable: detail.payable,
                             };
