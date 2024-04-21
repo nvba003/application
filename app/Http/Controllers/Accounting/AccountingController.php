@@ -199,20 +199,25 @@ class AccountingController extends Controller
     
     public function saveInfoRecoveryStaff(Request $request)
     {
-        $data = $request->validate([
-            'maDonHang' => 'required|string', // mã đơn thu hồi
-            'staff' => 'required|string'
-        ]);
+        $datas = $request->all(); // Lấy tất cả dữ liệu gửi đến
 
-        // updateOrCreate sử dụng để thêm mới hoặc cập nhật nếu đã tồn tại
-        $recoveryStaff = AccountingRecoveryStaff::updateOrCreate(
-            ['recovery_code' => $data['maDonHang']], // Tìm kiếm theo recovery_code
-            ['staff' => $data['staff']] // Cập nhật staff_id
-        );
+        foreach ($datas as $data) {
+            $validatedData = Validator::make($data, [
+                'maDonHang' => 'required|string',
+                'staff' => 'required|string'
+            ]);
 
+            if ($validatedData->fails()) {
+                return response()->json(['errors' => $validatedData->errors()], 422);
+            }
+            // updateOrCreate sử dụng để thêm mới hoặc cập nhật nếu đã tồn tại
+            $recoveryStaff = AccountingRecoveryStaff::updateOrCreate(
+                ['recovery_code' => $data['maDonHang']], // Tìm kiếm theo recovery_code
+                ['staff' => $data['staff']] // Cập nhật staff_id
+            );
+        }
         return response()->json([
-            'message' => 'Thông tin đã được lưu thành công',
-            'data' => $recoveryStaff
+            'message' => 'Thông tin đã được lưu thành công'
         ]);
     }
     
