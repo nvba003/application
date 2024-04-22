@@ -93,10 +93,10 @@
                 @php
                     $groupOrder = $summaryOrder->groupOrder->first();
                 @endphp
-                @if($groupOrder->accountingOrders->isNotEmpty() && !$summaryOrder->is_group && !$summaryOrder->is_recovery)
+                @if($groupOrder && $groupOrder->accountingOrders->isNotEmpty() && !$summaryOrder->is_group && !$summaryOrder->is_recovery)
                     {{ $groupOrder->accountingOrders->first()->customer_name }}
                 @elseif($summaryOrder->is_recovery)
-                    @if($groupOrder->recoveryOrders && $groupOrder->recoveryOrders->isNotEmpty())
+                    @if($groupOrder && $groupOrder->recoveryOrders && $groupOrder->recoveryOrders->isNotEmpty())
                         {{ $groupOrder->recoveryOrders->first()->customer_name }}
                     @endif
                 @endif
