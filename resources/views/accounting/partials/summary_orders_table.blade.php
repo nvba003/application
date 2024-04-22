@@ -15,9 +15,10 @@
                 @php
                     $groupOrder = $summaryOrder->groupOrder->first();
                 @endphp
-                @if($groupOrder->accountingOrders->isNotEmpty() && !is_null($groupOrder->accountingOrders))
+
+                @if($groupOrder && $groupOrder->accountingOrders->isNotEmpty())
                     {{ $groupOrder->accountingOrders->first()->staff ?? '_' }}
-                @elseif($groupOrder->recoveryOrders->isNotEmpty() && !is_null($groupOrder->recoveryOrders))
+                @elseif($groupOrder && $groupOrder->recoveryOrders->isNotEmpty())
                     {{ $groupOrder->recoveryOrders->first()->staff ?? '_' }}
                 @else
                     '_'
