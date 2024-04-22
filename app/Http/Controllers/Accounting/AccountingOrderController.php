@@ -14,6 +14,7 @@ use App\Models\Accounting\AccountingRecoveryDetail;
 use App\Models\Accounting\SummaryOrder;
 use App\Models\Accounting\GroupOrder;
 use App\Models\Accounting\SaleStaff;
+use Carbon\Carbon;
 
 class AccountingOrderController extends Controller
 {
@@ -321,6 +322,32 @@ class AccountingOrderController extends Controller
         $header = 'Đơn thu hồi chưa tổng hợp';
         return view('accounting.order_recovery_not_summarized', compact('recoveryOrders', 'header', 'saleStaffs'));
     }
+
+    public function fetchRecoveryDetails(Request $request)
+    {
+        $fromDate = $request->input('from_date');
+        $toDate = $request->input('to_date');
+        $customerName = $request->input('customer_name');
+        $phone = $request->input('phone');
+
+        // Chuyển đổi fromDate và toDate sang Carbon và điều chỉnh múi giờ nếu cần
+        $fromDate = Carbon::parse($fromDate)->startOfDay(); // Bắt đầu của ngày fromDate
+        $toDate = Carbon::parse($toDate)->endOfDay(); // Kết thúc của ngày toDate
+
+        $query = AccountingOrder::whereBetween('order_date', [$fromDate, $toDate])
+            ->when($phone, function ($q) use ($phone) {
+                return $q->where('customer_phone', $phone);
+            });
+
+        $lateDelivery = (clone $query)->where('type', 'Đơn bán / Giao sau')->get();
+        $immediateDelivery = (clone $query)->where('type', 'Đơn bán / Giao ngay')->get();
+
+        return response()->json([
+            'lateDelivery' => $lateDelivery,
+            'immediateDelivery' => $immediateDelivery
+        ]);
+    }
+
     //--------------------------------------------------
 
     public function addSummaryOrderForScheduled(Request $request)

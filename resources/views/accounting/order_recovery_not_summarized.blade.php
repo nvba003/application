@@ -37,6 +37,7 @@
                         <th>
                             <!-- <input type="checkbox" id="checkAll"> -->
                         </th>
+                        <th></th>
                         <th>STT</th> <!-- Cột cho nút mở rộng -->
                         <th>Ngày Thu</th>
                         <th>Mã Phiếu</th>
@@ -328,10 +329,77 @@ $(document).ready(function() {
         return searchParams.toString();
     }
 
-    // $('#recoveryOrdersTable').on('click', '.expand-button', function() {
-    //     var targetId = $(this).data('target');
-    //     $(targetId).toggle();
-    // });
+    $('#ordersTable').on('click', '.expand-button', function() {
+        var orderId = $(this).data('order-id'); // Lấy id của order từ attribute data
+        var targetId = '#searchFilter' + orderId; // Tạo id của div tương ứng
+        var order = $(this).data('order'); // Lấy thông tin order từ thuộc tính data-order
+        console.log(order);
+        $('#customer_name' + orderId).val(order.customer_name);
+        $('#phone' + orderId).val(order.phone);
+
+        // Lấy ngày hiện tại và ngày 30 ngày trước
+        var today = new Date();
+        today.setHours(today.getHours() + 7); // Thêm 7 giờ để chuyển sang múi giờ GMT+7
+        var pastDate = new Date(today);
+        pastDate.setDate(pastDate.getDate() - 30);
+
+        // Định dạng ngày tháng theo yyyy-mm-dd để phù hợp với input[type='date'] trong HTML
+        var formattedToday = today.toISOString().slice(0, 10);
+        var formattedPastDate = pastDate.toISOString().slice(0, 10);
+
+        $('#from_date' + orderId).val(formattedPastDate);
+        $('#to_date' + orderId).val(formattedToday);
+        $(targetId).toggle(); // Toggle hiển thị div
+    });
+
+    $('#ordersTable').on('click', '.btn-filter', function() {
+        var order = $(this).data('order');
+        //console.log(order);
+        fetchOrderDetails(order.id);
+    });
+
+    function fetchOrderDetails(orderId) {
+        var fromDate = $('#from_date' + orderId).val();
+        var toDate = $('#to_date' + orderId).val();
+        var customerName = $('#customer_name' + orderId).val();
+        var phone = $('#phone' + orderId).val();
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $.ajax({
+            url: `get-recovery-order-details`,
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ fromDate, toDate, customerName, phone, orderId }),
+            success: function(data) {
+                console.log(data);
+                displayOrderDetails(data, orderId);
+            },
+            error: function(error) {
+                console.error('Error:', error);
+            }
+        });
+    }
+
+    function displayOrderDetails(data, orderId) {
+        var detailsDiv = $(`#details${orderId}`);
+        var lateDeliveryTable = '<table><tr><th>Sản phẩm giao sau</th><th>Ngày tạo</th></tr>';
+        data.lateDelivery.forEach(item => {
+            lateDeliveryTable += `<tr><td>${item.productName}</td><td>${item.createdAt}</td></tr>`;
+        });
+        lateDeliveryTable += '</table>';
+
+        var immediateDeliveryTable = '<table><tr><th>Sản phẩm giao ngay</th><th>Ngày tạo</th></tr>';
+        data.immediateDelivery.forEach(item => {
+            immediateDeliveryTable += `<tr><td>${item.productName}</td><td>${item.createdAt}</td></tr>`;
+        });
+        immediateDeliveryTable += '</table>';
+
+        detailsDiv.html(lateDeliveryTable + immediateDeliveryTable);
+    }
+
 });
 </script>
 @endpush
