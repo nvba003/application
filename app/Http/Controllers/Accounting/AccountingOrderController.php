@@ -325,26 +325,41 @@ class AccountingOrderController extends Controller
 
     public function fetchRecoveryDetails(Request $request)
     {
-        $fromDate = $request->input('from_date');
-        $toDate = $request->input('to_date');
-        $customerName = $request->input('customer_name');
+        $fromDate = $request->input('fromDate');
+        $toDate = $request->input('toDate');
+        $customerName = $request->input('customerName');
         $phone = $request->input('phone');
-
-        // Chuyển đổi fromDate và toDate sang Carbon và điều chỉnh múi giờ nếu cần
-        $fromDate = Carbon::parse($fromDate)->startOfDay(); // Bắt đầu của ngày fromDate
-        $toDate = Carbon::parse($toDate)->endOfDay(); // Kết thúc của ngày toDate
-
-        $query = AccountingOrder::whereBetween('order_date', [$fromDate, $toDate])
+        // Thiết lập múi giờ cụ thể cho đối tượng Carbon
+        $timeZone = 'Asia/Ho_Chi_Minh'; // Múi giờ GMT+7
+        // Chuyển đổi fromDate và toDate sang Carbon với múi giờ chính xác
+        $fromDate = Carbon::createFromFormat('Y-m-d', $fromDate, $timeZone)->startOfDay();
+        $toDate = Carbon::createFromFormat('Y-m-d', $toDate, $timeZone)->endOfDay();
+        // Xây dựng truy vấn cơ bản và tải trước chi tiết đơn hàng
+        $query = AccountingOrder::with(['orderDetails'])
+            ->whereBetween('order_date', [$fromDate, $toDate])
             ->when($phone, function ($q) use ($phone) {
                 return $q->where('customer_phone', $phone);
             });
-
+        // Lấy các đơn giao sau và tải trước chi tiết
         $lateDelivery = (clone $query)->where('type', 'Đơn bán / Giao sau')->get();
+        // Lấy các đơn giao ngay và tải trước chi tiết
         $immediateDelivery = (clone $query)->where('type', 'Đơn bán / Giao ngay')->get();
-
+        // Định dạng lại dữ liệu cho phản hồi
+        $formattedLateDelivery = $lateDelivery->map(function ($order) {
+            return [
+                'order_info' => $order,
+                'order_details' => $order->orderDetails
+            ];
+        });
+        $formattedImmediateDelivery = $immediateDelivery->map(function ($order) {
+            return [
+                'order_info' => $order,
+                'order_details' => $order->orderDetails
+            ];
+        });
         return response()->json([
-            'lateDelivery' => $lateDelivery,
-            'immediateDelivery' => $immediateDelivery
+            'lateDelivery' => $formattedLateDelivery,
+            'immediateDelivery' => $formattedImmediateDelivery
         ]);
     }
 

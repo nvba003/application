@@ -332,6 +332,8 @@ $(document).ready(function() {
     $('#ordersTable').on('click', '.expand-button', function() {
         var orderId = $(this).data('order-id'); // Lấy id của order từ attribute data
         var targetId = '#searchFilter' + orderId; // Tạo id của div tương ứng
+        var detailsId = '#filterDetails' + orderId; // Tạo id của div tương ứng
+        var orderDetails = '#orderDetails' + orderId;
         var order = $(this).data('order'); // Lấy thông tin order từ thuộc tính data-order
         console.log(order);
         $('#customer_name' + orderId).val(order.customer_name);
@@ -350,6 +352,8 @@ $(document).ready(function() {
         $('#from_date' + orderId).val(formattedPastDate);
         $('#to_date' + orderId).val(formattedToday);
         $(targetId).toggle(); // Toggle hiển thị div
+        $(detailsId).toggle();
+        $(orderDetails).toggle();
     });
 
     $('#ordersTable').on('click', '.btn-filter', function() {
@@ -363,6 +367,7 @@ $(document).ready(function() {
         var toDate = $('#to_date' + orderId).val();
         var customerName = $('#customer_name' + orderId).val();
         var phone = $('#phone' + orderId).val();
+        console.log({ fromDate, toDate, customerName, phone, orderId });
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -383,22 +388,43 @@ $(document).ready(function() {
         });
     }
 
+    // Xây dựng bảng dữ liệu
     function displayOrderDetails(data, orderId) {
-        var detailsDiv = $(`#details${orderId}`);
-        var lateDeliveryTable = '<table><tr><th>Sản phẩm giao sau</th><th>Ngày tạo</th></tr>';
-        data.lateDelivery.forEach(item => {
-            lateDeliveryTable += `<tr><td>${item.productName}</td><td>${item.createdAt}</td></tr>`;
-        });
-        lateDeliveryTable += '</table>';
+        const detailsDiv = $(`#filterDetails${orderId} td`);
 
-        var immediateDeliveryTable = '<table><tr><th>Sản phẩm giao ngay</th><th>Ngày tạo</th></tr>';
-        data.immediateDelivery.forEach(item => {
-            immediateDeliveryTable += `<tr><td>${item.productName}</td><td>${item.createdAt}</td></tr>`;
-        });
-        immediateDeliveryTable += '</table>';
+        // Xây dựng bảng dữ liệu
+        function buildTable(orders, title) {
+            let tableHtml = `<div class="col-6"><h5>${title}</h5><div class="table-responsive" style="max-height: 400px; overflow-y: auto; background: green;"><table class='table table-striped bg-light'>
+            <thead><tr>
+            <th>STT</th>
+            <th>Mã SP</th>
+            <th>Tên sản phẩm</th>
+            <th>SL</th>
+            <th>Ngày</th>
+            </tr></thead><tbody>`;
+            orders.forEach(order => {
+                order.order_details.forEach((item, index) => {
+                    var quantity = item.packing * item.thung + item.le; // Tính toán số lượng
+                    var date = new Date(item.created_at);
+                    var formattedDate = `${date.getDate()}/${date.getMonth() + 1}`; // Định dạng ngày tháng theo d/m
+                    tableHtml += `<tr><td>${index + 1}</td><td>${item.product_code}</td><td>${item.product_name}</td><td>${quantity}</td><td>${formattedDate}</td></tr>`;
+                });
+            });
+            tableHtml += '</tbody></table></div></div>';
+            return tableHtml;
+        }
 
-        detailsDiv.html(lateDeliveryTable + immediateDeliveryTable);
+        // Lấy thông tin về các đơn Giao ngay và Giao sau
+        const lateDeliveryTable = buildTable(data.lateDelivery, 'Giao sau');
+        const immediateDeliveryTable = buildTable(data.immediateDelivery, 'Giao ngay');
+
+        // Thêm vào DOM trong row
+        detailsDiv.html(`<div class="row">${lateDeliveryTable}${immediateDeliveryTable}</div>`);
     }
+
+
+
+
 
 });
 </script>
