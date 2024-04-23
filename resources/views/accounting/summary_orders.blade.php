@@ -150,7 +150,7 @@
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="productModalLabel">Chi tiết sản phẩm</h5>
+        <h6 class="modal-title" id="productModalLabel"><strong>* Lưu ý: Phải chọn đúng các đơn cần xem</strong></h6>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -656,6 +656,7 @@ $(document).ready(function() {
         let products = {};
         let totalDiscount = 0;
         let totalPayable = 0;
+        let totalQuantity = 0;
         let stt = 0; // Biến đếm cho số thứ tự
         selectedOrders.forEach(order => {
         order.group_order.forEach(group => {
@@ -670,6 +671,7 @@ $(document).ready(function() {
                 products[key].totalPrice += detail.payable;
                 }
                 // Tính tổng chiết khấu và tổng thành tiền
+                totalQuantity += detail.packing * detail.thung + detail.le;
                 totalDiscount += detail.discount;
                 totalPayable += detail.payable;
             });
@@ -694,7 +696,8 @@ $(document).ready(function() {
         });
         // Thêm hàng tổng kết
         let totalRow = `<tr class="table-info">
-        <td colspan="5"><strong>Tổng cộng</strong></td>
+        <td colspan="4"><strong>Tổng cộng</strong></td>
+        <td class="text-right"><strong>${totalQuantity.toLocaleString()}</strong></td>
         <td class="text-right"><strong>${totalDiscount.toLocaleString()}</strong></td>
         <td class="text-right"><strong>${totalPayable.toLocaleString()}</strong></td>
         </tr>`;
