@@ -139,8 +139,8 @@ class ReportController extends Controller
                     case '6':
                         $q->where(function ($query) {
                             $query->where('is_group', 0)
-                                    ->orWhere('is_recovery', 1)
-                                    ->where('recovery_type', 0);
+                                    ->where('recovery_type', 0)
+                                    ->orWhere('is_recovery', 1);
                         });
                         break;
                 }
