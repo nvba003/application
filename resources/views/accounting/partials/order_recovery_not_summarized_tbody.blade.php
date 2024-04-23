@@ -41,26 +41,26 @@
     </tr>
 
     <tr id="searchFilter{{ $order->id }}" class="collapse">
-        <td colspan="100%">
-            <div class="container-fluid bg-success p-3">
+        <td colspan="100%" class="bg-success p-3">
+            <div>
                 <form class="form-inline">
                     <div class="form-group mr-2">
-                        <label for="customer_name{{ $order->id }}" class="mr-1 text-light">Tên KH:</label> <!-- Text màu xanh lá -->
+                        <label for="customer_name{{ $order->id }}" class="mr-1 text-light">Tên KH:</label>
                         <input type="text" class="form-control form-control-sm" id="customer_name{{ $order->id }}" name="customer_name">
                     </div>
                     
                     <div class="form-group mr-2">
-                        <label for="phone{{ $order->id }}" class="mr-1 text-light">ĐT:</label> <!-- Text màu xanh lá -->
+                        <label for="phone{{ $order->id }}" class="mr-1 text-light">ĐT:</label>
                         <input type="text" class="form-control form-control-sm" id="phone{{ $order->id }}" name="phone">
                     </div>
 
                     <div class="form-group mr-2">
-                        <label for="from_date{{ $order->id }}" class="mr-1 text-light">Từ ngày:</label> <!-- Text màu xanh lá -->
+                        <label for="from_date{{ $order->id }}" class="mr-1 text-light">Từ ngày:</label>
                         <input type="date" class="form-control form-control-sm" id="from_date{{ $order->id }}" name="from_date">
                     </div>
 
                     <div class="form-group mr-2">
-                        <label for="to_date{{ $order->id }}" class="mr-1 text-light">Đến ngày:</label> <!-- Text màu xanh lá -->
+                        <label for="to_date{{ $order->id }}" class="mr-1 text-light">Đến ngày:</label>
                         <input type="date" class="form-control form-control-sm" id="to_date{{ $order->id }}" name="to_date">
                     </div>
                     <button type="button" class="btn btn-warning btn-sm btn-filter" data-order-id="{{ $order->id }}" data-order="{{ $order }}">Tìm SĐT</button>
