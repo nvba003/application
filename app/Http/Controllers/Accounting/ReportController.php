@@ -90,7 +90,7 @@ class ReportController extends Controller
 
     public function summaryOrders(Request $request)
     {
-        $perPage = $request->input('per_page',20); // Số lượng mặc định là 3 nếu không có tham số per_page
+        $perPage = $request->input('per_page',2); // Số lượng mặc định là 3 nếu không có tham số per_page
         $saleStaffs = SaleStaff::all();
         $query = SummaryOrder::query()
             ->with(['groupOrder.accountingOrders'])

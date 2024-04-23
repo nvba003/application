@@ -42,6 +42,7 @@
             <div class="d-flex align-items-center">
                 <button id="showSummaryBtn" class="btn btn-warning mr-3">Tạo phiếu thu</button>
                 <div>Đã chọn: <span class="badge badge-primary" id="selectedCount">0</span> hàng</div>
+                <button id="showRecovery" class="btn btn-secondary ml-3">Tổng hợp đơn thu hồi</button>
             </div>
         </div>
     </div>
@@ -88,7 +89,7 @@
     </div>
 </div>
 
-<!-- Modal -->
+<!-- Modal tạo phiếu thu-->
 <div class="modal fade" id="summaryModal" tabindex="-1" role="dialog" aria-labelledby="summaryModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -142,6 +143,40 @@
             </div>
         </div>
     </div>
+</div>
+
+<!-- Modal xem tổng hợp đơn thu hồi-->
+<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="productModalLabel">Chi tiết sản phẩm</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">STT</th>
+              <th scope="col">Mã SP</th>
+              <th scope="col">Tên sản phẩm</th>
+              <th scope="col">Số lượng</th>
+              <th scope="col">Chiết khấu</th>
+              <th scope="col">Thành tiền</th>
+            </tr>
+          </thead>
+          <tbody id="productRecoveryDetails">
+            <!-- Dữ liệu sản phẩm sẽ được thêm vào đây bằng JavaScript -->
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Modal Chỉnh Sửa -->
@@ -385,7 +420,7 @@ $(document).ready(function() {
                     <th>Mã SP</th>
                     <th>Tên sản phẩm</th>
                     <th class="text-right">Số lượng</th>
-                    <th class="text-right">Chiếu khấu</th>
+                    <th class="text-right">Chiết khấu</th>
                     <th class="text-right">Thành tiền</th>
                 </tr>
             </thead>
@@ -606,6 +641,64 @@ $(document).ready(function() {
                 });//end ajax
             }//end else
         
+    });
+
+    $('#showRecovery').click(function() {
+        let selectedOrders = [];
+        $(".order-checkbox:checked").each(function(index) {
+        let orderId = $(this).data('id');
+        // Lấy dữ liệu từ summaryOrders dựa trên id được lựa chọn
+        selectedOrders.push(summaryOrders.find(order => order.id === orderId));
+        });
+
+        // Gộp và hiển thị dữ liệu trong modal
+        let products = {};
+        let totalDiscount = 0;
+        let totalPayable = 0;
+        let stt = 0; // Biến đếm cho số thứ tự
+        selectedOrders.forEach(order => {
+        order.group_order.forEach(group => {
+            group.recovery_orders.forEach(recovery => {
+            recovery.recovery_details.forEach(detail => {
+                let key = detail.product_code;
+                if (!products[key]) {
+                products[key] = { ...detail, stt: Object.keys(products).length + 1, quantity: detail.le, totalDiscount: detail.discount, totalPrice: detail.payable };
+                } else {
+                products[key].quantity += detail.packing * detail.thung + detail.le;
+                products[key].totalDiscount += detail.discount;
+                products[key].totalPrice += detail.payable;
+                }
+                // Tính tổng chiết khấu và tổng thành tiền
+                totalDiscount += detail.discount;
+                totalPayable += detail.payable;
+            });
+            });
+        });
+        });
+        // Hiển thị kết quả trong modal
+        const productDetails = $('#productRecoveryDetails');
+        productDetails.empty(); // Xóa các hàng hiện có
+        Object.values(products).forEach(product => {
+        stt++;
+        let row = `<tr>
+            <td>${stt}</td>
+            <td>${product.product_code}</td>
+            <td>${product.product_name}</td>
+            <td class="text-right">${product.quantity}</td>
+            <td class="text-right">${product.totalDiscount.toLocaleString()}</td>
+            <td class="text-right">${product.totalPrice.toLocaleString()}</td>
+        </tr>`;
+        productDetails.append(row);
+        });
+        // Thêm hàng tổng kết
+        let totalRow = `<tr class="table-info">
+        <td colspan="4"><strong>Tổng cộng</strong></td>
+        <td class="text-right">${totalDiscount.toLocaleString()}</td>
+        <td class="text-right">${totalPayable.toLocaleString()}</td>
+        </tr>`;
+        productDetails.append(totalRow);
+
+        $('#productModal').modal('show'); // Hiển thị modal
     });
 
     $('#ordersTable').on('click', '.btn-edit', function() {
