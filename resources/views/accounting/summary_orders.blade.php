@@ -42,7 +42,8 @@
             <div class="d-flex align-items-center">
                 <button id="showSummaryBtn" class="btn btn-warning mr-3">Tạo phiếu thu</button>
                 <div>Đã chọn: <span class="badge badge-primary" id="selectedCount">0</span> hàng</div>
-                <button id="showRecovery" class="btn btn-secondary ml-3">Xem tổng hợp chi tiết</button>
+                <button id="showRecovery" class="btn btn-secondary ml-3">Xem tổng hợp thu hồi</button>
+                <button id="showOrderDetails" class="btn btn-secondary ml-3">Xem tổng hợp đơn bán</button>
             </div>
         </div>
     </div>
@@ -168,7 +169,7 @@
               <th scope="col">Thành tiền</th>
             </tr>
           </thead>
-          <tbody id="productRecoveryDetails">
+          <tbody id="productSummaryDetails">
             <!-- Dữ liệu sản phẩm sẽ được thêm vào đây bằng JavaScript -->
           </tbody>
         </table>
@@ -679,7 +680,69 @@ $(document).ready(function() {
         });
         });
         // Hiển thị kết quả trong modal
-        const productDetails = $('#productRecoveryDetails');
+        const productDetails = $('#productSummaryDetails');
+        productDetails.empty(); // Xóa các hàng hiện có
+        Object.values(products).forEach(product => {
+        stt++;
+        let row = `<tr>
+            <td>${stt}</td>
+            <td>${product.product_code}</td>
+            <td>${product.product_name}</td>
+            <td class="text-right">${product.price.toLocaleString()}</td>
+            <td class="text-right">${product.quantity}</td>
+            <td class="text-right">${product.totalDiscount.toLocaleString()}</td>
+            <td class="text-right">${product.totalPrice.toLocaleString()}</td>
+        </tr>`;
+        productDetails.append(row);
+        });
+        // Thêm hàng tổng kết
+        let totalRow = `<tr class="table-info">
+        <td colspan="4"><strong>Tổng cộng</strong></td>
+        <td class="text-right"><strong>${totalQuantity.toLocaleString()}</strong></td>
+        <td class="text-right"><strong>${totalDiscount.toLocaleString()}</strong></td>
+        <td class="text-right"><strong>${totalPayable.toLocaleString()}</strong></td>
+        </tr>`;
+        productDetails.append(totalRow);
+
+        $('#productModal').modal('show'); // Hiển thị modal
+    });
+
+    $('#showOrderDetails').click(function() {//xem tổng hợp đơn bán
+        let selectedOrders = [];
+        $(".order-checkbox:checked").each(function(index) {
+        let orderId = $(this).data('id');
+        // Lấy dữ liệu từ summaryOrders dựa trên id được lựa chọn
+        selectedOrders.push(summaryOrders.find(order => order.id === orderId));
+        });
+
+        // Gộp và hiển thị dữ liệu trong modal
+        let products = {};
+        let totalDiscount = 0;
+        let totalPayable = 0;
+        let totalQuantity = 0;
+        let stt = 0; // Biến đếm cho số thứ tự
+        selectedOrders.forEach(order => {
+        order.group_order.forEach(group => {
+            group.accounting_orders.forEach(order => {
+            order.order_details.forEach(detail => {
+                let key = detail.product_code;
+                if (!products[key]) {
+                products[key] = { ...detail, stt: Object.keys(products).length + 1, quantity: detail.packing * detail.thung + detail.le, totalDiscount: detail.discount, totalPrice: detail.payable };
+                } else {
+                products[key].quantity += detail.packing * detail.thung + detail.le;
+                products[key].totalDiscount += detail.discount;
+                products[key].totalPrice += detail.payable;
+                }
+                // Tính tổng chiết khấu và tổng thành tiền
+                totalQuantity += detail.packing * detail.thung + detail.le;
+                totalDiscount += detail.discount;
+                totalPayable += detail.payable;
+            });
+            });
+        });
+        });
+        // Hiển thị kết quả trong modal
+        const productDetails = $('#productSummaryDetails');
         productDetails.empty(); // Xóa các hàng hiện có
         Object.values(products).forEach(product => {
         stt++;
