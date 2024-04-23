@@ -6,10 +6,10 @@
         <div class="filter-section mb-3">
             <form id="searchForm" class="form-inline">
                 <div class="form-group mb-2">
-                    <input type="date" class="form-control" id="reportDate" name="report_date" placeholder="Ngày báo cáo">
+                    <input type="date" class="form-control form-control-sm" id="reportDate" name="report_date" placeholder="Ngày báo cáo">
                 </div>
                 <div class="form-group mx-sm-3 mb-2">
-                    <select id="staff" name="staff" class="form-control">
+                    <select id="staff" name="staff" class="form-control form-control-sm">
                         <option value="">Chọn nhân viên</option>
                         @foreach($saleStaffs as $staff)
                             <option value="{{ $staff->name }}">{{ $staff->name }}</option>
@@ -17,26 +17,27 @@
                     </select>
                 </div>
                 <div class="form-group mb-2">
-                    <input type="number" class="form-control" id="transaction_id" name="transaction_id" placeholder="Số giao dịch" min="1">
+                    <input type="number" class="form-control form-control-sm" id="transaction_id" name="transaction_id" placeholder="Số giao dịch" min="1">
                 </div>
                 <div class="form-group mx-sm-3 mb-2">
-                    <select class="form-control" id="is_group" name="is_group">
+                    <select class="form-control form-control-sm" id="is_group" name="is_group">
                         <option value="">Loại đơn</option>
                         <option value="1">Giao Ngay</option>
                         <option value="2">Giao Sau</option>
                         <option value="3">Thu hồi</option>
-                        <option value="4">Giao Ngay & TH Giao Ngay</option>
-                        <option value="5">Giao Sau & TH Giao Sau</option>
+                        <option value="4">Giao Ngay & Thu hồi</option>
+                        <option value="5">Giao Ngay & TH Giao Ngay</option>
+                        <option value="6">Giao Sau & TH Giao Sau</option>
                     </select>
                 </div>
                 <div class="form-group mx-sm-3 mb-2">
-                    <select class="form-control" id="has_transaction_id" name="has_transaction_id">
+                    <select class="form-control form-control-sm" id="has_transaction_id" name="has_transaction_id">
                         <option value="">Trạng thái</option>
                         <option value="1">Đã tạo phiếu</option>
                         <option value="0">Chưa tạo phiếu</option>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-primary mb-2">Tìm kiếm</button>
+                <button type="submit" class="btn btn-primary btn-sm mb-2">Tìm kiếm</button>
             </form>
             <div class="d-flex align-items-center">
                 <button id="showSummaryBtn" class="btn btn-warning mr-3">Tạo phiếu thu</button>
