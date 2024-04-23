@@ -695,8 +695,8 @@ $(document).ready(function() {
         // Thêm hàng tổng kết
         let totalRow = `<tr class="table-info">
         <td colspan="5"><strong>Tổng cộng</strong></td>
-        <td class="text-right">${totalDiscount.toLocaleString()}</td>
-        <td class="text-right">${totalPayable.toLocaleString()}</td>
+        <td class="text-right"><strong>${totalDiscount.toLocaleString()}</strong></td>
+        <td class="text-right"><strong>${totalPayable.toLocaleString()}</strong></td>
         </tr>`;
         productDetails.append(totalRow);
 
