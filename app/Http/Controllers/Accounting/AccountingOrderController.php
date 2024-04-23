@@ -420,30 +420,67 @@ class AccountingOrderController extends Controller
         }
     }
 
-    public function addSummaryOrderForRecovery(Request $request)
+    // public function addSummaryOrderForRecovery(Request $request) // cũ
+    // {
+    //     $validated = $request->validate([
+    //         'invoice_code' => 'nullable|string',
+    //         'report_date' => 'nullable|date',
+    //     ]);
+    //     // Kiểm tra và lấy dữ liệu từ request
+    //     $invoiceCode = $validated['invoice_code'];
+    //     $reportDate = $validated['report_date'];
+    //     $orders = $request->input('orders');
+
+    //     try {
+    //         // Tạo một SummaryOrder cho tất cả các orderIds
+    //         $summaryOrder = SummaryOrder::create([
+    //             'is_recovery' => true,
+    //             'invoice_code' => $invoiceCode,
+    //             'report_date' => $reportDate,
+    //         ]);
+            
+    //         foreach ($orders as $order) {
+    //             GroupOrder::create([
+    //                 'group_id' => $summaryOrder->id,
+    //                 'recovery_id' => $order['order_id'],
+    //             ]);
+    //             // Cập nhật discount và total_amount vào recovery_orders sau khi tổng hợp
+    //             $recoveryOrder = RecoveryOrder::find($order['order_id']);
+    //             if ($recoveryOrder) {
+    //                 $recoveryOrder->update([
+    //                     'discount' => $order['discount'],
+    //                     'total_amount' => $order['total_amount']
+    //                 ]);
+    //             }
+
+    //             $orderDetails = $order['order_detail'];
+    //             if ($orderDetails) {
+    //                 foreach ($orderDetails as $detail) {
+    //                     $recoveryOrderDetail = RecoveryOrderDetail::find($detail['id']);// Cập nhật các con số vào recovery_order_details sau khi tổng hợp
+    //                     if ($recoveryOrderDetail) {
+    //                         $recoveryOrderDetail->update([
+    //                             'price' => $detail['price'],
+    //                             'subtotal' => $detail['subtotal'],
+    //                             'discount' => $detail['discount'],
+    //                             'payable' => $detail['payable'],
+    //                         ]);
+    //                     }
+    //                 }
+    //             }
+    //         }
+
+    //         return response()->json(['message' => 'Thêm thành công!'], 200);
+    //     } catch (\Exception $e) {
+    //         return response()->json(['error' => 'Có lỗi xảy ra'], 500);
+    //     }
+    // }
+
+    public function addSummaryOrderForRecovery(Request $request) //tính chiết khấu
     {
-        $validated = $request->validate([
-            'invoice_code' => 'nullable|string',
-            'report_date' => 'nullable|date',
-        ]);
-        // Kiểm tra và lấy dữ liệu từ request
-        $invoiceCode = $validated['invoice_code'];
-        $reportDate = $validated['report_date'];
         $orders = $request->input('orders');
 
         try {
-            // Tạo một SummaryOrder cho tất cả các orderIds
-            $summaryOrder = SummaryOrder::create([
-                'is_recovery' => true,
-                'invoice_code' => $invoiceCode,
-                'report_date' => $reportDate,
-            ]);
-            
             foreach ($orders as $order) {
-                GroupOrder::create([
-                    'group_id' => $summaryOrder->id,
-                    'recovery_id' => $order['order_id'],
-                ]);
                 // Cập nhật discount và total_amount vào recovery_orders sau khi tổng hợp
                 $recoveryOrder = RecoveryOrder::find($order['order_id']);
                 if ($recoveryOrder) {

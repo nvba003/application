@@ -27,23 +27,28 @@
         </div>
         <button type="submit" class="btn btn-primary mb-2">Tìm Kiếm</button>
     </form>
-    <button id="showSummaryBtn" class="btn btn-warning">Tổng hợp</button>
-
+    <div class="d-flex align-items-center">
+        <button id="showSummaryBtn" class="btn btn-warning mr-2">Xem</button>
+        <div>Đã chọn: <span class="badge badge-primary" id="selectedCount">0</span> hàng</div>
+    </div>
+    
     <div class="row">
         <div class="col-md-12">
             <table class="table" id="ordersTable">
                 <thead>
                     <tr>
                         <th>
-                            <!-- <input type="checkbox" id="checkAll"> -->
+                            <input type="checkbox" id="checkAll">
                         </th>
-                        <th>STT</th> <!-- Cột cho nút mở rộng -->
+                        <th></th>
+                        <th>STT</th>
                         <th>Ngày Thu</th>
                         <th>Mã Phiếu</th>
                         <th>NVBH</th>
                         <th>Trạng Thái</th>
                         <th>Chiết Khấu</th>
                         <th>Thành Tiền</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -79,7 +84,7 @@
             </div>
             <div class="modal-body" id="summaryModalBody">
                 <!-- Thêm form để nhập thông tin -->
-                <form id="summaryForm">
+                <!-- <form id="summaryForm">
                     <div class="form-group">
                         <label for="invoice_code">Mã Hóa Đơn:</label>
                         <input type="text" class="form-control" id="invoice_code" name="invoice_code" required>
@@ -88,13 +93,13 @@
                         <label for="report_date">Ngày Báo Cáo:</label>
                         <input type="date" class="form-control" id="report_date" name="report_date" required>
                     </div>
-                </form>
+                </form> -->
                 <!-- Đây là nơi hiển thị thông tin tóm tắt các đơn hàng đã chọn -->
                 <div id="selectedOrdersSummary"></div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                <button type="button" class="btn btn-primary" id="addSummaryBtn">Tổng hợp</button>
+                <!-- <button type="button" class="btn btn-primary" id="addSummaryBtn">Tổng hợp</button> -->
             </div>
         </div>
     </div>
@@ -177,75 +182,75 @@
         }
     });
 
-    $('#addSummaryBtn').click(function() {
-        let selectedRows = $('.order-checkbox:checked').closest('tr');
-        let staffNames = [];
-        let ordersData = [];
-        // Lấy dữ liệu từ form
-        let invoiceCode = $('#invoice_code').val();
-        let reportDate = $('#report_date').val();
+    // $('#addSummaryBtn').click(function() {
+    //     let selectedRows = $('.order-checkbox:checked').closest('tr');
+    //     let staffNames = [];
+    //     let ordersData = [];
+    //     // Lấy dữ liệu từ form
+    //     let invoiceCode = $('#invoice_code').val();
+    //     let reportDate = $('#report_date').val();
 
-        if (selectedRows.length === 0) {
-            alert('Vui lòng chọn ít nhất một đơn hàng.');
-            return;
-        }
+    //     if (selectedRows.length === 0) {
+    //         alert('Vui lòng chọn ít nhất một đơn hàng.');
+    //         return;
+    //     }
 
-        // Lặp qua các hàng được chọn để kiểm tra tên nhân viên và thu thập dữ liệu
-        selectedRows.each(function() {
-            let order = JSON.parse($(this).attr('data-order'));
-            staffNames.push(order.staff);
-            console.log(order.orderDetail);
-            ordersData.push({
-                order_id: order.id,
-                order_code: order.recovery_code,
-                staff: order.staff,
-                discount: order.total_discount,
-                total_amount: order.total_discounted_amount,
-                order_detail: order.orderDetail
-            });
-        });
+    //     // Lặp qua các hàng được chọn để kiểm tra tên nhân viên và thu thập dữ liệu
+    //     selectedRows.each(function() {
+    //         let order = JSON.parse($(this).attr('data-order'));
+    //         staffNames.push(order.staff);
+    //         console.log(order.orderDetail);
+    //         ordersData.push({
+    //             order_id: order.id,
+    //             order_code: order.recovery_code,
+    //             staff: order.staff,
+    //             discount: order.total_discount,
+    //             total_amount: order.total_discounted_amount,
+    //             order_detail: order.orderDetail
+    //         });
+    //     });
 
-        // Kiểm tra xem tất cả các tên nhân viên có giống nhau không
-        let isAllStaffSame = staffNames.every(staff => staff === staffNames[0]);
+    //     // Kiểm tra xem tất cả các tên nhân viên có giống nhau không
+    //     let isAllStaffSame = staffNames.every(staff => staff === staffNames[0]);
 
-        if (!isAllStaffSame) {
-            alert('Không trùng tên nhân viên.');
-            return;
-        }
+    //     if (!isAllStaffSame) {
+    //         alert('Không trùng tên nhân viên.');
+    //         return;
+    //     }
 
-        // Gửi dữ liệu qua AJAX để tạo các bản ghi mới trong group_orders và summary_orders
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
-        // console.log(invoiceCode);
-        // console.log(reportDate);
-        // console.log(ordersData);
-        $.ajax({
-            url: 'add-summary-order-for-recovery', 
-            type: 'POST',
-            data: {
-                invoice_code: invoiceCode,
-                report_date: reportDate,
-                orders: ordersData
-            },
-            success: function(response) {
-                // Xử lý phản hồi từ server
-                notify500();
-                $('#summaryModal').modal('hide'); // Đóng modal
-                // Thay thế checkbox bằng icon tick màu xanh cho các hàng được chọn
-                $('.order-checkbox:checked').each(function() {
-                    $(this).closest('.checkbox-container').html('<i class="fas fa-check text-success"></i>');
-                });
-                //$('#checkAll').prop('checked', false);//bỏ checkall
-            },
-            error: function(xhr, status, error) {
-                console.error('Error:', error);
-                alert('Có lỗi xảy ra khi thêm vào Summary Orders.');
-            }
-        });
-    });
+    //     // Gửi dữ liệu qua AJAX để tạo các bản ghi mới trong group_orders và summary_orders
+    //     $.ajaxSetup({
+    //         headers: {
+    //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    //         }
+    //     });
+    //     // console.log(invoiceCode);
+    //     // console.log(reportDate);
+    //     // console.log(ordersData);
+    //     $.ajax({
+    //         url: 'add-summary-order-for-recovery', 
+    //         type: 'POST',
+    //         data: {
+    //             invoice_code: invoiceCode,
+    //             report_date: reportDate,
+    //             orders: ordersData
+    //         },
+    //         success: function(response) {
+    //             // Xử lý phản hồi từ server
+    //             notify500();
+    //             $('#summaryModal').modal('hide'); // Đóng modal
+    //             // Thay thế checkbox bằng icon tick màu xanh cho các hàng được chọn
+    //             $('.order-checkbox:checked').each(function() {
+    //                 $(this).closest('.checkbox-container').html('<i class="fas fa-check text-success"></i>');
+    //             });
+    //             //$('#checkAll').prop('checked', false);//bỏ checkall
+    //         },
+    //         error: function(xhr, status, error) {
+    //             console.error('Error:', error);
+    //             alert('Có lỗi xảy ra khi thêm vào Summary Orders.');
+    //         }
+    //     });
+    // });
 
     function notify500(){
         $('#successModal').modal('show');
@@ -255,9 +260,23 @@
     }
 
 $(document).ready(function() {
-    $(document).on('click', '.checkItem', function() {
-        $('.checkItem').not(this).prop('checked', false);//chỉ chọn 1 item/lần
+    // $(document).on('click', '.checkItem', function() {
+    //     $('.checkItem').not(this).prop('checked', false);
+    // });
+    $('#checkAll').on('click', function() {
+        var isChecked = $(this).prop('checked');
+        $('.checkItem').prop('checked', isChecked);
+        updateCount();
     });
+    function updateCount() {
+        var count = $('.checkItem:checked').length;
+        $('#selectedCount').text(count);
+    }
+    $(document).on('click', '.checkItem', function() {
+        updateCount();
+    });
+    updateCount(); 
+    
     let currentSearchParams = "";
     let currentPerPage = "";
     let perPage = $('#perPage').val();
@@ -309,10 +328,49 @@ $(document).ready(function() {
         return searchParams.toString();
     }
 
-    // $('#recoveryOrdersTable').on('click', '.expand-button', function() {
-    //     var targetId = $(this).data('target');
-    //     $(targetId).toggle();
-    // });
+    $('#ordersTable').on('click', '.expand-button', function() {
+        var targetId = $(this).data('target');
+        $(targetId).toggle();
+    });
+
+    $('#ordersTable').on('click', '.btn-sum', function() {//tính chiết khấu
+        //let selectedRows = $('.order-checkbox:checked').closest('tr');
+        let ordersData = [];
+        // Lấy dữ liệu từ form
+        let order = JSON.parse($(this).attr('data-order'));
+        ordersData.push({
+            order_id: order.id,
+            order_code: order.recovery_code,
+            discount: order.total_discount,
+            total_amount: order.total_discounted_amount,
+            order_detail: order.orderDetail
+        });
+
+        // Gửi dữ liệu qua AJAX để tạo các bản ghi mới trong group_orders và summary_orders
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        console.log(ordersData);
+        $.ajax({
+            url: 'add-summary-order-for-recovery', // chức năng thực tế là tính chiết khấu
+            type: 'POST',
+            data: {
+                orders: ordersData
+            },
+            success: function(response) {
+                // Xử lý phản hồi từ server
+                notify500();
+                //$('#checkAll').prop('checked', false);//bỏ checkall
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra khi thêm vào Summary Orders.');
+            }
+        });
+    });
+
 });
 </script>
 @endpush
