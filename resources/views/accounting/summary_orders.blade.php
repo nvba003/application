@@ -162,6 +162,7 @@
               <th scope="col">STT</th>
               <th scope="col">Mã SP</th>
               <th scope="col">Tên sản phẩm</th>
+              <th scope="col">Đơn giá</th>
               <th scope="col">Số lượng</th>
               <th scope="col">Chiết khấu</th>
               <th scope="col">Thành tiền</th>
@@ -662,7 +663,7 @@ $(document).ready(function() {
             recovery.recovery_details.forEach(detail => {
                 let key = detail.product_code;
                 if (!products[key]) {
-                products[key] = { ...detail, stt: Object.keys(products).length + 1, quantity: detail.le, totalDiscount: detail.discount, totalPrice: detail.payable };
+                products[key] = { ...detail, stt: Object.keys(products).length + 1, quantity: detail.packing * detail.thung + detail.le, totalDiscount: detail.discount, totalPrice: detail.payable };
                 } else {
                 products[key].quantity += detail.packing * detail.thung + detail.le;
                 products[key].totalDiscount += detail.discount;
@@ -684,6 +685,7 @@ $(document).ready(function() {
             <td>${stt}</td>
             <td>${product.product_code}</td>
             <td>${product.product_name}</td>
+            <td class="text-right">${product.price.toLocaleString()}</td>
             <td class="text-right">${product.quantity}</td>
             <td class="text-right">${product.totalDiscount.toLocaleString()}</td>
             <td class="text-right">${product.totalPrice.toLocaleString()}</td>
@@ -692,7 +694,7 @@ $(document).ready(function() {
         });
         // Thêm hàng tổng kết
         let totalRow = `<tr class="table-info">
-        <td colspan="4"><strong>Tổng cộng</strong></td>
+        <td colspan="5"><strong>Tổng cộng</strong></td>
         <td class="text-right">${totalDiscount.toLocaleString()}</td>
         <td class="text-right">${totalPayable.toLocaleString()}</td>
         </tr>`;
