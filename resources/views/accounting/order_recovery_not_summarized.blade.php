@@ -394,7 +394,7 @@ $(document).ready(function() {
 
         // Xây dựng bảng dữ liệu
         function buildTable(orders, title) {
-            let tableHtml = `<div class="col-6"><h5>${title}</h5><div class="table-responsive" style="max-height: 400px; overflow-y: auto; background: green;"><table class='table table-striped bg-light'>
+            let tableHtml = `<div class="col-6"><h5>${title}</h5><div class="table-responsive" style="max-height: 400px; overflow-y: auto;"><table class='table table-striped bg-light'>
             <thead><tr>
             <th>STT</th>
             <th>Mã SP</th>
