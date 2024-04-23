@@ -46,8 +46,8 @@
                         <th>Mã Phiếu</th>
                         <th>NVBH</th>
                         <th>Trạng Thái</th>
-                        <th>Chiết Khấu</th>
-                        <th>Thành Tiền</th>
+                        <th class="text-right">Chiết Khấu</th>
+                        <th class="text-right">Thành Tiền</th>
                         <th></th>
                     </tr>
                 </thead>
