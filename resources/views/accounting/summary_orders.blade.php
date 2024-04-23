@@ -25,7 +25,8 @@
                         <option value="1">Giao Ngay</option>
                         <option value="2">Giao Sau</option>
                         <option value="3">Thu hồi</option>
-                        <option value="4">Giao Ngay & Thu hồi</option>
+                        <option value="4">Giao Ngay & TH Giao Ngay</option>
+                        <option value="5">Giao Sau & TH Giao Sau</option>
                     </select>
                 </div>
                 <div class="form-group mx-sm-3 mb-2">
