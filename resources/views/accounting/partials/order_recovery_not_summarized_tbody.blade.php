@@ -68,9 +68,9 @@
             </div>
         </td>
     </tr>
-    <tr id="filterDetails{{ $order->id }}" class="collapse" style="background-color: #d6e9ec;">
+    <tr id="filterDetails{{ $order->id }}" class="collapse">
         <td colspan="100%">
-            <div class="container-fluid">
+            <div class="container-fluid" style="background-color: #d2e9d7;">
                 <!-- Nội dung chi tiết đơn hàng sẽ được đổ vào đây bằng JavaScript -->
             </div>
         </td>
