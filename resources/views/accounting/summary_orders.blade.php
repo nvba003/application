@@ -42,7 +42,7 @@
             <div class="d-flex align-items-center">
                 <button id="showSummaryBtn" class="btn btn-warning mr-3">Tạo phiếu thu</button>
                 <div>Đã chọn: <span class="badge badge-primary" id="selectedCount">0</span> hàng</div>
-                <button id="showRecovery" class="btn btn-secondary ml-3">Tổng hợp chi tiết</button>
+                <button id="showRecovery" class="btn btn-secondary ml-3">Xem tổng hợp chi tiết</button>
             </div>
         </div>
     </div>
