@@ -439,7 +439,7 @@ $(document).ready(function() {
             var row = $(this).closest("tr");
             var chietKhau = parseInt(row.find("td:eq(6)").text().replace(/,/g, '')) || 0;
             var type = row.find("td:eq(8)").text().trim();
-            if(type == 'Thu hồi'){
+            if(type.startsWith('TH')){//nếu là thu hồi
                 var thanhTien = -1 * parseInt(row.find("td:eq(7)").text().replace(/,/g, '')) || 0;
             }else{
                 var thanhTien = parseInt(row.find("td:eq(7)").text().replace(/,/g, '')) || 0;
