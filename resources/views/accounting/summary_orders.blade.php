@@ -379,7 +379,7 @@ $(document).ready(function() {
         // ID container để cập nhật thông tin chi tiết sản phẩm
         const containerId = 'productDetails' + summaryOrder.id;
         let contentHtml = `<table class="table">
-            <thead>
+            <thead class="bg-info text-white">
                 <tr>
                     <th>STT</th>    
                     <th>Mã SP</th>
@@ -389,7 +389,7 @@ $(document).ready(function() {
                     <th class="text-right">Thành tiền</th>
                 </tr>
             </thead>
-            <tbody>`;
+            <tbody style="background-color: #d6e9ec;">`;
         contentHtml += bodyHtml + `</tbody></table>`;
         // Cập nhật container với thông tin sản phẩm đã gộp
         document.getElementById(containerId).innerHTML = contentHtml;
