@@ -16,7 +16,7 @@ class PromotionProduct extends Model
 
     public function promotionGroup()
     {
-        return $this->belongsTo(promotionGroup::class, 'group_promotion_id');
+        return $this->belongsTo(PromotionGroup::class, 'group_promotion_id');
     }
 
     public function productPrice()
