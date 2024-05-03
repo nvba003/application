@@ -238,11 +238,11 @@ $(document).ready(function() {
                                     <input type="number" id="total_quantity" class="px-2 py-2 form-control w-full" name="total_quantity[]" />
                                 </div>
                                 <div class="w-1/3 px-2 mt-1">
-                                    <label for="purchase" class="block text-sm font-medium text-gray-700">Mua</label>
+                                    <label for="purchase" class="block text-sm font-medium text-gray-700">CTKM mua</label>
                                     <input type="number" id="purchase" class="px-2 py-2 form-control w-full" name="purchase[]" />
                                 </div>
                                 <div class="w-1/3 px-2 mt-1">
-                                    <label for="reward" class="block text-sm font-medium text-gray-700">Tặng</label>
+                                    <label for="reward" class="block text-sm font-medium text-gray-700">CTKM tặng</label>
                                     <input type="number" id="reward" class="px-2 py-2 form-control w-full" name="reward[]" />
                                 </div>
                             </div>
