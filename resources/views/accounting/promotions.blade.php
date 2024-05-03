@@ -109,7 +109,7 @@
             <div class="col-md-4">
                 <div class="mb-3">
                     <label for="groupPromotionId" class="form-label">Nhóm</label>
-                    <input type="number" class="form-control" id="groupPromotionId" name="group_promotion_id" readonly>
+                    <input type="number" class="form-control" id="groupPromotionId" name="group_promotion_id">
                 </div>
                 <div class="mb-3">
                     <label for="promotionSerial" class="form-label">Serial</label>
