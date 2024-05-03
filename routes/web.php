@@ -6,6 +6,8 @@ use App\Http\Controllers\Accounting\AccountingOrderController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Accounting\SaleStaffController;
 use App\Http\Controllers\Accounting\ReportController;
+use App\Http\Controllers\Accounting\PromotionController;
+use App\Http\Controllers\Accounting\TemporaryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,6 +63,17 @@ Route::put('/update-is-entered/{id}', [ReportController::class, 'updateIsEntered
 Route::post('/add-transaction-detail', [ReportController::class, 'addTransactionDetail']);
 Route::put('/update-transaction', [ReportController::class, 'updateTransaction']);
 Route::put('/update-transaction-detail', [ReportController::class, 'updateTransactionDetail']);
+
+Route::get('/promotions', [PromotionController::class, 'promotions'])->name('promotions');
+Route::put('/update-promotions', [PromotionController::class, 'updatePromotion']);
+Route::get('/promotion-products', [PromotionController::class, 'promotionProducts'])->name('promotionProducts');
+Route::put('/update-promotion-products', [PromotionController::class, 'updatePromotionProduct']);
+Route::delete('/promotion-products/{id}', [PromotionController::class, 'destroy'])->name('promotion_products.destroy');
+Route::post('/promotion-products/create', [PromotionController::class, 'create'])->name('promotion_products.create');
+
+Route::get('/order-temporary', [TemporaryController::class, 'orderTemporary'])->name('orderTemporary');
+Route::get('/create-order-temporary', [TemporaryController::class, 'createOrderTemporary'])->name('orderTemporary.create');
+Route::post('/store-order-temporary', [TemporaryController::class, 'storeOrderTemporary'])->name('orderTemporary.store');
 
 
 

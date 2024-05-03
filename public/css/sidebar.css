@@ -1,217 +1,40 @@
-/* Layout chung */
-.wrapper {
-    display: flex;
-    flex-direction: row;
-}
-
-/* Sidebar styles */
-.sidebar {
-    max-width: 250px; /* Chiều rộng mặc định */
-    height: 100vh;
+/* Cấu hình cho submenuModal */
+#submenuModal {
     position: fixed;
-    top: 0;
-    left: 0;
-    background-color: #000d1a;
-    color: #d4d4d4;
-    overflow-y: auto;
-    transition: width 0.5s ease;
-}
-
-.sidebar.collapsed {
-    width: 50px; /* Chiều rộng khi thu nhỏ */
-}
-
-/* Content styles */
-.content {
-    margin-left: 250px; /* Đẩy nội dung ra phía bên phải của sidebar */
-    transition: margin-left 0.5s ease;
-    width: calc(100% - 250px); /* Giảm chiều rộng của nội dung */
-    height: 100vh;
-    overflow-y: auto;
-}
-
-.sidebar.collapsed ~ .content {
-    margin-left: 50px;
-    width: calc(100% - 50px);
-}
-
-/* Khi sidebar không bị collapse */
-/* .navigation {
-    width: calc(100% - 500px);
-    transition: width 0.3s ease;
-} */
-
-
-/* Khi sidebar bị collapse */
-.sidebar.collapsed ~ .navigation {
-    width: 100%; /* Chiếm toàn bộ width khi sidebar collapse */
-}
-
-/* Ẩn text menu khi sidebar không được mở rộng */
-.toggle-sidebar .button-text {
     display: none;
+    width: 250px;
+    height: fit-content;
+    z-index: 1050;
+    padding: 5px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
 }
 
-/* Hiển thị text menu khi sidebar được mở rộng */
-.sidebar:not(.collapsed) .toggle-sidebar .button-text {
-    display: inline; /* Hoặc bạn có thể sử dụng 'block' tùy thuộc vào cách bạn muốn hiển thị */
+/* Cài đặt màu và tương tác cho menu và submenu item */
+.active-menu {
+    background-color: #4A90E2;
+    color: #FFFFFF;
 }
 
-.menu-toggle {
-    background: none;
-    border: none;
-    text-align: left;
-    width: 100%;
-}
-
-.sub-menu {
-    padding-left: 20px; /* Tạo một khoảng lề cho menu con */
-}
-
-/* Ẩn nav-list khi sidebar được thu */
-.sidebar.collapsed .nav-list {
-    display: none;
-}
-
-.toggle-sidebar {
-    display: flex; /* Sử dụng Flexbox để sắp xếp các thành phần bên trong */
-    justify-content: space-between; /* Căn chỉnh các item bên trong ra hai bên */
-    align-items: center; /* Đảm bảo các item bên trong được căn giữa theo chiều dọc */
-    width: 100%; /* Đặt chiều rộng cho nút, có thể điều chỉnh theo yêu cầu */
-    padding: 10px 20px; /* Thêm padding để tăng khoảng cách bên trong nút */
-    margin-bottom: 20px;
-    border: none; /* Loại bỏ viền */
-    /*background-color: #007BFF;  Màu nền */
-    color: #FFFFFF; /* Màu chữ */
-    border-radius: 0px; /* Bo tròn góc */
-    cursor: pointer; /* Hiển thị con trỏ là pointer khi hover */
-    transition: all 0.3s ease; /* Hiệu ứng chuyển màu mượt mà khi hover và active */
-    font-size: 16px; /* Đặt kích thước font chữ, có thể điều chỉnh */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2); /* Thêm bóng đổ cho nút */
-}
-
-/* -------cần xem lại---------- */
-.nav-item.active, .nav-item.active a {
-    background-color: #FFFF00; /* Màu vàng cho menu con đang được chọn */
-    color: #000000; /* Màu chữ, nếu cần */
-}
-.nav-list, .sub-menu {
-    list-style: none; /* Loại bỏ các dấu đầu dòng mặc định */
-    padding: 0; /* Loại bỏ padding mặc định */
-}
-
-.nav-item {
-    margin-bottom: 5px; /* Điều chỉnh khoảng cách giữa các nav-item */
-}
-
-.nav-item a {
-    display: block; /* Để các link chiếm hết không gian của li */
-    font-size: 16px; /* Điều chỉnh kích thước font của text */
-    line-height: 24px; /* Điều chỉnh khoảng cách giữa các dòng */
-    padding: 10px; /* Thêm một chút padding cho mỗi link */
+.submenu-item {
+    display: block;
+    padding: 4px 16px;
     text-decoration: none; /* Loại bỏ gạch chân */
-    color: #808080; /* Màu xám cho text */
-    transition: color 0.3s ease; /* Hiệu ứng chuyển màu mượt mà khi hover */
 }
 
-.nav-item :hover {
-    color: #FFFFFF; /* Màu trắng cho text khi hover */
-    background-color: #343434; /* Màu nền khi hover */
+.submenu-item:hover {
+    background-color: #4a5568;
+    color: #FFFFFF;
 }
 
-/* Style cho các nút toggle và menu items */
-.nav button {
-    width: 100%; /* Chiều rộng tối đa cho button */
-    background: none; /* Không background */
-    border: none; /* Không viền */
-    color: inherit; /* Kế thừa màu từ parent */
-    text-align: left; /* Căn trái text */
-    padding: 15px; /* Padding cho button */
-    font-size: 16px; /* Kích thước font */
-    transition: background-color 0.3s ease; /* Hiệu ứng khi hover */
+.active-submenu {
+    color: #4A90E2;
+    background-color: #4a5568;
 }
 
-.nav button:hover {
-    background-color: #495057; /* Màu khi hover */
-}
-
-/* Icon chỉ mục */
-.nav i {
-    margin-right: 10px; /* Khoảng cách giữa icon và text */
-}
-
-/* Sub-menu */
-.sub-menu {
-    display: none; /* Mặc định là ẩn */
-    background-color: #23272b; /* Màu nền cho sub-menu */
-}
-
-.nav-item:hover .sub-menu {
-    display: block; /* Hiển thị sub-menu khi hover vào item */
-}
-
-/* Link trong sub-menu */
-.sub-menu a {
-    color: #adb5bd; /* Màu cho link */
-    display: block; /* Hiển thị dạng block để chiếm toàn bộ chiều rộng */
-    padding: 10px 30px; /* Padding cho link */
-    text-decoration: none; /* Bỏ gạch chân */
-}
-
-.sub-menu a:hover {
-    background-color: #495057; /* Màu nền khi hover link */
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .sidebar,
-    .sidebar.expanded,
-    .sidebar.collapsed {
-        width: 100%; /* Chiều rộng toàn màn hình trên thiết bị nhỏ */
-        height: 100vh; /* Chiều cao toàn màn hình */
-        position: fixed; /* Giữ cố định */
-        top: 0; /* Top cố định */
-        left: 0; /* Left cố định */
-        overflow-y: auto; /* Cho phép cuộn dọc nếu cần */
-        z-index: 1000; /* Đảm bảo sidebar ở trên các thành phần khác */
-    }
-
-    .content,
-    .sidebar.collapsed ~ .content {
-        margin-left: 0; /* No margin when sidebar is full width */
-        width: 100%; /* Full width */
-    }
-}
-
-@media (max-width: 640px) {
-    .navigation-text {
-        display: none;
-    }
-    .settings-dropdown {
-        margin-right: auto; /* Đẩy dropdown về phía bên phải */
-    }
-    .sidebar.collapsed {
-        width: 50px; /* Chiều rộng toàn màn hình trên thiết bị nhỏ */
-    }
-    .sidebar.collapsed ~ .content {
-        margin-left: 50px; /* No margin when sidebar is full width */
-        width: 100%; /* Full width */
-    }
-}
-
-/* Sử dụng trên các màn hình lớn hơn 640px */
-@media (min-width: 641px) {
-    .navigation-text {
-        display: block; /* Hoặc 'flex' tùy vào layout của bạn */
-        align-content: right;
-    }
-    .sidebar.collapsed {
-        width: 50px; /* Chiều rộng toàn màn hình trên thiết bị nhỏ */
-    }
-    .sidebar.collapsed ~ .content {
-        margin-left: 50px; /* No margin when sidebar is full width */
-        width: 100%; /* Full width */
-    }
+.active-submenu-item {
+    color: #FFFFFF;
+    background-color: #4a5568;
+    padding: 4px 16px;
 }
 
 /* Định nghĩa cho card */
@@ -260,6 +83,31 @@
     background-color: #f2f2f2; /* Màu nền xen kẽ cho các hàng */
 }
 
+.ui-autocomplete {
+    z-index: 1050 !important; /* Bootstrap modals usually have z-index around 1040 to 1050 */
+}
 
+.table-fixed thead th {
+    position: sticky;
+    top: 0;
+    background: white; /* Đảm bảo nền trắng che các hàng dưới khi cuộn */
+    z-index: 10;
+}
+
+.table-fixed tbody {
+    display: block;
+    overflow-y: auto;
+    max-height: 700px; /* Đặt chiều cao tối đa cho phần cuộn */
+}
+
+.table-fixed thead, .table-fixed tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed; /* Giúp các cột không thay đổi khi cuộn */
+}
+
+.table-fixed {
+    width: 100%;
+}
 
 

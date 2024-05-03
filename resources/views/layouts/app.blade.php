@@ -14,27 +14,30 @@
 
         <!-- Styles -->
         <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-        <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}"> <!-- Sidebar CSS -->
+        <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
 
         <!-- Scripts -->
         <script src="{{ asset('js/app.js') }}" defer></script>
-        <script src="{{ asset('js/sidebar.js') }}" defer></script> <!-- Sidebar JavaScript -->
+        <script src="//cdn.jsdelivr.net/npm/alpinejs" defer></script>
 
         <!-- CSS -->
         <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">      
         <!-- <link href="https://cdn.jsdelivr.net/npm/tailwindcss@^2.0/dist/tailwind.min.css" rel="stylesheet"> -->
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
     </head>
     <body class="font-sans antialiased">
-        <div class="flex navigation">
-            @include('layouts.navigation')
-        </div>
         <div class="min-h-screen bg-gray-100">
-            <div class="wrapper d-flex"> <!-- Wrapper for sidebar and content -->
-                    @include('components.sidebar') <!-- Sidebar component -->
-                <div class="content expanded"> <!-- Content wrapper adjusts based on sidebar -->
+            <div class="flex"> <!-- Wrapper for sidebar and content -->
+                @include('components.sidebar') <!-- Sidebar component -->
+
+                <div class="content w-full"> <!-- Content wrapper -->
+                <div class="navigation"> <!-- Navigation bar -->
+                    @include('layouts.navigation') <!-- Include your navigation view -->
+                </div>
+                    <!-- Page Content -->
                     <main>
-                        @yield('content') <!-- Dynamic page content -->
+                        @yield('content')
                     </main>
                 </div>
             </div>
@@ -43,16 +46,9 @@
 
         <!-- jQuery -->
         <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
         <!-- Bootstrap JS -->
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-
-        <script>
-            $(document).ready(function() {
-                $('.toggle-sidebar').on('click', function() {
-                    $('.sidebar, .content').toggleClass('expanded');
-                });
-            });
-        </script>
 
         @stack('scripts')
         

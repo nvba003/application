@@ -17,7 +17,7 @@ class CreateMenusTable extends Migration
             $table->tinyIncrements('id');
             $table->string('name');
             $table->string('url')->nullable();
-            $table->string('icon')->nullable();
+            $table->text('icon')->nullable();
             $table->unsignedTinyInteger('parent_id')->nullable();
             $table->timestamps();
     
