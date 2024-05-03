@@ -157,7 +157,7 @@
                     <input type="text" class="form-control" id="bonusProductId" name="bonus_product_id">
                 </div>
                 <div class="mb-3">
-                    <label for="bonusQuantity" class="form-label">Số lượng tặng</label>
+                    <label for="bonusQuantity" class="form-label">SL tặng cố định</label>
                     <input type="number" class="form-control" id="bonusQuantity" name="bonus_quantity">
                 </div>
                 <div class="mb-3">
