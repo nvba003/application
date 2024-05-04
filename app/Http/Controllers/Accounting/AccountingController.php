@@ -308,11 +308,13 @@ class AccountingController extends Controller
     {
         $generalData = $request->input('generalData');
         $tableData = collect($request->input('tableData'))->slice(1); // Loại bỏ object đầu tiên
+        $creation_date = Carbon::createFromFormat('d/m/Y H:i', $generalData['ngayTao'])->format('Y-m-d H:i:s');
+        $approval_date = Carbon::createFromFormat('d/m/Y H:i', $generalData['ngayDuyet'])->format('Y-m-d H:i:s');
         $temporary = Temporary::create([
             'temporary_code' => $generalData['soPhieu'],
             'staff' => $generalData['nvbh'],
-            'creation_date' => $generalData['ngayTao'],
-            'approval_date' => $generalData['ngayDuyet'],
+            'creation_date' => $creation_date,
+            'approval_date' => $approval_date,
             'type' => 1 //import là 1
         ]);
         foreach ($tableData as $data) {
