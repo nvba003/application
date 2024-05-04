@@ -137,7 +137,7 @@ $(document).ready(function() {
                 data: JSON.stringify({ temporary_code: orderSearchValue }),
                 success: function(data) {
                     if (data.details.length === 0) {
-                        alert("Chưa có mã đơn này");
+                        alert("Đơn hàng không có chi tiết");
                     } else {
                         console.log(data);
                         $('#staff').val(data.staff);
@@ -148,7 +148,8 @@ $(document).ready(function() {
                 },
                 error: function(xhr, status, error) {
                     var errorMessage = xhr.status + ': ' + xhr.statusText;
-                    alert('Error - ' + errorMessage);
+                    // alert('Error - ' + errorMessage);
+                    alert("Chưa có mã đơn này");
                 }
             });
         } else {
