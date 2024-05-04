@@ -141,6 +141,7 @@ $(document).ready(function() {
                     } else {
                         console.log(data);
                         $('#staff').val(data.staff);
+                        $('#productList tbody').empty();
                         data.details.forEach(function(detail) {
                             addProductToOrderWithQty(detail);
                         });
@@ -331,7 +332,6 @@ $(document).ready(function() {
         let sapCode = detail.sap_code;
         var product = promotions.find(p => p.sap_code === sapCode);
         let promotionDetails = '';
-        $('#productList tbody').empty();
         if (product) { // nếu sản phẩm có khuyến mãi
             let promotionGroup = product.promotion_group;
             //console.log(promotionGroup);
