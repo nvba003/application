@@ -12,7 +12,9 @@ use App\Models\Accounting\AccountingRecoveryStaff;
 use App\Models\Accounting\RecoveryOrder; 
 use App\Models\Accounting\RecoveryOrderDetail;
 use App\Models\Accounting\ProductPrice; 
-use App\Models\Accounting\ProductDiscount; 
+use App\Models\Accounting\ProductDiscount;
+use App\Models\Accounting\Temporary;
+use App\Models\Accounting\TemporaryDetail;
 use Carbon\Carbon;
 
 class AccountingController extends Controller
@@ -278,6 +280,52 @@ class AccountingController extends Controller
         return response()->json(['message' => 'Chiết khấu sản phẩm đã được cập nhật thành công']);
     }
 
+    //==================================================================
+    public function exportTemporary(Request $request)
+    {
+        $generalData = $request->input('generalData');
+        $tableData = collect($request->input('tableData'))->slice(1); // Loại bỏ object đầu tiên
+        $temporary = Temporary::create([
+            'temporary_code' => $generalData['soPhieu'],
+            'staff' => $generalData['nvbh'],
+            'creation_date' => $generalData['ngayTao'],
+            'approval_date' => $generalData['ngayDuyet'],
+            'type' => 0 //export là 0
+        ]);
+        foreach ($tableData as $data) {
+            TemporaryDetail::create([
+                'import_temporary_id' => $temporary->id,
+                'product_code' => $data['stt'],
+                'product_name' => $data['maSanPham'],
+                'quantity' => intval(preg_replace('/\D/', '', $data['tenSanPham'])), // Chỉ lấy phần số
+                'type' => 0
+            ]);
+        }
+        return response()->json(['message' => 'Data saved successfully']);
+    }
+
+    public function importTemporary(Request $request)
+    {
+        $generalData = $request->input('generalData');
+        $tableData = collect($request->input('tableData'))->slice(1); // Loại bỏ object đầu tiên
+        $temporary = Temporary::create([
+            'temporary_code' => $generalData['soPhieu'],
+            'staff' => $generalData['nvbh'],
+            'creation_date' => $generalData['ngayTao'],
+            'approval_date' => $generalData['ngayDuyet'],
+            'type' => 1 //import là 1
+        ]);
+        foreach ($tableData as $data) {
+            TemporaryDetail::create([
+                'import_temporary_id' => $temporary->id,
+                'product_code' => $data['stt'],
+                'product_name' => $data['maSanPham'],
+                'quantity' => intval(preg_replace('/\D/', '', $data['tenSanPham'])), // Chỉ lấy phần số
+                'type' => 1
+            ]);
+        }
+        return response()->json(['message' => 'Data saved successfully']);
+    }
     //==================================================================
     public function getOrderCodes()
     {

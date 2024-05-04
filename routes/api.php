@@ -36,8 +36,14 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::post('/order_recovery', [AccountingController::class, 'accountingRecovery']);//đơn hàng thu hồi
     Route::post('/save_info_recovery_staff', [AccountingController::class, 'saveInfoRecoveryStaff']);//đơn hàng thu hồi
     Route::post('/accounting_product_price', [AccountingController::class, 'updateProductPrice']);
+    Route::post('/export_temporary', [AccountingController::class, 'exportTemporary']);//đơn hàng tạm ứng
+    Route::post('/import_temporary', [AccountingController::class, 'importTemporary']);//đơn hàng hoàn ứng
 
     Route::get('/accounting_orders', [AccountingController::class, 'getOrderCodes']);
     Route::get('/accounting_recovery', [AccountingController::class, 'getRecoveryCodes']);//thu hồi từ NVBH
     Route::get('/order_recovery', [AccountingController::class, 'getOrderRecovery']);//đơn hàng thu hồi
+    Route::get('/export_temporary', [AccountingController::class, 'getExportTemporary']);//đơn hàng tạm ứng
+    Route::get('/import_temporary', [AccountingController::class, 'getImportTemporary']);//đơn hàng hoàn ứng
+
+    
 

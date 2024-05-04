@@ -85,7 +85,7 @@ function updateGiftValue(checkbox) {
 
 $(document).ready(function() {
     var today = new Date();
-    today.setHours(today.getHours() + 7);
+    //today.setHours(today.getHours() + 7);
     var yyyy = today.getFullYear();
     var mm = String(today.getMonth() + 1).padStart(2, '0');
     var dd = String(today.getDate()).padStart(2, '0');
