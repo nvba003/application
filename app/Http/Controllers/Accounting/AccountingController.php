@@ -344,5 +344,17 @@ class AccountingController extends Controller
         $recoveryCodes = AccountingRecovery::pluck('recovery_code');
         return response()->json($recoveryCodes);
     }
+    
+    public function getExportTemporary()
+    {
+        $temporaryCodes = Temporary::where('type', 0)->pluck('temporary_code');
+        return response()->json($temporaryCodes);
+    }
+
+    public function getImportTemporary()
+    {
+        $temporaryCodes = Temporary::where('type', 1)->pluck('temporary_code');
+        return response()->json($temporaryCodes);
+    }
 
 }
