@@ -10,6 +10,8 @@ use App\Models\Accounting\OrderTemporary;
 use App\Models\Accounting\OrderTemporaryDetail;
 use App\Models\Accounting\Promotion;
 use App\Models\Accounting\PromotionProduct;
+use App\Models\Accounting\Temporary;
+use App\Models\Accounting\TemporaryDetail;
 use Carbon\Carbon;
 
 class TemporaryController extends Controller
@@ -102,4 +104,20 @@ class TemporaryController extends Controller
         //return response()->json(['message' => 'Success'], 200);
         return redirect()->route('orderTemporary.create')->with('success', 'Đơn hàng đã được tạo thành công.');
     }
+
+    public function searchTemporary(Request $request)
+    {
+        $code = $request->input('temporary_code');
+        $temporary = Temporary::with('details', 'staff')->where('temporary_code', $code)->first();
+        if (!$temporary) {
+            return response()->json(['message' => 'Chưa có mã đơn này'], 404);
+        }
+        // Tạo mảng dữ liệu để trả về
+        $data = [
+            'details' => $temporary->details,
+            'staff' => $temporary->staff ? $temporary->staff : ''
+        ];
+        return response()->json($data);
+    }
+
 }

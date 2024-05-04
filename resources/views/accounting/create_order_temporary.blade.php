@@ -1,31 +1,43 @@
 @extends('layouts.app')
-
+<meta name="csrf-token" content="{{ csrf_token() }}">
 @section('content')
-<form method="POST" action="{{ route('orderTemporary.store') }}" id="orderForm">
-    <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="mt-2 mb-3 flex gap-4">
-            <div>
-                <label for="productSearch" class="form-label">Tìm Kiếm Sản Phẩm</label>
-                <input type="text" id="productSearch" class="form-control" placeholder="Nhập SAP code hoặc tên">
-            </div>
-            <div>
-                <label for="orderSearch" class="form-label">Tìm Kiếm Đơn Hàng</label>
-                <input type="text" id="orderSearch" class="form-control" placeholder="Nhập số phiếu tạm ứng">
-            </div>
-            <div>
-                <label for="report_date" class="form-label">Ngày Báo Cáo</label>
-                <input type="date" id="report_date" name="report_date" class="form-control">
-            </div>
-            <div>
-                <label for="staff" class="form-label">Nhân Viên</label>
-                <select id="staff" name="staff" class="form-control" required>
-                    <option value="">Chọn nhân viên</option>
-                    @foreach($saleStaffs as $staff)
-                        <option value="{{ $staff->name }}">{{ $staff->name }}</option>
-                    @endforeach
-                </select>
-            </div>
+<div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="mt-2 mb-3 flex gap-4">
+        <div>
+            <label for="productSearch" class="form-label text-sm font-bold">Tìm Kiếm Sản Phẩm</label>
+            <input type="text" id="productSearch" class="form-control form-control-sm" placeholder="Nhập SAP code hoặc tên">
         </div>
+        <div>
+            <label for="orderSearch" class="form-label text-sm font-bold">Tìm Kiếm Đơn Hàng</label>
+            <input type="text" id="orderSearch" class="form-control form-control-sm" placeholder="Nhập số phiếu tạm ứng">
+        </div>
+        <button id="searchButton" class="bg-blue-500 hover:bg-blue-700 text-white text-sm mt-4 py-1 px-2 rounded focus:outline-none focus:shadow-outline">Tìm Kiếm</button>
+    </div>
+    <form method="POST" action="{{ route('orderTemporary.store') }}" id="orderForm">
+    <div class="mt-2 mb-3 flex gap-4">
+    <div class="flex flex-row items-right w-1/2">
+        <div class="w-2/4 mr-1 mt-1">
+            <label for="report_date" class="form-label text-sm">Ngày Báo Cáo:</label>
+        </div>
+        <div class="w-2/4">
+            <input type="date" id="report_date" name="report_date" class="form-control form-control-sm">
+        </div>
+    </div>
+    <div class="flex flex-row items-right w-1/2">
+        <div class="w-1/4 mr-1 mt-1">
+            <label for="staff" class="form-label text-sm">NVBH:</label>
+        </div>
+        <div class="w-3/4">
+            <select id="staff" name="staff" class="form-control form-control-sm" required>
+                <option value="">Chọn nhân viên</option>
+                @foreach($saleStaffs as $staff)
+                    <option value="{{ $staff->name }}">{{ $staff->name }}</option>
+                @endforeach
+            </select>
+        </div>
+    </div>
+</div>
+
         @csrf
         <table class="min-w-full divide-y divide-gray-200" id="productList">
             <thead class="bg-gray-50">
@@ -110,7 +122,40 @@ $(document).ready(function() {
             return false;
         }
     });
-    
+
+    //$('#orderSearch').on('input', function() {
+    $('#searchButton').on('click', function() {
+        var orderSearchValue = $('#orderSearch').val();
+        if (orderSearchValue.trim() !== '') {
+            $.ajax({
+                url: 'search-temporary',
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                contentType: 'application/json',
+                data: JSON.stringify({ temporary_code: orderSearchValue }),
+                success: function(data) {
+                    if (data.details.length === 0) {
+                        alert("Chưa có mã đơn này");
+                    } else {
+                        console.log(data);
+                        $('#staff').val(data.staff);
+                        data.details.forEach(function(detail) {
+                            addProductToOrderWithQty(detail);
+                        });
+                    }
+                },
+                error: function(xhr, status, error) {
+                    var errorMessage = xhr.status + ': ' + xhr.statusText;
+                    alert('Error - ' + errorMessage);
+                }
+            });
+        } else {
+            alert("Vui lòng nhập mã đơn hàng cần tìm.");
+        }
+    });
+
     function addProductToOrder(sapCode) {
         var product = promotions.find(p => p.sap_code === sapCode);
         let promotionDetails = '';
@@ -279,6 +324,178 @@ $(document).ready(function() {
         
         sortProductsByPromotionGroup();// Sắp xếp lại danh sách dựa trên group_promotion_id
         updateProductIndices(); // Cập nhật số thứ tự sau khi thêm hoặc sắp xếp
+    }
+
+    function addProductToOrderWithQty(detail) {
+        let sapCode = detail.sap_code;
+        var product = promotions.find(p => p.sap_code === sapCode);
+        let promotionDetails = '';
+        if (product) { // nếu sản phẩm có khuyến mãi
+            let promotionGroup = product.promotion_group;
+            //console.log(promotionGroup);
+            // Bắt đầu một hàng mới
+            promotionDetails += '<div class="flex flex-wrap">';
+            // Lặp qua từng promotion trong promotionGroup
+            promotionGroup.promotion.forEach(promo => {
+                // Common details for each promotion
+                let details = `
+                    <div class="selectPromotion promotion-item p-2 border rounded-lg shadow my-2 mx-2 cursor-pointer" 
+                        id="promo_${promo.id}" data-promotion-id="${promo.id}" data-product-id="${product.id}">
+                        <strong>Tên:</strong> ${promotionGroup.promotion_name}
+                        <br>
+                        <strong>Loại KM:</strong> ${promo.promotion_type}
+                        <br>
+                        <strong>SL tối thiểu:</strong> ${promo.minimum_quantity || ''}
+                        <br>
+                        ${promo.minimum_amount ? `<strong>Số tiền tối thiểu:</strong> ${promo.minimum_amount}<br>` : ''}
+                `;
+                // Conditional details based on promotion type
+                if (promo.promotion_type === "Sản phẩm") {
+                    details += `
+                        <strong>Sản phẩm tặng:</strong> ${promo.bonus_product_id || ''}
+                        <br>
+                        <strong>SL tặng cố định:</strong> ${promo.bonus_quantity || '0'}
+                        <br>
+                        <strong>Tỉ lệ tặng:</strong> ${promo.bonus_ratio || '0'}
+                        <br>
+                        <strong>Mô tả:</strong> ${promo.description || ''}
+                    `;
+                } else if (promo.promotion_type === "Chiết khấu") {
+                    details += `
+                        <strong>Chiết khấu:</strong> ${promo.discount_percentage ? promo.discount_percentage + '%' : ''}
+                        <br>
+                        <strong>Mô tả:</strong> ${promo.description || ''}
+                    `;
+                }
+
+                // Close the div for this promotion
+                details += `</div>`;
+
+                // Append details to promotionDetails
+                promotionDetails += details;
+            });
+            // Kết thúc hàng
+            promotionDetails += '</div>';
+            //console.log(promotionDetails);
+        } else {
+            var product = products.find(p => p.sap_code === sapCode);
+            var product_price = { ...product };// Tạo một bản sao của đối tượng sản phẩm
+            product.product_price = product_price;// Thêm trường product_price vào đối tượng sản phẩm
+        }
+        // console.log(product);
+
+        let html = `
+            <tr class="productItem" data-row-id="${product.id}" data-group-id="${product.promotion_group ? product.promotion_group.id : 'none'}">
+                <input type="hidden" id="selectedPromotionId_${product.id}" name="promotion_ids[]" value="">
+                <td class="w-1/12 text-center py-1 px-1">
+                    <button type="button" class="text-white px-2 py-1 rounded text-sm mt-1 hideExpand" data-row-id="${product.id}" style="background-color: ${product.promotion_group && product.promotion_group.color_code ? product.promotion_group.color_code : 'grey'}">-</button>
+                    <span class="product-index"></span>
+                    <input type="hidden" name="is_gift[]" value="0" class="gift-input">
+                    <input type="checkbox" class="is-gift-checkbox" onchange="updateGiftValue(this);">
+                </td>
+                <td class="w-1/12">
+                    <span class="form-control-plaintext">${product.sap_code}</span>
+                    <input type="hidden" name="sap_code[]" value="${product.sap_code}">
+                </td>
+                <td class="w-5/12">
+                    <span class="form-control-plaintext">${product.product_name}</span>
+                    <input type="hidden" name="product_name[]" value="${product.product_name}">
+                </td>
+                <td class="hidden">
+                    <input type="number" class="form-input mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" name="packing[]" value="${product.product_price.packaging.match(/\d+/)[0] || ''}" readonly>
+                </td>
+                <td class="w-1/12">
+                    <input type="number" class="form-input mt-1 py-1 px-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" name="thung[]" min="0">
+                </td>
+                <td class="w-1/12">
+                    <input type="number" class="form-input mt-1 py-1 px-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" name="le[]" min="0" value="${detail.quantity}">
+                </td>
+                <td class="w-1/12">
+                    <input type="text" disabled class="form-input mt-1 py-1 px-1 block w-full appearance-none border-none shadow-sm bg-gray-200 rounded-sm" name="quantity[]" value="${detail.quantity}" required>
+                </td>
+                <td class="hidden">
+                    <input type="number" class="form-control" name="price[]" value="${product.product_price.price_sellout_per_unit}">
+                </td> 
+                <td class="w-1/12">
+                    <input type="text" disabled class="form-input mt-1 py-1 px-1 block w-full appearance-none border-none shadow-sm bg-gray-200 rounded-sm" name="subtotal[]" value="${detail.quantity * product.product_price.price_sellout_per_unit}">
+                </td>
+                <td class="w-1/12">
+                    <input type="number" class="form-input mt-1 py-1 px-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" name="discount_percentage[]" step="0.01">
+                </td>
+                <td class="hidden">
+                    <input type="hidden" class="form-control" name="discounted_price[]" value="${product.product_price.price_sellout_per_unit}">
+                </td> 
+                <td class="w-1/12">
+                    <input type="text" disabled class="form-input mt-1 py-1 px-1 block w-full appearance-none border-none shadow-sm bg-gray-200 rounded-sm" name="discount[]">
+                </td>
+                <td class="w-1/12">
+                    <input type="text" disabled class="form-input mt-1 py-1 px-1 block w-full appearance-none border-none shadow-sm bg-gray-200 rounded-sm" name="payable[]" value="${detail.quantity * product.product_price.price_sellout_per_unit}">
+                </td>
+                <td class="w-1/12">
+                    <button type="button" class="btn btn-danger btn-sm mt-1 removeProduct" data-row-id="${product.id}">Xóa</button>
+                </td>
+            </tr>
+            
+            <tr class="productItemExpand" data-row-id="${product.id}" data-group-id="${product.promotion_group ? product.promotion_group.id : 'none'}"
+                style="background-color: ${product.promotion_group && product.promotion_group.color_code ? product.promotion_group.color_code : ''}">
+                <td colspan="100%">
+                    <div class="flex flex-wrap items-center">
+                        <div class="w-full md:w-1/2 lg:w-1/3">
+                            <div class="flex flex-wrap -mx-2">
+                                <div class="w-1/4 px-2">
+                                    <span class="block mb-2 mt-2 ml-2 text-sm">QC: ${product.product_price.packaging}</span>
+                                </div>
+                                <div class="w-1/4 px-2">
+                                    <span class="block mb-2 mt-2 ml-2 text-sm">Đ.giá: ${product.product_price.price_sellout_per_unit}</span>
+                                </div>
+                                <div class="w-2/4 px-2">
+                                    <textarea class="form-control w-full ml-2 text-sm" rows="1" name="notes[]" placeholder="Ghi chú"></textarea>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap -mx-2 ml-1">
+                                <div class="w-1/3 px-2 mt-1">
+                                    <label for="total_quantity" class="block text-sm font-medium text-gray-700">SL tổng</label>
+                                    <input type="number" id="total_quantity" class="px-2 py-2 form-control w-full" name="total_quantity[]" />
+                                </div>
+                                <div class="w-1/3 px-2 mt-1">
+                                    <label for="purchase" class="block text-sm font-medium text-gray-700">CTKM mua</label>
+                                    <input type="number" id="purchase" class="px-2 py-2 form-control w-full" name="purchase[]" />
+                                </div>
+                                <div class="w-1/3 px-2 mt-1">
+                                    <label for="reward" class="block text-sm font-medium text-gray-700">CTKM tặng</label>
+                                    <input type="number" id="reward" class="px-2 py-2 form-control w-full" name="reward[]" />
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap -mx-2 ml-1">
+                                <div class="w-1/3 px-2 mt-1">
+                                    <label for="quantity_without_promotion" class="block text-sm font-medium text-gray-900">SL gốc</label>
+                                    <input type="number" id="quantity_without_promotion" class="px-2 py-1 form-control w-full" name="quantity_without_promotion[]" readonly />
+                                </div>
+                                <div class="w-1/3 px-2 mt-1">
+                                    <label for="gift_quantity" class="block text-sm font-medium text-gray-900">SL tặng</label>
+                                    <input type="number" id="gift_quantity" class="px-2 py-1 form-control w-full" name="gift_quantity[]" readonly />
+                                </div>
+                                <div class="w-1/3 px-2 mt-1">
+                                    <label for="total_including_gifts" class="block text-sm font-medium text-gray-900">Tổng SL</label>
+                                    <input type="number" id="total_including_gifts" class="px-2 py-1 form-control w-full" name="total_including_gifts[]" readonly />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-full md:w-1/2 lg:w-2/3 lg:pl-4">
+                            <div class="border-t border-gray-200 mt-2 bg-gray-100">
+                                ${promotionDetails !== '' ? promotionDetails : 'Không có CTKM'}
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+
+        `;
+        $('#productList tbody').append(html);
+        
+        sortProductsByPromotionGroup();// Sắp xếp lại danh sách dựa trên group_promotion_id
+        updateProductIndices(); // Cập nhật số thứ tự sau khi thêm hoặc sắp xếp
+        updateTotals();
     }
 
     $('#productList').on('input', '[name="total_quantity[]"], [name="purchase[]"], [name="reward[]"]', function() {

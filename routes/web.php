@@ -74,6 +74,7 @@ Route::post('/promotion-products/create', [PromotionController::class, 'create']
 Route::get('/order-temporary', [TemporaryController::class, 'orderTemporary'])->name('orderTemporary');
 Route::get('/create-order-temporary', [TemporaryController::class, 'createOrderTemporary'])->name('orderTemporary.create');
 Route::post('/store-order-temporary', [TemporaryController::class, 'storeOrderTemporary'])->name('orderTemporary.store');
+Route::post('/search-temporary', [TemporaryController::class, 'searchTemporary'])->name('search.temporary');
 
 
 
