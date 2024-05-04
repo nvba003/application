@@ -285,8 +285,10 @@ class AccountingController extends Controller
     {
         $generalData = $request->input('generalData');
         $tableData = collect($request->input('tableData'))->slice(1); // Loại bỏ object đầu tiên
-        $creation_date = Carbon::createFromFormat('d/m/Y H:i', $generalData['ngayTao'])->format('Y-m-d H:i:s');
-        $approval_date = Carbon::createFromFormat('d/m/Y H:i', $generalData['ngayDuyet'])->format('Y-m-d H:i:s');
+        $creationDateInput = $generalData['ngayTao'];
+        $approvalDateInput = $generalData['ngayDuyet'];
+        $creation_date = !empty($creationDateInput) ? Carbon::createFromFormat('d/m/Y H:i', $creationDateInput)->format('Y-m-d H:i:s') : null;
+        $approval_date = !empty($approvalDateInput) ? Carbon::createFromFormat('d/m/Y H:i', $approvalDateInput)->format('Y-m-d H:i:s') : null;
         $temporary = Temporary::create([
             'temporary_code' => $generalData['soPhieu'],
             'staff' => $generalData['nvbh'],
@@ -310,8 +312,10 @@ class AccountingController extends Controller
     {
         $generalData = $request->input('generalData');
         $tableData = collect($request->input('tableData'))->slice(1); // Loại bỏ object đầu tiên
-        $creation_date = Carbon::createFromFormat('d/m/Y H:i', $generalData['ngayTao'])->format('Y-m-d H:i:s');
-        $approval_date = Carbon::createFromFormat('d/m/Y H:i', $generalData['ngayDuyet'])->format('Y-m-d H:i:s');
+        $creationDateInput = $generalData['ngayTao'];
+        $approvalDateInput = $generalData['ngayDuyet'];
+        $creation_date = !empty($creationDateInput) ? Carbon::createFromFormat('d/m/Y H:i', $creationDateInput)->format('Y-m-d H:i:s') : null;
+        $approval_date = !empty($approvalDateInput) ? Carbon::createFromFormat('d/m/Y H:i', $approvalDateInput)->format('Y-m-d H:i:s') : null;
         $temporary = Temporary::create([
             'temporary_code' => $generalData['soPhieu'],
             'staff' => $generalData['nvbh'],
