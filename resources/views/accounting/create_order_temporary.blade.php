@@ -9,6 +9,10 @@
                 <input type="text" id="productSearch" class="form-control" placeholder="Nhập SAP code hoặc tên">
             </div>
             <div>
+                <label for="orderSearch" class="form-label">Tìm Kiếm Đơn Hàng</label>
+                <input type="text" id="orderSearch" class="form-control" placeholder="Nhập số phiếu tạm ứng">
+            </div>
+            <div>
                 <label for="report_date" class="form-label">Ngày Báo Cáo</label>
                 <input type="date" id="report_date" name="report_date" class="form-control">
             </div>

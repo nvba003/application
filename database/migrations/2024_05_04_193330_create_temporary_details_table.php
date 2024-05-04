@@ -18,6 +18,7 @@ class CreateTemporaryDetailsTable extends Migration
             $table->unsignedInteger('temporary_id');
             $table->foreign('temporary_id')->references('id')->on('temporaries')->onDelete('cascade');
             $table->string('product_code')->nullable();
+            $table->unsignedMediumInteger('sap_code')->nullable();
             $table->string('product_name')->nullable();
             $table->unsignedTinyInteger('quantity')->nullable(); // Số lượng (Lẻ)
             $table->tinyInteger('type')->comment('0: export, 1: import');
