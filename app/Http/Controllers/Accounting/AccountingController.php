@@ -296,7 +296,7 @@ class AccountingController extends Controller
         ]);
         foreach ($tableData as $data) {
             TemporaryDetail::create([
-                'import_temporary_id' => $temporary->id,
+                'temporary_id' => $temporary->id,
                 'product_code' => $data['stt'],
                 'product_name' => $data['maSanPham'],
                 'quantity' => intval(preg_replace('/\D/', '', $data['tenSanPham'])), // Chỉ lấy phần số
@@ -321,7 +321,7 @@ class AccountingController extends Controller
         ]);
         foreach ($tableData as $data) {
             TemporaryDetail::create([
-                'import_temporary_id' => $temporary->id,
+                'temporary_id' => $temporary->id,
                 'product_code' => $data['stt'],
                 'product_name' => $data['maSanPham'],
                 'quantity' => intval(preg_replace('/\D/', '', $data['tenSanPham'])), // Chỉ lấy phần số
