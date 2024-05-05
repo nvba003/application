@@ -18,11 +18,11 @@
                                 <span x-show="!collapsed && (activeMenu === '{{ $menu->id }}' || sidebarExpanded)" class="ml-2 menu-name">{{ $menu->name }}</span>
                             </span>
                         </button>
-                        <div x-show="activeMenu === '{{ $menu->id }}' && !collapsed && sidebarExpanded" class="menu-links flex flex-col pl-4 bg-gray-800 w-full">
+                        <div x-show="activeMenu === '{{ $menu->id }}' && !collapsed && sidebarExpanded" class="flex flex-col pl-4 bg-gray-800 w-full">
                             @foreach ($menu->children as $child)
-                                <div @click="handleSubmenuClick('{{ $child->id }}', '{{ $menu->id }}', '{{ $child->url }}', $event)" 
+                                <a href="#" @click="handleSubmenuClick('{{ $child->id }}', '{{ $menu->id }}', '{{ $child->url }}', $event)" 
                                    :class="{ 'active-submenu': isActiveSubmenu('{{ $child->id }}') }"
-                                   class="block px-4 py-2 hover:bg-gray-600 text-white cursor-pointer no-underline">{{ $child->name }}</div>
+                                   class="block px-4 py-2 hover:bg-gray-600 text-white cursor-pointer submenu-item">{{ $child->name }}</a>
                             @endforeach
                         </div>
                     </li>
@@ -37,7 +37,7 @@
         <ul>
             <li class="text-white bg-gray-600 font-bold p-2 mb-2 shadow" x-text="submenuTitle"></li>
             <template x-for="item in submenuItems" :key="item.id">
-                <div :class="item.class" class="cursor-pointer" @click="handleSubmenuClick(item.id, item.menuId, item.url, $event)" x-text="item.name"></div>
+                <a href="#" :class="item.class" class="cursor-pointer text-white submenu-item" @click="handleSubmenuClick(item.id, item.menuId, item.url, $event)" x-text="item.name"></a>
             </template>
         </ul>
     </div>

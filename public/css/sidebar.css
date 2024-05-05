@@ -18,7 +18,7 @@
 .submenu-item {
     display: block;
     padding: 4px 16px;
-    text-decoration: none; /* Loại bỏ gạch chân */
+    text-decoration: none !important; /* Loại bỏ gạch chân */
 }
 
 .submenu-item:hover {
