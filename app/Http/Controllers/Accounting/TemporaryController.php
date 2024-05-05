@@ -120,4 +120,14 @@ class TemporaryController extends Controller
         return response()->json($data);
     }
 
+    public function removeOrder($id)
+    {
+        $temporary = OrderTemporary::find($id);
+        if (!$temporary) {
+            return response()->json(['message' => 'Not found'], 404);
+        }
+        $temporary->delete();
+        return response()->json(['message' => 'Xóa thành công'], 200);
+    }
+
 }

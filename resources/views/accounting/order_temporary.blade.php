@@ -1,5 +1,5 @@
 @extends('layouts.app')
-
+<meta name="csrf-token" content="{{ csrf_token() }}">
 @section('content')
 <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="mt-2 mb-3 flex gap-4">
@@ -131,6 +131,35 @@
 
 @push('scripts')
 <script>
+function removeOrder(id) {
+    if (confirm('Bạn chắc muốn xóa?')) {
+        const url = `temporary/${id}`;
+        fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+        .then(response => response.json()) // Parsing the JSON response
+        .then(data => {
+            console.log(data); // Handling the response data
+            if (data.message) {
+                alert(data.message); // Optionally display a message to the user
+                setTimeout(function() {
+                    location.reload();
+                }, 500);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Lỗi chưa xóa được.'); // Handling any errors
+        });
+    } else {
+        console.log('Deletion cancelled by user.');
+    }
+}
+
 $(document).ready(function() {
     // Xử lý form tìm kiếm
     let currentSearchParams = "";
@@ -369,78 +398,6 @@ $(document).ready(function() {
         $('#productModal').modal('show'); // Hiển thị modal
     });
 
-
-    $('#promotionTable').on('click', '.btn-edit', function() {
-        var promotion = $(this).data('promotion');
-        openEditForm(promotion);
-    });
-    function openEditForm(promotion) {
-        // Điền dữ liệu cơ bản
-        $('#edit-id').val(promotion.id);
-        $('#groupPromotionId').val(promotion.group_promotion_id);
-        $('#promotionSerial').val(promotion.promotion_serial);
-        $('#promotionName').val(promotion.promotion_name);
-        $('#promotionType').val(promotion.promotion_type);
-        $('#promotionStatus').val(promotion.status);
-        $('#colorCode').val(promotion.color_code);
-        // Điền dữ liệu số lượng và số tiền
-        $('#minimumQuantity').val(promotion.minimum_quantity);
-        $('#minimumAmount').val(promotion.minimum_amount);
-        $('#discountPercentage').val(promotion.discount_percentage);
-        $('#bonusProductId').val(promotion.bonus_product_id);
-        $('#bonusQuantity').val(promotion.bonus_quantity);
-        $('#bonusRatio').val(promotion.bonus_ratio);
-        // Điền dữ liệu ngày tháng
-        $('#startDate').val(promotion.start_date);
-        $('#endDate').val(promotion.end_date);
-        // Điền mô tả
-        $('#description').val(promotion.description);
-        // Hiển thị modal
-        $('#editPromotionModal').modal('show');
-    }
-
-    $('#saveChanges').click(function() {
-        const editedData = {
-            id: $('#edit-id').val(),
-            group_promotion_id: $('#groupPromotionId').val(),
-            promotion_serial: $('#promotionSerial').val(),
-            promotion_name: $('#promotionName').val(),
-            promotion_type: $('#promotionType').val(),
-            promotion_status: $('#promotionStatus').val(),
-            color_code: $('#colorCode').val(),
-            minimum_quantity: $('#minimumQuantity').val(),
-            minimum_amount: $('#minimumAmount').val(),
-            discount_percentage: $('#discountPercentage').val(),
-            bonus_product_id: $('#bonusProductId').val(),
-            bonus_quantity: $('#bonusQuantity').val(),
-            bonus_ratio: $('#bonusRatio').val(),
-            start_date: $('#startDate').val(),
-            end_date: $('#endDate').val(),
-            description: $('#description').val()
-        };
-        console.log(editedData);
-        $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            });
-        $.ajax({
-            url: 'update-promotions',
-            method: 'PUT',
-            data: editedData,
-            success: function(response) {
-                notify500();
-                $('#editPromotionModal').modal('hide');
-                setTimeout(function() {
-                    location.reload();
-                }, 500);
-            },
-            error: function(error) {
-                // Xử lý lỗi
-                console.error("Có lỗi khi cập nhật: ", error);
-            }
-        });
-    });
 
 });
 </script>
