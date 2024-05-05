@@ -15,15 +15,15 @@
     </div>
     <form method="POST" action="{{ route('orderTemporary.store') }}" id="orderForm">
     <div class="mt-2 mb-3 flex gap-4">
-    <div class="flex flex-row items-right w-1/2">
-        <div class="w-2/4 mr-1 mt-1">
-            <label for="report_date" class="form-label text-sm">Ngày Báo Cáo:</label>
+    <div class="flex flex-row items-right w-1/4">
+        <div class="w-1/4 mr-1 mt-1">
+            <label for="report_date" class="form-label text-sm">Ngày BC:</label>
         </div>
-        <div class="w-2/4">
+        <div class="w-3/4">
             <input type="date" id="report_date" name="report_date" class="form-control form-control-sm">
         </div>
     </div>
-    <div class="flex flex-row items-right w-1/2">
+    <div class="flex flex-row items-right w-1/4">
         <div class="w-1/4 mr-1 mt-1">
             <label for="staff" class="form-label text-sm">NVBH:</label>
         </div>
