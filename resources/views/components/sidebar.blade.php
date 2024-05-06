@@ -1,4 +1,4 @@
-<aside id="sidebar" :class="{ 'w-80': !collapsed, 'w-10': collapsed }" class="bg-gray-800 text-white min-h-screen transition-width duration-300 ease-in-out relative"
+<aside id="sidebar" :class="{ 'w-80': !collapsed, 'w-10': collapsed }" class="bg-gray-800 text-white min-h-screen z-40 transition-width duration-300 ease-in-out relative"
     x-data="sidebarComponent({{ json_encode($menus) }})">
     <nav class="flex flex-col">
         <button @click="toggleSidebar" class="toggle-sidebar flex items-center justify-between px-2 py-2 bg-blue-500 text-white hover:bg-blue-600 focus:outline-none transition-colors duration-300 ease-in-out">
@@ -31,7 +31,7 @@
         </div>
     </nav>
 
-    <div x-show="showModal && collapsed" class="submenuModal fixed bg-gray-800 text-white pb-2"
+    <div x-show="showModal && collapsed" class="submenuModal fixed bg-gray-800 text-white pb-2 z-40"
         :style="'top: ' + modalTop + '; left: ' + modalLeft" 
         @mouseenter="mouseEnterModal" @mouseleave="mouseLeaveModal" x-transition>
         <ul>
