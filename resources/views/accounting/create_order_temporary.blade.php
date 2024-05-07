@@ -598,7 +598,7 @@ $(document).ready(function() {
             let le = parseInt(row.querySelector('[name="le[]"]').value) || 0;
             let price = parseFloat(row.querySelector('[name="price[]"]').value) || 0;
             let subtotal = row.querySelector('[name="subtotal[]"]');
-            let discount_percentage = parseInt(row.querySelector('[name="discount_percentage[]"]').value) || 0;
+            let discount_percentage = parseFloat(row.querySelector('[name="discount_percentage[]"]').value) || 0;
             let discountFactor = discount_percentage / 100;
             let discounted_price = row.querySelector('[name="discounted_price[]"]');
 
