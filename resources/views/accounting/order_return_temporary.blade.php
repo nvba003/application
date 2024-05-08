@@ -133,7 +133,7 @@
 <script>
 function removeOrder(id) {
     if (confirm('Bạn chắc muốn xóa?')) {
-        const url = `temporary/${id}`;
+        const url = `return-temporary/${id}`;
         fetch(url, {
             method: 'DELETE',
             headers: {
