@@ -36,8 +36,10 @@ Route::get('/product-discounts', [AccountingController::class, 'productDiscounts
 Route::post('/product-discounts', [AccountingController::class, 'updateProductDiscount'])->name('updateProductDiscount');
 Route::get('/users', [UserController::class, 'index'])->name('users.index');
 
-Route::get('/user/{id}/roles', [UserController::class, 'editRoles'])->name('user.edit.roles');
-Route::post('/user/{id}/roles', [UserController::class, 'updateRoles'])->name('user.update.roles');
+// Route::get('/user/{id}/roles', [UserController::class, 'editRoles'])->name('user.edit.roles');
+// Route::post('/user/{id}/roles', [UserController::class, 'updateRoles'])->name('user.update.roles');
+Route::get('/edit-user-roles', [UserController::class, 'editRoles'])->name('user.edit.roles');
+Route::post('/update-user-roles', [UserController::class, 'updateRoles'])->name('user.update.roles');
 
 Route::resource('sale-staff', SaleStaffController::class);
 Route::get('/sale-staff', [SaleStaffController::class, 'index'])->name('sale-staff');

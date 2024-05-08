@@ -21,8 +21,12 @@
                 <td>{{ $user->name }}</td>
                 <td>{{ $user->email }}</td>
                 <td>
-                    <a href="{{ route('user.edit.roles', $user->id) }}" class="btn btn-primary btn-sm">Chỉnh Sửa Roles/Permissions</a>
-                    {{-- Các nút hành động khác như Edit, Delete --}}
+                    <!-- <a href="{{ route('user.edit.roles', $user->id) }}" class="btn btn-primary btn-sm">Chỉnh Sửa Roles/Permissions</a> -->
+                    <form method="GET" action="{{ route('user.edit.roles') }}">
+                        @csrf
+                        <input type="hidden" name="id" value="{{ $user->id }}">
+                        <button type="submit" class="btn btn-primary btn-sm">Chỉnh Sửa Roles</button>
+                    </form>
                 </td>
             </tr>
             @endforeach

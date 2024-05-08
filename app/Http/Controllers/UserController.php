@@ -18,22 +18,53 @@ class UserController extends Controller
     }
 
     // Hiển thị form chỉnh sửa roles và permissions cho một user
-    public function editRoles($id)
+    public function editRoles(Request $request)
     {
+        // Lấy ID từ request và lưu vào session
+        if ($request->has('id')) {
+            session(['edit_user_id' => $request->id]);
+        }
+        // Lấy ID từ session
+        $id = session('edit_user_id');
         $user = User::findOrFail($id);
         $roles = Role::all();
         $permissions = Permission::all();
-        return view('users.edit_roles', compact('user', 'roles', 'permissions'));
+        $header = 'Chỉnh sửa quyền người dùng';
+
+        return view('users.edit_roles', compact('user', 'roles', 'permissions', 'header'));
     }
 
     // Xử lý cập nhật roles và permissions từ form
-    public function updateRoles(Request $request, $id)
+    public function updateRoles(Request $request)
     {
+        //dd($request->roles);
+        if ($request->has('id')) {
+            session(['edit_user_id' => $request->id]);
+        }
+        // Lấy ID từ session
+        $id = session('edit_user_id');
         $user = User::findOrFail($id);
-        $user->syncRoles($request->roles);
-        $user->syncPermissions($request->permissions);
+        // Validate các dữ liệu đầu vào nếu cần
+        $request->validate([
+            'roles' => 'required|array',
+            'roles.*' => 'exists:roles,id', // Đảm bảo các ID role tồn tại trong bảng roles
+        ]);
+        // Đồng bộ hóa vai trò cho người dùng theo tên Roles
+        // $user->syncRoles($request->roles);
+        $roleNames = Role::whereIn('id', $request->roles)->pluck('name')->toArray();// Lấy tên các roles từ ID
+        $user->syncRoles($roleNames);// Đồng bộ hóa vai trò cho người dùng
+        // Kiểm tra nếu có permissions trong request
+        // if ($request->has('permissions')) {
+        //     $request->validate([
+        //         'permissions' => 'nullable|array',
+        //         'permissions.*' => 'exists:permissions,id', // Đảm bảo các ID permission tồn tại trong bảng permissions
+        //     ]);
+        //     $user->syncPermissions($request->permissions);
+        // } else {
+        //     $user->syncPermissions([]); // Xóa hết permissions nếu không có permission nào được gửi
+        // }
 
-        return redirect()->route('users.index')->with('success', 'Roles and permissions updated successfully.');
+        return redirect()->route('users.index')->with('success', 'User updated successfully.');
     }
 
     // Các phương thức khác như create, update, delete users...
