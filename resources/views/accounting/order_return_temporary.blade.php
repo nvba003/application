@@ -28,7 +28,7 @@
     <div>Đã chọn: <span class="badge badge-primary" id="selectedCount">0</span> hàng</div>
     <div class="bg-white shadow-md rounded my-1 overflow-x-auto">
         <table class="min-w-full leading-normal" id="promotionTable">
-            <thead class="text-white bg-gray-500">
+            <thead class="text-white bg-red-400">
                 <tr>
                     <th class="px-2 py-3 border-b-2 border-gray-200 text-left text-sm font-semibold uppercase tracking-wider">
                         <input type="checkbox" id="checkAll">
