@@ -79,5 +79,11 @@ Route::post('/store-order-temporary', [TemporaryController::class, 'storeOrderTe
 Route::post('/search-temporary', [TemporaryController::class, 'searchTemporary'])->name('search.temporary');
 Route::delete('/temporary/{id}', [TemporaryController::class, 'removeOrder']);
 
+Route::get('/order-return-temporary', [TemporaryController::class, 'orderReturnTemporary'])->name('orderReturnTemporary');
+Route::get('/create-order-return-temporary', [TemporaryController::class, 'createOrderReturnTemporary'])->name('orderReturnTemporary.create');
+Route::post('/store-order-return-temporary', [TemporaryController::class, 'storeOrderReturnTemporary'])->name('orderReturnTemporary.store');
+Route::post('/search-return-temporary', [TemporaryController::class, 'searchReturnTemporary'])->name('search.returnTemporary');
+Route::delete('/return-temporary/{id}', [TemporaryController::class, 'removeOrderReturn']);
+
 
 

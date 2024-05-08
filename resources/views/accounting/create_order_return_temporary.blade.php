@@ -8,12 +8,12 @@
             <input type="text" id="productSearch" class="form-control form-control-sm" placeholder="Nhập SAP code hoặc tên">
         </div>
         <div>
-            <label for="orderSearch" class="form-label text-sm font-bold">Tìm Kiếm Đơn Hàng</label>
-            <input type="text" id="orderSearch" class="form-control form-control-sm" placeholder="Nhập số phiếu tạm ứng">
+            <label for="orderSearch" class="form-label text-sm font-bold">Tìm Đơn Hoàn Ứng</label>
+            <input type="text" id="orderSearch" class="form-control form-control-sm" placeholder="Nhập số phiếu hoàn ứng">
         </div>
         <button id="searchButton" class="bg-blue-500 hover:bg-blue-700 text-white text-sm mt-4 py-1 px-2 rounded focus:outline-none focus:shadow-outline">Tìm Kiếm</button>
     </div>
-    <form method="POST" action="{{ route('orderTemporary.store') }}" id="orderForm">
+    <form method="POST" action="{{ route('orderReturnTemporary.store') }}" id="orderForm">
     <div class="mt-2 mb-3 flex gap-4">
     <div class="flex flex-row items-right w-1/4">
         <div class="w-1/4 mr-1 mt-1">
@@ -60,7 +60,7 @@
             </tbody>
         </table>
         <div class="flex items-center justify-between mt-2">
-            <button type="submit" class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-700 focus:outline-none focus:shadow-outline">Tạo Đơn Tạm Ứng</button>
+            <button type="submit" class="bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700 focus:outline-none focus:shadow-outline">Tạo Đơn Hoàn Ứng</button>
             <div class="flex flex-grow items-center justify-end space-x-4">
                 <div class="totals flex space-x-2">
                     <div class="total-quantity">
@@ -128,7 +128,7 @@ $(document).ready(function() {
         var orderSearchValue = $('#orderSearch').val();
         if (orderSearchValue.trim() !== '') {
             $.ajax({
-                url: 'search-temporary',
+                url: '{{ route('search.returnTemporary') }}',
                 type: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -390,7 +390,7 @@ $(document).ready(function() {
             <tr class="productItem" data-row-id="${product.id}" data-group-id="${product.promotion_group ? product.promotion_group.id : 'none'}">
                 <input type="hidden" id="selectedPromotionId_${product.id}" name="promotion_ids[]" value="">
                 <td class="w-1/12 text-center py-1 px-1">
-                    <button type="button" class="text-white px-2 py-1 rounded text-sm mt-1 hideExpand" data-row-id="${product.id}" style="background-color: ${product.promotion_group && product.promotion_group.color_code ? product.promotion_group.color_code : 'grey'}">-</button>
+                    <button type="button" class="text-white px-2 py-1 rounded text-sm mt-1 hideExpand" data-row-id="${product.id}" style="background-color: ${product.promotion_group && product.promotion_group.color_code ? product.promotion_group.color_code : 'grey'}">+</button>
                     <span class="product-index"></span>
                     <input type="hidden" name="is_gift[]" value="0" class="gift-input">
                     <input type="checkbox" class="is-gift-checkbox" onchange="updateGiftValue(this);">
@@ -439,7 +439,7 @@ $(document).ready(function() {
             </tr>
             
             <tr class="productItemExpand" data-row-id="${product.id}" data-group-id="${product.promotion_group ? product.promotion_group.id : 'none'}"
-                style="background-color: ${product.promotion_group && product.promotion_group.color_code ? product.promotion_group.color_code : ''}">
+                style="display: none; background-color: ${product.promotion_group && product.promotion_group.color_code ? product.promotion_group.color_code : ''}">
                 <td colspan="100%">
                     <div class="flex flex-wrap items-center">
                         <div class="w-full md:w-1/2 lg:w-1/3">
