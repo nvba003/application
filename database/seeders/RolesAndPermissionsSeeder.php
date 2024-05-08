@@ -18,12 +18,16 @@ class RolesAndPermissionsSeeder extends Seeder
         Permission::create(['name' => 'delete post']);
         Permission::create(['name' => 'publish post']);
         Permission::create(['name' => 'unpublish post']);
+        Permission::create(['name' => 'approve users']); // Thêm permission để phê duyệt người dùng
 
         // Tạo Roles và gán Permissions
         $role = Role::create(['name' => 'writer']);
         $role->givePermissionTo('edit post');
 
         $role = Role::create(['name' => 'admin']);
-        $role->givePermissionTo(['publish post', 'unpublish post']);
+        $role->givePermissionTo(['publish post', 'unpublish post', 'approve users']); // Gán thêm permission approve users
+
+        // Tạo role unapproved (không cần gán permission)
+        Role::create(['name' => 'unapproved']);
     }
 }
