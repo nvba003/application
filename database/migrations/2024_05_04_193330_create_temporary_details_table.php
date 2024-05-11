@@ -20,7 +20,7 @@ class CreateTemporaryDetailsTable extends Migration
             $table->string('product_code')->nullable();
             $table->unsignedMediumInteger('sap_code')->nullable();
             $table->string('product_name')->nullable();
-            $table->unsignedTinyInteger('quantity')->nullable(); // Số lượng (Lẻ)
+            $table->unsignedSmallInteger('quantity')->nullable(); // Số lượng (Lẻ)
             $table->tinyInteger('type')->comment('0: export, 1: import');
             $table->timestamps();
         });
