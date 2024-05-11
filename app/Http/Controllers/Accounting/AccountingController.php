@@ -289,36 +289,46 @@ class AccountingController extends Controller
         $approvalDateInput = $generalData['ngayDuyet'];
         $creation_date = !empty($creationDateInput) ? Carbon::createFromFormat('d/m/Y H:i', $creationDateInput)->format('Y-m-d H:i:s') : null;
         $approval_date = !empty($approvalDateInput) ? Carbon::createFromFormat('d/m/Y H:i', $approvalDateInput)->format('Y-m-d H:i:s') : null;
-        $temporary = Temporary::create([
-            'temporary_code' => $generalData['soPhieu'],
-            'staff' => $generalData['nvbh'],
-            'creation_date' => $creation_date,
-            'approval_date' => $approval_date,
-            'type' => 0 //export là 0
-        ]);
+        $temporary = Temporary::updateOrCreate(
+            ['temporary_code' => $generalData['soPhieu']],
+            [
+                'staff' => $generalData['nvbh'],
+                'creation_date' => $creation_date,
+                'approval_date' => $approval_date,
+                'type' => 0 //export là 0
+            ]
+        );
         foreach ($tableData as $data) {
             // Tìm sản phẩm trong bảng product_prices để lấy sap_code
             $product = ProductPrice::where('product_code', $data['stt'])->first();
             // Kiểm tra nếu sản phẩm tồn tại
             if ($product) {
-                TemporaryDetail::create([
-                    'temporary_id' => $temporary->id,
-                    'product_code' => $data['stt'],
-                    'product_name' => $data['maSanPham'],
-                    'sap_code' => $product->sap_code, // Thêm sap_code vào TemporaryDetail
-                    'quantity' => intval(preg_replace('/\D/', '', $data['tenSanPham'])), // Chỉ lấy phần số
-                    'type' => 0
-                ]);
+                TemporaryDetail::updateOrCreate(
+                    [
+                        'temporary_id' => $temporary->id,
+                        'product_code' => $data['stt'],
+                    ],
+                    [
+                        'product_name' => $data['maSanPham'],
+                        'sap_code' => $product->sap_code, // Thêm sap_code vào TemporaryDetail
+                        'quantity' => intval(preg_replace('/\D/', '', $data['tenSanPham'])), // Chỉ lấy phần số từ tenSanPham
+                        'type' => 0
+                    ]
+                );
             } else {
                 // Xử lý trường hợp không tìm thấy sản phẩm, ví dụ lưu log hoặc tạo mục với sap_code mặc định
-                TemporaryDetail::create([
-                    'temporary_id' => $temporary->id,
-                    'product_code' => $data['stt'],
-                    'product_name' => $data['maSanPham'],
-                    'sap_code' => null, // Hoặc một giá trị mặc định nếu cần
-                    'quantity' => intval(preg_replace('/\D/', '', $data['tenSanPham'])),
-                    'type' => 0
-                ]);
+                TemporaryDetail::updateOrCreate(
+                    [
+                        'temporary_id' => $temporary->id,
+                        'product_code' => $data['stt'],
+                    ],
+                    [
+                        'product_name' => $data['maSanPham'],
+                        'sap_code' => $product->sap_code, // Thêm sap_code vào TemporaryDetail
+                        'quantity' => intval(preg_replace('/\D/', '', $data['tenSanPham'])), // Chỉ lấy phần số từ tenSanPham
+                        'type' => 0
+                    ]
+                );
             }
         }
         return response()->json(['message' => 'Data saved successfully']);
@@ -332,36 +342,46 @@ class AccountingController extends Controller
         $approvalDateInput = $generalData['ngayDuyet'];
         $creation_date = !empty($creationDateInput) ? Carbon::createFromFormat('d/m/Y H:i', $creationDateInput)->format('Y-m-d H:i:s') : null;
         $approval_date = !empty($approvalDateInput) ? Carbon::createFromFormat('d/m/Y H:i', $approvalDateInput)->format('Y-m-d H:i:s') : null;
-        $temporary = Temporary::create([
-            'temporary_code' => $generalData['soPhieu'],
-            'staff' => $generalData['nvbh'],
-            'creation_date' => $creation_date,
-            'approval_date' => $approval_date,
-            'type' => 1 //import là 1
-        ]);
+        $temporary = Temporary::updateOrCreate(
+            ['temporary_code' => $generalData['soPhieu']],
+            [
+                'staff' => $generalData['nvbh'],
+                'creation_date' => $creation_date,
+                'approval_date' => $approval_date,
+                'type' => 1 //export là 1
+            ]
+        );
         foreach ($tableData as $data) {
             // Tìm sản phẩm trong bảng product_prices để lấy sap_code
             $product = ProductPrice::where('product_code', $data['stt'])->first();
             // Kiểm tra nếu sản phẩm tồn tại
             if ($product) {
-                TemporaryDetail::create([
-                    'temporary_id' => $temporary->id,
-                    'product_code' => $data['stt'],
-                    'product_name' => $data['maSanPham'],
-                    'sap_code' => $product->sap_code, // Thêm sap_code vào TemporaryDetail
-                    'quantity' => intval(preg_replace('/\D/', '', $data['tenSanPham'])), // Chỉ lấy phần số
-                    'type' => 0
-                ]);
+                TemporaryDetail::updateOrCreate(
+                    [
+                        'temporary_id' => $temporary->id,
+                        'product_code' => $data['stt'],
+                    ],
+                    [
+                        'product_name' => $data['maSanPham'],
+                        'sap_code' => $product->sap_code, // Thêm sap_code vào TemporaryDetail
+                        'quantity' => intval(preg_replace('/\D/', '', $data['tenSanPham'])), // Chỉ lấy phần số từ tenSanPham
+                        'type' => 1
+                    ]
+                );
             } else {
                 // Xử lý trường hợp không tìm thấy sản phẩm, ví dụ lưu log hoặc tạo mục với sap_code mặc định
-                TemporaryDetail::create([
-                    'temporary_id' => $temporary->id,
-                    'product_code' => $data['stt'],
-                    'product_name' => $data['maSanPham'],
-                    'sap_code' => null, // Hoặc một giá trị mặc định nếu cần
-                    'quantity' => intval(preg_replace('/\D/', '', $data['tenSanPham'])),
-                    'type' => 0
-                ]);
+                TemporaryDetail::updateOrCreate(
+                    [
+                        'temporary_id' => $temporary->id,
+                        'product_code' => $data['stt'],
+                    ],
+                    [
+                        'product_name' => $data['maSanPham'],
+                        'sap_code' => $product->sap_code, // Thêm sap_code vào TemporaryDetail
+                        'quantity' => intval(preg_replace('/\D/', '', $data['tenSanPham'])), // Chỉ lấy phần số từ tenSanPham
+                        'type' => 1
+                    ]
+                );
             }
         }
         return response()->json(['message' => 'Data saved successfully']);
