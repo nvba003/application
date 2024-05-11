@@ -324,7 +324,7 @@ class AccountingController extends Controller
                     ],
                     [
                         'product_name' => $data['maSanPham'],
-                        'sap_code' => $product->sap_code, // Thêm sap_code vào TemporaryDetail
+                        'sap_code' => null,
                         'quantity' => intval(preg_replace('/\D/', '', $data['tenSanPham'])), // Chỉ lấy phần số từ tenSanPham
                         'type' => 0
                     ]
@@ -377,7 +377,7 @@ class AccountingController extends Controller
                     ],
                     [
                         'product_name' => $data['maSanPham'],
-                        'sap_code' => $product->sap_code, // Thêm sap_code vào TemporaryDetail
+                        'sap_code' => null,
                         'quantity' => intval(preg_replace('/\D/', '', $data['tenSanPham'])), // Chỉ lấy phần số từ tenSanPham
                         'type' => 1
                     ]
