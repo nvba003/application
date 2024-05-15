@@ -583,6 +583,7 @@ $(document).ready(function() {
         if (isChecked) {
             $row.find('input[type="number"]:not([name="le[]"])').val(0);
             $row.find('input[type="text"]:not([name="quantity[]"])').val(0);
+            $row.find('input[name="price[]"].hidden').val(0);
             //$expandRow.toggle(!isChecked); // Sử dụng toggle với điều kiện ngược lại của isChecked
             //$expandRow.remove();
             $expandRow.hide();
