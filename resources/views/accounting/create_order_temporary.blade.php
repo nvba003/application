@@ -13,7 +13,7 @@
         </div>
         <button id="searchButton" class="bg-blue-500 hover:bg-blue-700 text-white text-sm mt-4 py-1 px-2 rounded focus:outline-none focus:shadow-outline">Tìm Kiếm</button>
     </div>
-    <form method="POST" action="{{ route('orderTemporary.store') }}" id="orderForm">
+    <form method="POST" id="orderForm">
     <div class="mt-2 mb-3 flex gap-4">
     <div class="flex flex-row items-right w-1/4">
         <div class="w-1/4 mr-1 mt-1">
@@ -90,10 +90,32 @@
 @endif
 </div>
 
+<!-- Modal thông báo -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="successModalLabel">Thành công!</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Thao tác thành công!
+      </div>
+    </div>
+  </div>
+</div>
+
 @endsection
 
 @push('scripts')
 <script>
+function notify500(){
+        $('#successModal').modal('show');
+        setTimeout(function() {
+            $('#successModal').modal('hide');
+        }, 500);
+    }
+
 function updateGiftValue(checkbox) {
     var hiddenInput = checkbox.previousElementSibling; // Truy cập input ẩn
     hiddenInput.value = checkbox.checked ? 1 : 0; // Cập nhật giá trị dựa trên trạng thái của checkbox
@@ -661,6 +683,25 @@ $(document).ready(function() {
         });
     }
 
+    $('#orderForm').on('submit', function(e) {
+        e.preventDefault(); // Ngăn chặn hành vi gửi form mặc định
+        $.ajax({
+            type: 'POST', // Phương thức gửi dữ liệu
+            url: '{{ route('orderTemporary.store') }}', // Đường dẫn tới hàm xử lý trong Laravel
+            data: $(this).serialize(), // Lấy dữ liệu từ form
+            success: function(response) {
+                notify500();
+                //console.log('Response:', response); // Hiển thị phản hồi trong console
+                sessionStorage.setItem('serverResponse', JSON.stringify(response));
+                setTimeout(function() {
+                    location.reload();
+                }, 1000); // Trì hoãn 10 giây
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', error); // Hiển thị lỗi nếu có
+            }
+        });
+    });
 
 });
 
