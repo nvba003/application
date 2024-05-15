@@ -381,7 +381,7 @@ $(document).ready(function() {
 
         let html = `
             <tr class="productItem" data-row-id="${product.id}" data-group-id="${product.promotion_group ? product.promotion_group.id : 'none'}">
-                <input type="hidden" id="selectedPromotionId_${product.id}" class="promotion-id" name="promotion_ids[]" value="">
+                <input type="hidden" id="selectedPromotionId_${product.id}" class="promotion-id" name="promotion_ids[]" value="null">
                 <td class="w-1/12 text-center py-1 px-1">
                     <button type="button" class="text-white px-2 py-1 rounded text-sm mt-1 hideExpand" data-row-id="${product.id}" style="background-color: ${product.promotion_group && product.promotion_group.color_code ? product.promotion_group.color_code : 'grey'}">-</button>
                     <span class="product-index"></span>
