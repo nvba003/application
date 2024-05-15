@@ -115,18 +115,6 @@ function notify500(){
         $('#successModal').modal('hide');
     }, 500);
 }
-function updateGiftValue(checkbox) {
-    var hiddenInput = checkbox.previousElementSibling; // Truy cập input ẩn
-    hiddenInput.value = checkbox.checked ? 1 : 0; // Cập nhật giá trị dựa trên trạng thái của checkbox
-    var $row = $(checkbox).closest('tr.productItem');
-    if (checkbox.checked) {
-        $row.find('input').not('.is-gift-checkbox, .gift-input, .quantity, .sap-code, .product-code, .product-name ,.promotion-id').val(0);
-        $row.find('input[name="is_gift[]"]').val(1);
-    } else {
-        // Thực hiện các thao tác khác nếu checkbox không được đánh dấu
-        // Ví dụ: khôi phục giá trị ban đầu nếu cần
-    }
-}
 
 $(document).ready(function() {
     var today = new Date();
@@ -140,6 +128,8 @@ $(document).ready(function() {
     console.log(products);
     let promotions = @json($promotions);
     console.log(promotions);
+    let promotionChilds = @json($promotionChilds);
+    console.log(promotionChilds);
     $('#productSearch').autocomplete({
         source: products.map(product => ({
             label: product.sap_code + " - " + product.product_name,
@@ -187,56 +177,157 @@ $(document).ready(function() {
         }
     });
 
+    function addPromotionBox(product){
+        console.log(product);
+        let promotionDetails = '';
+        let promotionDetailChilds = '';
+        let promotionGroup = product.promotion_group;
+        // console.log(promotionGroup);
+        // Bắt đầu một hàng mới
+        promotionDetails += '<div class="flex flex-wrap">';
+        // Lặp qua từng promotion trong promotionGroup
+        promotionGroup.promotion.forEach(promo => {
+            // Common details for each promotion
+            let details = `
+                <div class="selectPromotion promotion-item p-2 border rounded-lg shadow my-2 mx-2 cursor-pointer" 
+                    id="promo_${promo.id}" data-promotion-id="${promo.id}" data-product-id="${product.id}">
+                    <strong>Tên:</strong> ${promotionGroup.promotion_name}
+                    <br>
+                    <strong>Loại KM:</strong> ${promo.promotion_type}
+                    <br>
+                    <strong>SL tối thiểu:</strong> ${promo.minimum_quantity || ''}
+                    <br>
+                    ${promo.minimum_amount ? `<strong>Số tiền tối thiểu:</strong> ${promo.minimum_amount}<br>` : ''}
+            `;
+            // Conditional details based on promotion type
+            if (promo.promotion_type === "Sản phẩm") {
+                details += `
+                    <strong>Sản phẩm tặng:</strong> ${promo.bonus_product_id || ''}
+                    <br>
+                    <strong>SL tặng cố định:</strong> ${promo.bonus_quantity || '0'}
+                    <br>
+                    <strong>Tỉ lệ tặng:</strong> ${promo.bonus_ratio || '0'}
+                    <br>
+                    <strong>Mô tả:</strong> ${promo.description || ''}
+                `;
+            } else if (promo.promotion_type === "Chiết khấu") {
+                details += `
+                    <strong>Chiết khấu:</strong> ${promo.discount_percentage ? promo.discount_percentage + '%' : ''}
+                    <br>
+                    <strong>Mô tả:</strong> ${promo.description || ''}
+                `;
+            }
+            details += `</div>`;// Close the div for this promotion
+            promotionDetails += details;// Append details to promotionDetails
+        });
+
+        const productIdToCheck = product.product_price.id; // ID của sản phẩm bạn muốn kiểm tra
+        // Tìm tất cả sản phẩm trong danh sách promotionChilds dựa trên product_id
+        const foundProducts = promotionChilds.filter(item => item.product_price.id === productIdToCheck);
+        if (foundProducts.length > 0) {
+            foundProducts.forEach(product => {
+                let promotionGroup = product.promotion_group;
+                promotionGroup.promotion.forEach(promo => {
+                    let details = `
+                        <div class="bg-gray-300 promotion-item p-2 border rounded-lg shadow my-2 mx-2 cursor-pointer" 
+                            id="promo_${promo.id}" data-promotion-id="${promo.id}" data-product-id="${product.id}">
+                            <strong>Tên:</strong> ${promotionGroup.promotion_name}
+                            <br>
+                            <strong>Loại KM:</strong> ${promo.promotion_type}
+                            <br>
+                            <strong>SL tối thiểu:</strong> ${promo.minimum_quantity || ''}
+                            <br>
+                            ${promo.minimum_amount ? `<strong>Số tiền tối thiểu:</strong> ${promo.minimum_amount}<br>` : ''}
+                    `;
+                    // Conditional details based on promotion type
+                    if (promo.promotion_type === "Sản phẩm") {
+                        details += `
+                            <strong>Sản phẩm tặng:</strong> ${promo.bonus_product_id || ''}
+                            <br>
+                            <strong>SL tặng cố định:</strong> ${promo.bonus_quantity || '0'}
+                            <br>
+                            <strong>Tỉ lệ tặng:</strong> ${promo.bonus_ratio || '0'}
+                            <br>
+                            <strong>Mô tả:</strong> ${promo.description || ''}
+                        `;
+                    } else if (promo.promotion_type === "Chiết khấu") {
+                        details += `
+                            <strong>Chiết khấu:</strong> ${promo.discount_percentage ? promo.discount_percentage + '%' : ''}
+                            <br>
+                            <strong>Mô tả:</strong> ${promo.description || ''}
+                        `;
+                    }
+                    details += `</div>`;// Close the div for this promotion
+                    promotionDetailChilds += details;// Append details to promotionDetails
+                });
+            });
+        }
+        promotionDetails += promotionDetailChilds + `</div>`;
+        return promotionDetails;
+    }
+
+    function productItemExpand(product, promotionDetails){
+        let details = `<tr class="productItemExpand" data-row-id="${product.id}" data-group-id="${product.promotion_group ? product.promotion_group.id : 'none'}"
+            style="display: none; background-color: ${product.promotion_group && product.promotion_group.color_code ? product.promotion_group.color_code : ''}">
+            <td colspan="100%">
+                <div class="flex flex-wrap items-center">
+                    <div class="w-full md:w-1/2 lg:w-1/3">
+                        <div class="flex flex-wrap -mx-2">
+                            <div class="w-1/4 px-2">
+                                <span class="block mb-2 mt-2 ml-2 text-sm">QC: ${product.product_price.packaging}</span>
+                            </div>
+                            <div class="w-1/4 px-2">
+                                <span class="block mb-2 mt-2 ml-2 text-sm">Đ.giá: ${product.product_price.price_sellout_per_unit}</span>
+                            </div>
+                            <div class="w-2/4 px-2">
+                                <textarea class="form-control w-full ml-2 text-sm" rows="1" name="notes[]" placeholder="Ghi chú"></textarea>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap -mx-2 ml-1">
+                            <div class="w-1/3 px-2 mt-1">
+                                <label for="total_quantity" class="block text-sm font-medium text-gray-700">SL tổng</label>
+                                <input type="number" id="total_quantity" class="px-2 py-2 form-control w-full" name="total_quantity[]" />
+                            </div>
+                            <div class="w-1/3 px-2 mt-1">
+                                <label for="purchase" class="block text-sm font-medium text-gray-700">CTKM mua</label>
+                                <input type="number" id="purchase" class="px-2 py-2 form-control w-full" name="purchase[]" />
+                            </div>
+                            <div class="w-1/3 px-2 mt-1">
+                                <label for="reward" class="block text-sm font-medium text-gray-700">CTKM tặng</label>
+                                <input type="number" id="reward" class="px-2 py-2 form-control w-full" name="reward[]" />
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap -mx-2 ml-1">
+                            <div class="w-1/3 px-2 mt-1">
+                                <label for="quantity_without_promotion" class="block text-sm font-medium text-gray-900">SL gốc</label>
+                                <input type="number" id="quantity_without_promotion" class="px-2 py-1 form-control w-full" name="quantity_without_promotion[]" readonly />
+                            </div>
+                            <div class="w-1/3 px-2 mt-1">
+                                <label for="gift_quantity" class="block text-sm font-medium text-gray-900">SL tặng</label>
+                                <input type="number" id="gift_quantity" class="px-2 py-1 form-control w-full" name="gift_quantity[]" readonly />
+                            </div>
+                            <div class="w-1/3 px-2 mt-1">
+                                <label for="total_including_gifts" class="block text-sm font-medium text-gray-900">Tổng SL</label>
+                                <input type="number" id="total_including_gifts" class="px-2 py-1 form-control w-full" name="total_including_gifts[]" readonly />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-full md:w-1/2 lg:w-2/3 lg:pl-4">
+                        <div class="border-t border-gray-200 mt-2 bg-gray-100">
+                            ${promotionDetails !== '' ? promotionDetails : 'Không có CTKM'}
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>`;
+        return details;
+    }
+
     function addProductToOrder(sapCode) {
         var product = promotions.find(p => p.sap_code === sapCode);
-        let promotionDetails = '';
+        var promotionDetails = '';
         if (product) { // nếu sản phẩm có khuyến mãi
-            let promotionGroup = product.promotion_group;
-            console.log(promotionGroup);
-            // Bắt đầu một hàng mới
-            promotionDetails += '<div class="flex flex-wrap">';
-            // Lặp qua từng promotion trong promotionGroup
-            promotionGroup.promotion.forEach(promo => {
-                // Common details for each promotion
-                let details = `
-                    <div class="selectPromotion promotion-item p-2 border rounded-lg shadow my-2 mx-2 cursor-pointer" 
-                        id="promo_${promo.id}" data-promotion-id="${promo.id}" data-product-id="${product.id}">
-                        <strong>Tên:</strong> ${promotionGroup.promotion_name}
-                        <br>
-                        <strong>Loại KM:</strong> ${promo.promotion_type}
-                        <br>
-                        <strong>SL tối thiểu:</strong> ${promo.minimum_quantity || ''}
-                        <br>
-                        ${promo.minimum_amount ? `<strong>Số tiền tối thiểu:</strong> ${promo.minimum_amount}<br>` : ''}
-                `;
-                // Conditional details based on promotion type
-                if (promo.promotion_type === "Sản phẩm") {
-                    details += `
-                        <strong>Sản phẩm tặng:</strong> ${promo.bonus_product_id || ''}
-                        <br>
-                        <strong>SL tặng cố định:</strong> ${promo.bonus_quantity || '0'}
-                        <br>
-                        <strong>Tỉ lệ tặng:</strong> ${promo.bonus_ratio || '0'}
-                        <br>
-                        <strong>Mô tả:</strong> ${promo.description || ''}
-                    `;
-                } else if (promo.promotion_type === "Chiết khấu") {
-                    details += `
-                        <strong>Chiết khấu:</strong> ${promo.discount_percentage ? promo.discount_percentage + '%' : ''}
-                        <br>
-                        <strong>Mô tả:</strong> ${promo.description || ''}
-                    `;
-                }
-
-                // Close the div for this promotion
-                details += `</div>`;
-
-                // Append details to promotionDetails
-                promotionDetails += details;
-            });
-            // Kết thúc hàng
-            promotionDetails += '</div>';
-            //console.log(promotionDetails);
+            promotionDetails = addPromotionBox(product);
         } else {
             var product = products.find(p => p.sap_code === sapCode);
             var product_price = { ...product };// Tạo một bản sao của đối tượng sản phẩm
@@ -246,12 +337,12 @@ $(document).ready(function() {
 
         let html = `
             <tr class="productItem" data-row-id="${product.id}" data-group-id="${product.promotion_group ? product.promotion_group.id : 'none'}">
-                <input type="hidden" id="selectedPromotionId_${product.id}" name="promotion_ids[]" value="">
+                <input type="hidden" id="selectedPromotionId_${product.id}" class="promotion-id" name="promotion_ids[]" value="">
                 <td class="w-1/12 text-center py-1 px-1">
-                    <button type="button" class="text-white px-2 py-1 rounded text-sm mt-1 hideExpand" data-row-id="${product.id}" style="background-color: ${product.promotion_group && product.promotion_group.color_code ? product.promotion_group.color_code : 'grey'}">-</button>
+                    <button type="button" class="text-white px-2 py-1 rounded text-sm mt-1 hideExpand" data-row-id="${product.id}" style="background-color: ${product.promotion_group && product.promotion_group.color_code ? product.promotion_group.color_code : 'grey'}">+</button>
                     <span class="product-index"></span>
                     <input type="hidden" name="is_gift[]" value="0" class="gift-input">
-                    <input type="checkbox" class="is-gift-checkbox" onchange="updateGiftValue(this);">
+                    <input type="checkbox" class="is-gift-checkbox">
                 </td>
                 <td class="w-1/12">
                     <span class="form-control-plaintext">${product.sap_code}</span>
@@ -295,119 +386,23 @@ $(document).ready(function() {
                     <button type="button" class="btn btn-danger btn-sm mt-1 removeProduct" data-row-id="${product.id}">Xóa</button>
                 </td>
             </tr>
-            
-            <tr class="productItemExpand" data-row-id="${product.id}" data-group-id="${product.promotion_group ? product.promotion_group.id : 'none'}"
-                style="background-color: ${product.promotion_group && product.promotion_group.color_code ? product.promotion_group.color_code : ''}">
-                <td colspan="100%">
-                    <div class="flex flex-wrap items-center">
-                        <div class="w-full md:w-1/2 lg:w-1/3">
-                            <div class="flex flex-wrap -mx-2">
-                                <div class="w-1/4 px-2">
-                                    <span class="block mb-2 mt-2 ml-2 text-sm">QC: ${product.product_price.packaging}</span>
-                                </div>
-                                <div class="w-1/4 px-2">
-                                    <span class="block mb-2 mt-2 ml-2 text-sm">Đ.giá: ${product.product_price.price_sellout_per_unit}</span>
-                                </div>
-                                <div class="w-2/4 px-2">
-                                    <textarea class="form-control w-full ml-2 text-sm" rows="1" name="notes[]" placeholder="Ghi chú"></textarea>
-                                </div>
-                            </div>
-                            <div class="flex flex-wrap -mx-2 ml-1">
-                                <div class="w-1/3 px-2 mt-1">
-                                    <label for="total_quantity" class="block text-sm font-medium text-gray-700">SL tổng</label>
-                                    <input type="number" id="total_quantity" class="px-2 py-2 form-control w-full" name="total_quantity[]" />
-                                </div>
-                                <div class="w-1/3 px-2 mt-1">
-                                    <label for="purchase" class="block text-sm font-medium text-gray-700">CTKM mua</label>
-                                    <input type="number" id="purchase" class="px-2 py-2 form-control w-full" name="purchase[]" />
-                                </div>
-                                <div class="w-1/3 px-2 mt-1">
-                                    <label for="reward" class="block text-sm font-medium text-gray-700">CTKM tặng</label>
-                                    <input type="number" id="reward" class="px-2 py-2 form-control w-full" name="reward[]" />
-                                </div>
-                            </div>
-                            <div class="flex flex-wrap -mx-2 ml-1">
-                                <div class="w-1/3 px-2 mt-1">
-                                    <label for="quantity_without_promotion" class="block text-sm font-medium text-gray-900">SL gốc</label>
-                                    <input type="number" id="quantity_without_promotion" class="px-2 py-1 form-control w-full" name="quantity_without_promotion[]" readonly />
-                                </div>
-                                <div class="w-1/3 px-2 mt-1">
-                                    <label for="gift_quantity" class="block text-sm font-medium text-gray-900">SL tặng</label>
-                                    <input type="number" id="gift_quantity" class="px-2 py-1 form-control w-full" name="gift_quantity[]" readonly />
-                                </div>
-                                <div class="w-1/3 px-2 mt-1">
-                                    <label for="total_including_gifts" class="block text-sm font-medium text-gray-900">Tổng SL</label>
-                                    <input type="number" id="total_including_gifts" class="px-2 py-1 form-control w-full" name="total_including_gifts[]" readonly />
-                                </div>
-                            </div>
-                        </div>
-                        <div class="w-full md:w-1/2 lg:w-2/3 lg:pl-4">
-                            <div class="border-t border-gray-200 mt-2 bg-gray-100">
-                                ${promotionDetails !== '' ? promotionDetails : 'Không có CTKM'}
-                            </div>
-                        </div>
-                    </div>
-                </td>
-            </tr>
-
         `;
+        let itemExpandHtml = productItemExpand(product, promotionDetails);
+        html += itemExpandHtml;
+        
         $('#productList tbody').append(html);
         
         sortProductsByPromotionGroup();// Sắp xếp lại danh sách dựa trên group_promotion_id
         updateProductIndices(); // Cập nhật số thứ tự sau khi thêm hoặc sắp xếp
+        updateTotals();
     }
 
     function addProductToOrderWithQty(detail) {
         let sapCode = detail.sap_code;
         var product = promotions.find(p => p.sap_code === sapCode);
-        let promotionDetails = '';
+        var promotionDetails = '';
         if (product) { // nếu sản phẩm có khuyến mãi
-            let promotionGroup = product.promotion_group;
-            //console.log(promotionGroup);
-            // Bắt đầu một hàng mới
-            promotionDetails += '<div class="flex flex-wrap">';
-            // Lặp qua từng promotion trong promotionGroup
-            promotionGroup.promotion.forEach(promo => {
-                // Common details for each promotion
-                let details = `
-                    <div class="selectPromotion promotion-item p-2 border rounded-lg shadow my-2 mx-2 cursor-pointer" 
-                        id="promo_${promo.id}" data-promotion-id="${promo.id}" data-product-id="${product.id}">
-                        <strong>Tên:</strong> ${promotionGroup.promotion_name}
-                        <br>
-                        <strong>Loại KM:</strong> ${promo.promotion_type}
-                        <br>
-                        <strong>SL tối thiểu:</strong> ${promo.minimum_quantity || ''}
-                        <br>
-                        ${promo.minimum_amount ? `<strong>Số tiền tối thiểu:</strong> ${promo.minimum_amount}<br>` : ''}
-                `;
-                // Conditional details based on promotion type
-                if (promo.promotion_type === "Sản phẩm") {
-                    details += `
-                        <strong>Sản phẩm tặng:</strong> ${promo.bonus_product_id || ''}
-                        <br>
-                        <strong>SL tặng cố định:</strong> ${promo.bonus_quantity || '0'}
-                        <br>
-                        <strong>Tỉ lệ tặng:</strong> ${promo.bonus_ratio || '0'}
-                        <br>
-                        <strong>Mô tả:</strong> ${promo.description || ''}
-                    `;
-                } else if (promo.promotion_type === "Chiết khấu") {
-                    details += `
-                        <strong>Chiết khấu:</strong> ${promo.discount_percentage ? promo.discount_percentage + '%' : ''}
-                        <br>
-                        <strong>Mô tả:</strong> ${promo.description || ''}
-                    `;
-                }
-
-                // Close the div for this promotion
-                details += `</div>`;
-
-                // Append details to promotionDetails
-                promotionDetails += details;
-            });
-            // Kết thúc hàng
-            promotionDetails += '</div>';
-            //console.log(promotionDetails);
+            promotionDetails = addPromotionBox(product);
         } else {
             var product = products.find(p => p.sap_code === sapCode);
             var product_price = { ...product };// Tạo một bản sao của đối tượng sản phẩm
@@ -422,11 +417,11 @@ $(document).ready(function() {
                     <button type="button" class="text-white px-2 py-1 rounded text-sm mt-1 hideExpand" data-row-id="${product.id}" style="background-color: ${product.promotion_group && product.promotion_group.color_code ? product.promotion_group.color_code : 'grey'}">+</button>
                     <span class="product-index"></span>
                     <input type="hidden" name="is_gift[]" value="0" class="gift-input">
-                    <input type="checkbox" class="is-gift-checkbox" onchange="updateGiftValue(this);">
+                    <input type="checkbox" class="is-gift-checkbox">
                 </td>
                 <td class="w-1/12">
                     <span class="form-control-plaintext">${product.sap_code}</span>
-                    <input type="hidden" name="sap_code[]" class="sap-code" value="${product.sap_code}">
+                    <input type="hidden" name="sap_code[]"  class="sap-code" value="${product.sap_code}">
                 </td>
                 <td class="w-5/12">
                     <span class="form-control-plaintext">${product.product_name}</span>
@@ -466,62 +461,9 @@ $(document).ready(function() {
                     <button type="button" class="btn btn-danger btn-sm mt-1 removeProduct" data-row-id="${product.id}">Xóa</button>
                 </td>
             </tr>
-            
-            <tr class="productItemExpand" data-row-id="${product.id}" data-group-id="${product.promotion_group ? product.promotion_group.id : 'none'}"
-                style="display: none; background-color: ${product.promotion_group && product.promotion_group.color_code ? product.promotion_group.color_code : ''}">
-                <td colspan="100%">
-                    <div class="flex flex-wrap items-center">
-                        <div class="w-full md:w-1/2 lg:w-1/3">
-                            <div class="flex flex-wrap -mx-2">
-                                <div class="w-1/4 px-2">
-                                    <span class="block mb-2 mt-2 ml-2 text-sm">QC: ${product.product_price.packaging}</span>
-                                </div>
-                                <div class="w-1/4 px-2">
-                                    <span class="block mb-2 mt-2 ml-2 text-sm">Đ.giá: ${product.product_price.price_sellout_per_unit}</span>
-                                </div>
-                                <div class="w-2/4 px-2">
-                                    <textarea class="form-control w-full ml-2 text-sm" rows="1" name="notes[]" placeholder="Ghi chú"></textarea>
-                                </div>
-                            </div>
-                            <div class="flex flex-wrap -mx-2 ml-1">
-                                <div class="w-1/3 px-2 mt-1">
-                                    <label for="total_quantity" class="block text-sm font-medium text-gray-700">SL tổng</label>
-                                    <input type="number" id="total_quantity" class="px-2 py-2 form-control w-full" name="total_quantity[]" />
-                                </div>
-                                <div class="w-1/3 px-2 mt-1">
-                                    <label for="purchase" class="block text-sm font-medium text-gray-700">CTKM mua</label>
-                                    <input type="number" id="purchase" class="px-2 py-2 form-control w-full" name="purchase[]" />
-                                </div>
-                                <div class="w-1/3 px-2 mt-1">
-                                    <label for="reward" class="block text-sm font-medium text-gray-700">CTKM tặng</label>
-                                    <input type="number" id="reward" class="px-2 py-2 form-control w-full" name="reward[]" />
-                                </div>
-                            </div>
-                            <div class="flex flex-wrap -mx-2 ml-1">
-                                <div class="w-1/3 px-2 mt-1">
-                                    <label for="quantity_without_promotion" class="block text-sm font-medium text-gray-900">SL gốc</label>
-                                    <input type="number" id="quantity_without_promotion" class="px-2 py-1 form-control w-full" name="quantity_without_promotion[]" readonly />
-                                </div>
-                                <div class="w-1/3 px-2 mt-1">
-                                    <label for="gift_quantity" class="block text-sm font-medium text-gray-900">SL tặng</label>
-                                    <input type="number" id="gift_quantity" class="px-2 py-1 form-control w-full" name="gift_quantity[]" readonly />
-                                </div>
-                                <div class="w-1/3 px-2 mt-1">
-                                    <label for="total_including_gifts" class="block text-sm font-medium text-gray-900">Tổng SL</label>
-                                    <input type="number" id="total_including_gifts" class="px-2 py-1 form-control w-full" name="total_including_gifts[]" readonly />
-                                </div>
-                            </div>
-                        </div>
-                        <div class="w-full md:w-1/2 lg:w-2/3 lg:pl-4">
-                            <div class="border-t border-gray-200 mt-2 bg-gray-100">
-                                ${promotionDetails !== '' ? promotionDetails : 'Không có CTKM'}
-                            </div>
-                        </div>
-                    </div>
-                </td>
-            </tr>
-
         `;
+        let itemExpandHtml = productItemExpand(product, promotionDetails);
+        html += itemExpandHtml;
         $('#productList tbody').append(html);
         
         sortProductsByPromotionGroup();// Sắp xếp lại danh sách dựa trên group_promotion_id
@@ -544,7 +486,6 @@ $(document).ready(function() {
         var totalIncludingGifts = totalQuantity; // Đây có thể chỉ đơn giản là totalQuantity nếu đã bao gồm số lượng tặng
         $row.find('[name="total_including_gifts[]"]').val(totalIncludingGifts.toFixed(2));
     });
-
 
     $('#productList').on('click', '.selectPromotion', function() {
         const productId = $(this).data('product-id');// Lấy productId từ data attribute của element được click
@@ -582,14 +523,18 @@ $(document).ready(function() {
         $('.productItemExpand[data-row-id="' + rowId + '"]').remove(); 
     });
 
-    $('#productList').on('change', '.is-gift-checkbox', function() {
+    $('#productList').on('change', '.is-gift-checkbox', function(e) {
         var isChecked = $(this).prop('checked');
         var $row = $(this).closest('.productItem');
         var $expandRow = $row.next('.productItemExpand'); // Lấy phần mở rộng tương ứng
         // Nếu là quà tặng, đặt giá trị null cho các ô input khác và vô hiệu hóa chúng
         if (isChecked) {
-            $row.find('input[type="number"]:not([name="le[]"])').val(0);
-            $row.find('input[type="text"]:not([name="quantity[]"])').val(0);
+            // $row.find('input[type="number"]:not([name="le[]"])').val(0);
+            // $row.find('input[type="text"]:not([name="quantity[]"])').val(0);
+            $row.find('input').not('.is-gift-checkbox, .gift-input, .quantity, .sap-code, .product-code, .product-name ,.promotion-id').val(0);
+            $row.find('input[name="is_gift[]"]').val(1);
+            let productItem = e.target.closest('.productItem');
+            updateQuantity(productItem);
             //$expandRow.toggle(!isChecked); // Sử dụng toggle với điều kiện ngược lại của isChecked
             //$expandRow.remove();
             $expandRow.hide();

@@ -116,19 +116,6 @@ function notify500(){
         }, 500);
     }
 
-// function updateGiftValue(checkbox) {
-//     var hiddenInput = checkbox.previousElementSibling; // Truy cập input ẩn
-//     hiddenInput.value = checkbox.checked ? 1 : 0; // Cập nhật giá trị dựa trên trạng thái của checkbox
-//     var $row = $(checkbox).closest('tr.productItem');
-//     if (checkbox.checked) {
-//         $row.find('input').not('.is-gift-checkbox, .gift-input, .quantity, .sap-code, .product-code, .product-name ,.promotion-id').val(0);
-//         $row.find('input[name="is_gift[]"]').val(1);
-//     } else {
-//         // Thực hiện các thao tác khác nếu checkbox không được đánh dấu
-//         // Ví dụ: khôi phục giá trị ban đầu nếu cần
-//     }
-// }
-
 $(document).ready(function() {
     var today = new Date();
     //today.setHours(today.getHours() + 7);
