@@ -54,8 +54,11 @@ class TemporaryController extends Controller
         $products = ProductPrice::all();
         $saleStaffs = SaleStaff::all();
         $promotions = PromotionProduct::with(['promotionGroup.promotion', 'productPrice'])->get();
+        $promotionChilds = PromotionProduct::with(['promotionGroup.promotion', 'productPrice'])
+                                       ->whereNotNull('parent_id')
+                                       ->get();
         $header = 'Tạo đơn tạm ứng';
-        return view('accounting.create_order_temporary', compact('header', 'products', 'saleStaffs', 'promotions'));
+        return view('accounting.create_order_temporary', compact('header', 'products', 'saleStaffs', 'promotions',  'promotionChilds'));
     }
 
     // Lưu đơn hàng mới vào cơ sở dữ liệu

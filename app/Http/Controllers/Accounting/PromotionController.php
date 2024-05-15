@@ -95,6 +95,7 @@ class PromotionController extends Controller
         $promotionProduct->sap_code = $request->sap_code;
         $promotionProduct->product_name = $request->product_name;
         $promotionProduct->group_promotion_id = $request->group_promotion_id;
+        $promotionProduct->parent_id = $request->parent_id;
         $promotionProduct->save(); // Lưu các thay đổi
 
         return response()->json(['message' => 'Cập nhật đơn hàng thành công'], 200);

@@ -141,6 +141,8 @@ $(document).ready(function() {
     console.log(products);
     let promotions = @json($promotions);
     console.log(promotions);
+    let promotionChilds = @json($promotionChilds);
+    console.log(promotionChilds);
     $('#productSearch').autocomplete({
         source: products.map(product => ({
             label: product.sap_code + " - " + product.product_name,
@@ -191,6 +193,7 @@ $(document).ready(function() {
     function addPromotionBox(product){
         console.log(product);
         let promotionDetails = '';
+        let promotionDetailChilds = '';
         let promotionGroup = product.promotion_group;
         // console.log(promotionGroup);
         // Bắt đầu một hàng mới
@@ -230,9 +233,49 @@ $(document).ready(function() {
             details += `</div>`;// Close the div for this promotion
             promotionDetails += details;// Append details to promotionDetails
         });
-        // Kết thúc hàng
-        promotionDetails += '</div>';
-        //console.log(promotionDetails);
+
+        const productIdToCheck = product.product_price.id; // ID của sản phẩm bạn muốn kiểm tra
+        // Tìm tất cả sản phẩm trong danh sách promotionChilds dựa trên product_id
+        const foundProducts = promotionChilds.filter(item => item.product_price.id === productIdToCheck);
+        if (foundProducts.length > 0) {
+            foundProducts.forEach(product => {
+                let promotionGroup = product.promotion_group;
+                promotionGroup.promotion.forEach(promo => {
+                    let details = `
+                        <div class="bg-gray-300 promotion-item p-2 border rounded-lg shadow my-2 mx-2 cursor-pointer" 
+                            id="promo_${promo.id}" data-promotion-id="${promo.id}" data-product-id="${product.id}">
+                            <strong>Tên:</strong> ${promotionGroup.promotion_name}
+                            <br>
+                            <strong>Loại KM:</strong> ${promo.promotion_type}
+                            <br>
+                            <strong>SL tối thiểu:</strong> ${promo.minimum_quantity || ''}
+                            <br>
+                            ${promo.minimum_amount ? `<strong>Số tiền tối thiểu:</strong> ${promo.minimum_amount}<br>` : ''}
+                    `;
+                    // Conditional details based on promotion type
+                    if (promo.promotion_type === "Sản phẩm") {
+                        details += `
+                            <strong>Sản phẩm tặng:</strong> ${promo.bonus_product_id || ''}
+                            <br>
+                            <strong>SL tặng cố định:</strong> ${promo.bonus_quantity || '0'}
+                            <br>
+                            <strong>Tỉ lệ tặng:</strong> ${promo.bonus_ratio || '0'}
+                            <br>
+                            <strong>Mô tả:</strong> ${promo.description || ''}
+                        `;
+                    } else if (promo.promotion_type === "Chiết khấu") {
+                        details += `
+                            <strong>Chiết khấu:</strong> ${promo.discount_percentage ? promo.discount_percentage + '%' : ''}
+                            <br>
+                            <strong>Mô tả:</strong> ${promo.description || ''}
+                        `;
+                    }
+                    details += `</div>`;// Close the div for this promotion
+                    promotionDetailChilds += details;// Append details to promotionDetails
+                });
+            });
+        }
+        promotionDetails += promotionDetailChilds + `</div>`;
         return promotionDetails;
     }
 

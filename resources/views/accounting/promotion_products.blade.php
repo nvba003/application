@@ -11,10 +11,12 @@
         <table class="table-fixed text-left w-full border-collapse" id="promotionTable">
             <thead>
                 <tr>
+                    <th class="w-1/12 px-2 py-3 bg-grey-lightest font-bold uppercase text-sm text-grey-dark border-b border-grey-light">ID</th>    
                     <th class="w-1/12 px-3 py-3 bg-grey-lightest font-bold uppercase text-sm text-grey-dark border-b border-grey-light">Mã SAP</th>
-                    <th class="w-5/12 px-4 py-3 bg-grey-lightest font-bold uppercase text-sm text-grey-dark border-b border-grey-light">Tên sản phẩm</th>
+                    <th class="w-4/12 px-4 py-3 bg-grey-lightest font-bold uppercase text-sm text-grey-dark border-b border-grey-light">Tên sản phẩm</th>
                     <th class="w-1/12 px-3 py-3 bg-grey-lightest font-bold uppercase text-sm text-grey-dark border-b border-grey-light">Nhóm</th>
-                    <th class="w-3/12 px-4 py-3 bg-grey-lightest font-bold uppercase text-sm text-grey-dark border-b border-grey-light">Tên CTKM</th>
+                    <th class="w-2/12 px-4 py-3 bg-grey-lightest font-bold uppercase text-sm text-grey-dark border-b border-grey-light">Tên CTKM</th>
+                    <th class="w-1/12 px-4 py-3 bg-grey-lightest font-bold uppercase text-sm text-grey-dark border-b border-grey-light">P.Bản</th>
                     <th class="w-2/12 px-4 py-3 bg-grey-lightest font-bold uppercase text-sm text-grey-dark border-b border-grey-light">Thao tác</th>
                 </tr>
             </thead>
@@ -96,6 +98,10 @@
           <div class="mb-3">
             <label for="editGroup" class="form-label">Nhóm</label>
             <input type="text" class="form-control" id="editGroup" name="group_promotion_id">
+          </div>
+          <div class="mb-3">
+            <label for="editParent" class="form-label">Phiên bản</label>
+            <input type="text" class="form-control" id="editParent" name="parent_id">
           </div>
         </form>
       </div>
@@ -264,6 +270,7 @@ $(document).ready(function() {
         $('#editSapCode').val(product.sap_code);
         $('#editProductName').val(product.product_name);
         $('#editGroup').val(product.group_promotion_id);
+        $('#editParent').val(product.parent_id);
         // Hiển thị modal
         $('#editModal').modal('show');
     }
@@ -274,6 +281,7 @@ $(document).ready(function() {
             sap_code: $('#editSapCode').val(),
             product_name: $('#editProductName').val(),
             group_promotion_id: $('#editGroup').val(),
+            parent_id: $('#editParent').val(),
         };
         console.log(editedData);
         $.ajaxSetup({

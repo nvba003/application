@@ -19,9 +19,11 @@ class CreatePromotionProductsTable extends Migration
             $table->unsignedMediumInteger('sap_code')->nullable(); // Mã SAP
             $table->foreign('sap_code')->references('sap_code')->on('product_prices')->onDelete('set null');
             $table->string('product_name')->nullable(); // Tên sản phẩm
+            $table->unsignedSmallInteger('parent_id')->nullable();
             $table->timestamps();
 
             $table->foreign('group_promotion_id')->references('id')->on('promotion_groups')->onDelete('cascade');
+            $table->foreign('parent_id')->references('id')->on('promotion_products')->onDelete('set null');
         });
     }
 
