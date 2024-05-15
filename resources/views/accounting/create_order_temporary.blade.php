@@ -494,7 +494,7 @@ $(document).ready(function() {
         $('.productItemExpand[data-row-id="' + rowId + '"]').remove(); 
     });
 
-    $('#productList').on('change', '.is-gift-checkbox', function() {
+    $('#productList').on('change', '.is-gift-checkbox', function(e) {
         var isChecked = $(this).prop('checked');
         var $row = $(this).closest('.productItem');
         var $expandRow = $row.next('.productItemExpand'); // Lấy phần mở rộng tương ứng
@@ -504,6 +504,8 @@ $(document).ready(function() {
             // $row.find('input[type="text"]:not([name="quantity[]"])').val(0);
             $row.find('input').not('.is-gift-checkbox, .gift-input, .quantity, .sap-code, .product-code, .product-name ,.promotion-id').val(0);
             $row.find('input[name="is_gift[]"]').val(1);
+            let productItem = e.target.closest('.productItem');
+            updateQuantity(productItem);
             //$expandRow.toggle(!isChecked); // Sử dụng toggle với điều kiện ngược lại của isChecked
             //$expandRow.remove();
             $expandRow.hide();
