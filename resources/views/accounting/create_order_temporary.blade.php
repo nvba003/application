@@ -189,6 +189,7 @@ $(document).ready(function() {
     });
 
     function addPromotionBox(product){
+        console.log(product);
         let promotionDetails = '';
         let promotionGroup = product.promotion_group;
         // console.log(promotionGroup);
