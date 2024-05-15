@@ -202,6 +202,8 @@ class TemporaryController extends Controller
         $orderTemporary->report_date = $request->report_date; // Ngày báo cáo
         $orderTemporary->save();
 
+        $details = [];
+
         $productCodes = $request->sap_code;
         $productNames = $request->product_name;
         $packings = $request->packing;
@@ -234,9 +236,15 @@ class TemporaryController extends Controller
             $detail->promotion_id = $promotionIds[$index] ?? null;
             $detail->notes = $notes[$index] ?? null;
             $detail->save();
+            $details[] = $detail->toArray(); 
         }
         //return response()->json(['message' => 'Success'], 200);
-        return redirect()->route('orderReturnTemporary.create')->with('success', 'Đơn hoàn ứng đã được tạo thành công.');
+        //return redirect()->route('orderReturnTemporary.create')->with('success', 'Đơn hoàn ứng đã được tạo thành công.');
+        return response()->json([
+            'message' => 'Success',
+            'orderTemporary' => $orderTemporary->toArray(),
+            'details' => $details
+        ], 200);
     }
 
     public function searchReturnTemporary(Request $request)
