@@ -640,6 +640,7 @@ $(document).ready(function() {
             // thung.value = 0;
             let le = parseInt(row.querySelector('[name="le[]"]').value) || 0;
             let quantityInput = row.querySelector('[name="quantity[]"]');
+            row.querySelector('[name="price[]"]').value = 0;
             row.querySelector('[name="discount[]"]').value = 0;
             row.querySelector('[name="payable[]"]').value = 0;//đặt payable = 0 để không bị lỗi discount âm
             quantityInput.value = le;
