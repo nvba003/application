@@ -269,10 +269,10 @@ $(document).ready(function() {
                     <input type="number" class="form-input mt-1 py-1 px-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" name="thung[]" min="0">
                 </td>
                 <td class="w-1/12">
-                    <input type="number" class="form-input mt-1 py-1 px-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" name="le[]" min="0">
+                    <input type="number" class="quantity form-input mt-1 py-1 px-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" name="le[]" min="0">
                 </td>
                 <td class="w-1/12">
-                    <input type="text" disabled class="form-input mt-1 py-1 px-1 block w-full appearance-none border-none shadow-sm bg-gray-200 rounded-sm" name="quantity[]" required>
+                    <input type="text" disabled class="quantity form-input mt-1 py-1 px-1 block w-full appearance-none border-none shadow-sm bg-gray-200 rounded-sm" name="quantity[]" required>
                 </td>
                 <td class="hidden">
                     <input type="number" class="form-control" name="price[]" value="${product.product_price.price_sellout_per_unit}">
