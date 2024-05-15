@@ -119,6 +119,14 @@ function notify500(){
 function updateGiftValue(checkbox) {
     var hiddenInput = checkbox.previousElementSibling; // Truy cập input ẩn
     hiddenInput.value = checkbox.checked ? 1 : 0; // Cập nhật giá trị dựa trên trạng thái của checkbox
+    var $row = $(checkbox).closest('tr.productItem');
+    if (checkbox.checked) {
+        $row.find('input').not('.is-gift-checkbox, .gift-input, .quantity, .sap-code, .product-code, .product-name ,.promotion-id').val(0);
+        $row.find('input[name="is_gift[]"]').val(1);
+    } else {
+        // Thực hiện các thao tác khác nếu checkbox không được đánh dấu
+        // Ví dụ: khôi phục giá trị ban đầu nếu cần
+    }
 }
 
 $(document).ready(function() {
@@ -248,11 +256,11 @@ $(document).ready(function() {
                 </td>
                 <td class="w-1/12">
                     <span class="form-control-plaintext">${product.sap_code}</span>
-                    <input type="hidden" name="sap_code[]" value="${product.sap_code}">
+                    <input type="hidden" name="sap_code[]" class="sap-code" value="${product.sap_code}">
                 </td>
                 <td class="w-5/12">
                     <span class="form-control-plaintext">${product.product_name}</span>
-                    <input type="hidden" name="product_name[]" value="${product.product_name}">
+                    <input type="hidden" name="product_name[]" class="product-name" value="${product.product_name}">
                 </td>
                 <td class="hidden">
                     <input type="number" class="form-input mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" name="packing[]" value="${product.product_price.packaging.match(/\d+/)[0] || ''}" readonly>
@@ -410,7 +418,7 @@ $(document).ready(function() {
 
         let html = `
             <tr class="productItem" data-row-id="${product.id}" data-group-id="${product.promotion_group ? product.promotion_group.id : 'none'}">
-                <input type="hidden" id="selectedPromotionId_${product.id}" name="promotion_ids[]" value="">
+                <input type="hidden" id="selectedPromotionId_${product.id}" class="promotion-id" name="promotion_ids[]" value="">
                 <td class="w-1/12 text-center py-1 px-1">
                     <button type="button" class="text-white px-2 py-1 rounded text-sm mt-1 hideExpand" data-row-id="${product.id}" style="background-color: ${product.promotion_group && product.promotion_group.color_code ? product.promotion_group.color_code : 'grey'}">-</button>
                     <span class="product-index"></span>
@@ -419,11 +427,11 @@ $(document).ready(function() {
                 </td>
                 <td class="w-1/12">
                     <span class="form-control-plaintext">${product.sap_code}</span>
-                    <input type="hidden" name="sap_code[]" value="${product.sap_code}">
+                    <input type="hidden" name="sap_code[]"  class="sap-code" value="${product.sap_code}">
                 </td>
                 <td class="w-5/12">
                     <span class="form-control-plaintext">${product.product_name}</span>
-                    <input type="hidden" name="product_name[]" value="${product.product_name}">
+                    <input type="hidden" name="product_name[]" class="product-name" value="${product.product_name}">
                 </td>
                 <td class="hidden">
                     <input type="number" class="form-input mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" name="packing[]" value="${product.product_price.packaging.match(/\d+/)[0] || ''}" readonly>
@@ -432,10 +440,10 @@ $(document).ready(function() {
                     <input type="number" class="form-input mt-1 py-1 px-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" name="thung[]" min="0">
                 </td>
                 <td class="w-1/12">
-                    <input type="number" class="form-input mt-1 py-1 px-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" name="le[]" min="0" value="${detail.quantity}">
+                    <input type="number" class="quantity form-input mt-1 py-1 px-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" name="le[]" min="0" value="${detail.quantity}">
                 </td>
                 <td class="w-1/12">
-                    <input type="text" disabled class="form-input mt-1 py-1 px-1 block w-full appearance-none border-none shadow-sm bg-gray-200 rounded-sm" name="quantity[]" value="${detail.quantity}" required>
+                    <input type="text" disabled class="quantity form-input mt-1 py-1 px-1 block w-full appearance-none border-none shadow-sm bg-gray-200 rounded-sm" name="quantity[]" value="${detail.quantity}" required>
                 </td>
                 <td class="hidden">
                     <input type="number" class="form-control" name="price[]" value="${product.product_price.price_sellout_per_unit}">
@@ -583,7 +591,6 @@ $(document).ready(function() {
         if (isChecked) {
             $row.find('input[type="number"]:not([name="le[]"])').val(0);
             $row.find('input[type="text"]:not([name="quantity[]"])').val(0);
-            $row.find('input[name="discounted_price[]"].hidden').val(0);
             //$expandRow.toggle(!isChecked); // Sử dụng toggle với điều kiện ngược lại của isChecked
             //$expandRow.remove();
             $expandRow.hide();
@@ -641,9 +648,6 @@ $(document).ready(function() {
             // thung.value = 0;
             let le = parseInt(row.querySelector('[name="le[]"]').value) || 0;
             let quantityInput = row.querySelector('[name="quantity[]"]');
-            row.querySelector('[name="price[]"]').value = 0;
-            row.querySelector('[name="discount[]"]').value = 0;
-            row.querySelector('[name="payable[]"]').value = 0;//đặt payable = 0 để không bị lỗi discount âm
             quantityInput.value = le;
             updateTotals();
         }
