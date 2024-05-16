@@ -334,8 +334,9 @@ $(document).ready(function() {
         }
         // Thêm hàng tổng kết
         let totalRow = `<tr class="bg-blue-200">
-        <td colspan="5" class="text-sm"><strong>Tổng cộng</strong></td>
+        <td colspan="4" class="text-sm"><strong>Tổng cộng</strong></td>
         <td class="text-sm text-right"><strong>${totalQuantity.toLocaleString()}</strong></td>
+        <td></td>
         <td class="text-sm text-right"><strong>${totalDiscount.toLocaleString()}</strong></td>
         <td class="text-sm text-right"><strong>${totalPayable.toLocaleString()}</strong></td>
         </tr>`;
