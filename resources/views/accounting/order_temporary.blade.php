@@ -311,8 +311,8 @@ $(document).ready(function() {
                 <td class="w-1/12 px-3 py-2 text-sm border-b border-grey-light text-right">${product.price.toLocaleString()}</td>
                 <td class="w-1/12 px-3 py-2 text-sm border-b border-grey-light text-right">${product.quantity}</td>
                 <td class="w-1/12 px-3 py-2 text-sm border-b border-grey-light text-right">${product.subtotal.toLocaleString()}</td>
-                <td class="w-1/12 px-3 py-2 text-sm border-b border-grey-light text-right">${product.totalDiscount.toLocaleString()}</td>
-                <td class="w-1/12 px-3 py-2 text-sm border-b border-grey-light text-right">${product.totalPrice.toLocaleString()}</td>
+                <td class="w-1/12 px-3 py-2 text-sm border-b border-grey-light text-right bg-blue-50 bg-opacity-40 text-red-500">${product.totalDiscount.toLocaleString()}</td>
+                <td class="w-1/12 px-3 py-2 text-sm border-b border-grey-light text-right text-green-700">${product.totalPrice.toLocaleString()}</td>
             </tr>`;
             productDetails.append(row);
         });
@@ -337,8 +337,8 @@ $(document).ready(function() {
         <td colspan="4" class="text-sm"><strong>Tổng cộng</strong></td>
         <td class="text-sm text-right"><strong>${totalQuantity.toLocaleString()}</strong></td>
         <td></td>
-        <td class="text-sm text-right"><strong>${totalDiscount.toLocaleString()}</strong></td>
-        <td class="text-sm text-right"><strong>${totalPayable.toLocaleString()}</strong></td>
+        <td class="text-base text-right text-red-500"><strong>${totalDiscount.toLocaleString()}</strong></td>
+        <td class="text-base text-right text-green-700"><strong>${totalPayable.toLocaleString()}</strong></td>
         </tr>`;
         productDetails.append(totalRow);
 
