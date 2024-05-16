@@ -105,16 +105,16 @@
       </div>
       <div class="modal-body">
         <table class="table">
-          <thead>
+          <thead class="bg-blue-400">
             <tr>
-              <th scope="col" class="px-2 py-2 text-xs font-bold text-gray-900 uppercase tracking-wider">STT</th>
-              <th scope="col" class="px-2 py-2 text-xs font-bold text-gray-900 uppercase tracking-wider">Mã SAP</th>
-              <th scope="col" class="px-2 py-2 text-xs font-bold text-gray-900 uppercase tracking-wider">Tên sản phẩm</th>
-              <th scope="col" class="px-2 py-2 text-right text-xs font-bold text-gray-900 uppercase tracking-wider">Đơn giá</th>
-              <th scope="col" class="px-2 py-2 text-right text-xs font-bold text-gray-900 uppercase tracking-wider">Số lượng</th>
-              <th scope="col" class="px-2 py-2 text-right text-xs font-bold text-gray-900 uppercase tracking-wider">T.Tiền</th>
-              <th scope="col" class="px-2 py-2 text-right text-xs font-bold text-gray-900 uppercase tracking-wider">C.Khấu</th>
-              <th scope="col" class="px-2 py-2 text-right text-xs font-bold text-gray-900 uppercase tracking-wider">T.Toán</th>
+              <th scope="col" class="px-2 py-3 text-xs font-bold text-gray-900 uppercase tracking-wider">STT</th>
+              <th scope="col" class="px-2 py-3 text-xs font-bold text-gray-900 uppercase tracking-wider">Mã SAP</th>
+              <th scope="col" class="px-2 py-3 text-xs font-bold text-gray-900 uppercase tracking-wider">Tên sản phẩm</th>
+              <th scope="col" class="px-2 py-3 text-right text-xs font-bold text-gray-900 uppercase tracking-wider">Đơn giá</th>
+              <th scope="col" class="px-2 py-3 text-right text-xs font-bold text-gray-900 uppercase tracking-wider">Số lượng</th>
+              <th scope="col" class="px-2 py-3 text-right text-xs font-bold text-gray-900 uppercase tracking-wider">T.Tiền</th>
+              <th scope="col" class="px-2 py-3 text-right text-xs font-bold text-gray-900 uppercase tracking-wider">C.Khấu</th>
+              <th scope="col" class="px-2 py-3 text-right text-xs font-bold text-gray-900 uppercase tracking-wider">T.Toán</th>
             </tr>
           </thead>
           <tbody id="productSummaryDetails">
@@ -253,65 +253,6 @@ $(document).ready(function() {
     });
     updateCount();  
 
-    // $('#showSummaryBtn').click(function() {
-    //     var tableContent = buildTableContent();// Khởi tạo và bắt đầu nội dung HTML của bảng
-    //     $('#tableContainer').html(tableContent);
-    //     $('#summaryModal').modal('show');
-    // });
-
-    // function buildTableContent() {
-    //     var totalChietKhau = 0;
-    //     var totalThanhToan = 0;
-
-    //     var tableContent = `
-    //         <table class="table">
-    //             <thead>
-    //                 <tr>
-    //                     <th>#</th>
-    //                     <th>Ngày BC</th>
-    //                     <th>NVBH</th>
-    //                     <th>C.Khấu</th>
-    //                     <th>T.Toán</th>
-    //                 </tr>
-    //             </thead>
-    //             <tbody>`;
-
-    //     // Duyệt qua mỗi hàng có checkbox được tích
-    //     $(".order-checkbox:checked").each(function(index) {
-    //         var orderId = $(this).data('id');
-    //         var row = $(this).closest("tr");
-    //         var ChietKhau = parseInt(row.find("td:eq(4)").text().replace(/,/g, '')) || 0;
-    //         var ThanhToan = parseInt(row.find("td:eq(5)").text().replace(/,/g, '')) || 0;
-    //         console.log(ChietKhau);
-    //         console.log(ThanhToan);
-
-    //         totalChietKhau += ChietKhau;
-    //         totalThanhToan += ThanhToan;
-
-    //         tableContent += `
-    //             <tr>
-    //                 <td style="display: none;" data-id="${orderId}"></td>    
-    //                 <td>${index + 1}</td>
-    //                 <td>${row.find("td:eq(2)").text()}</td>
-    //                 <td>${row.find("td:eq(3)").text()}</td>
-    //                 <td>${ChietKhau.toLocaleString()}</td>
-    //                 <td>${ThanhToan.toLocaleString()}</td>
-    //             </tr>`;
-    //     });
-
-    //     // Đóng thẻ tbody và thêm hàng tổng số
-    //     tableContent += `
-    //             <tr>
-    //                 <td colspan="3"><strong>Tổng</strong></td>
-    //                 <td><strong>${totalChietKhau.toLocaleString()}</strong></td>
-    //                 <td><strong>${totalThanhToan.toLocaleString()}</strong></td>
-    //             </tr>
-    //             </tbody>
-    //         </table>`;
-
-    //     return tableContent;
-    // }
-
     $('#showSummaryOrder').click(function() {
         let selectedOrders = [];
         $(".order-checkbox:checked").each(function(index) {
@@ -363,7 +304,7 @@ $(document).ready(function() {
         productDetails.empty(); // Xóa các hàng hiện có
         Object.values(products).forEach(product => {
             stt++;
-            let row = `<tr>
+            let row = `<tr class="even:bg-gray-200 odd:bg-white">
                 <td class="w-1/12 px-3 py-2 text-sm border-b border-grey-light">${stt}</td>
                 <td class="w-2/12 px-3 py-2 text-sm border-b border-grey-light">${product.product_code}</td>
                 <td class="w-4/12 px-3 py-2 text-sm border-b border-grey-light">${product.product_name}</td>
@@ -378,19 +319,22 @@ $(document).ready(function() {
         if (Object.keys(productSpecials).length > 0) {
             Object.values(productSpecials).forEach((product, index) => {
                 let row = `
-                    <tr>
-                        <td>${index + 1}</td>    
-                        <td>${product.product_code}</td>
-                        <td>${product.product_name}</td>
+                    <tr class="bg-gray-100">
+                        <td class="w-1/12 px-3 py-2 text-sm border-b border-grey-light">${index + 1}</td>    
+                        <td class="w-2/12 px-3 py-2 text-sm border-b border-grey-light">${product.product_code}</td>
+                        <td class="w-4/12 px-3 py-2 text-sm border-b border-grey-light">${product.product_name}</td>
                         <td></td>  
-                        <td class="text-right">${product.quantity}</td>
+                        <td class="w-1/12 px-3 py-2 text-sm border-b border-grey-light text-right">${product.quantity}</td>
+                        <td></td> 
+                        <td></td> 
+                        <td></td>
                     </tr>`;
                 productDetails.append(row);
             });
         }
         // Thêm hàng tổng kết
-        let totalRow = `<tr class="table-info">
-        <td colspan="5"><strong>Tổng cộng</strong></td>
+        let totalRow = `<tr class="bg-blue-200">
+        <td colspan="5" class="text-sm"><strong>Tổng cộng</strong></td>
         <td class="text-sm text-right"><strong>${totalQuantity.toLocaleString()}</strong></td>
         <td class="text-sm text-right"><strong>${totalDiscount.toLocaleString()}</strong></td>
         <td class="text-sm text-right"><strong>${totalPayable.toLocaleString()}</strong></td>

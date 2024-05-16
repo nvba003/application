@@ -105,15 +105,16 @@
       </div>
       <div class="modal-body">
         <table class="table">
-          <thead>
+          <thead class="bg-blue-400">
             <tr>
-              <th scope="col">STT</th>
-              <th scope="col">Mã SAP</th>
-              <th scope="col">Tên sản phẩm</th>
-              <th scope="col">Đơn giá</th>
-              <th scope="col">Số lượng</th>
-              <th scope="col">Chiết khấu</th>
-              <th scope="col">Thành tiền</th>
+              <th scope="col" class="px-2 py-3 text-xs font-bold text-gray-900 uppercase tracking-wider">STT</th>
+              <th scope="col" class="px-2 py-3 text-xs font-bold text-gray-900 uppercase tracking-wider">Mã SAP</th>
+              <th scope="col" class="px-2 py-3 text-xs font-bold text-gray-900 uppercase tracking-wider">Tên sản phẩm</th>
+              <th scope="col" class="px-2 py-3 text-right text-xs font-bold text-gray-900 uppercase tracking-wider">Đơn giá</th>
+              <th scope="col" class="px-2 py-3 text-right text-xs font-bold text-gray-900 uppercase tracking-wider">Số lượng</th>
+              <th scope="col" class="px-2 py-3 text-right text-xs font-bold text-gray-900 uppercase tracking-wider">T.Tiền</th>
+              <th scope="col" class="px-2 py-3 text-right text-xs font-bold text-gray-900 uppercase tracking-wider">C.Khấu</th>
+              <th scope="col" class="px-2 py-3 text-right text-xs font-bold text-gray-900 uppercase tracking-wider">T.Toán</th>
             </tr>
           </thead>
           <tbody id="productSummaryDetails">
@@ -303,36 +304,40 @@ $(document).ready(function() {
         productDetails.empty(); // Xóa các hàng hiện có
         Object.values(products).forEach(product => {
             stt++;
-            let row = `<tr>
-                <td>${stt}</td>
-                <td>${product.product_code}</td>
-                <td>${product.product_name}</td>
-                <td class="text-right">${product.price.toLocaleString()}</td>
-                <td class="text-right">${product.quantity}</td>
-                <td class="text-right">${product.totalDiscount.toLocaleString()}</td>
-                <td class="text-right">${product.totalPrice.toLocaleString()}</td>
+            let row = `<tr class="even:bg-gray-200 odd:bg-white">
+                <td class="w-1/12 px-3 py-2 text-sm border-b border-grey-light">${stt}</td>
+                <td class="w-2/12 px-3 py-2 text-sm border-b border-grey-light">${product.product_code}</td>
+                <td class="w-4/12 px-3 py-2 text-sm border-b border-grey-light">${product.product_name}</td>
+                <td class="w-1/12 px-3 py-2 text-sm border-b border-grey-light text-right">${product.price.toLocaleString()}</td>
+                <td class="w-1/12 px-3 py-2 text-sm border-b border-grey-light text-right">${product.quantity}</td>
+                <td class="w-1/12 px-3 py-2 text-sm border-b border-grey-light text-right">${product.subtotal.toLocaleString()}</td>
+                <td class="w-1/12 px-3 py-2 text-sm border-b border-grey-light text-right">${product.totalDiscount.toLocaleString()}</td>
+                <td class="w-1/12 px-3 py-2 text-sm border-b border-grey-light text-right">${product.totalPrice.toLocaleString()}</td>
             </tr>`;
             productDetails.append(row);
         });
         if (Object.keys(productSpecials).length > 0) {
             Object.values(productSpecials).forEach((product, index) => {
                 let row = `
-                    <tr>
-                        <td>${index + 1}</td>    
-                        <td>${product.product_code}</td>
-                        <td>${product.product_name}</td>
+                    <tr class="bg-gray-100">
+                        <td class="w-1/12 px-3 py-2 text-sm border-b border-grey-light">${index + 1}</td>    
+                        <td class="w-2/12 px-3 py-2 text-sm border-b border-grey-light">${product.product_code}</td>
+                        <td class="w-4/12 px-3 py-2 text-sm border-b border-grey-light">${product.product_name}</td>
                         <td></td>  
-                        <td class="text-right">${product.quantity}</td>
+                        <td class="w-1/12 px-3 py-2 text-sm border-b border-grey-light text-right">${product.quantity}</td>
+                        <td></td> 
+                        <td></td> 
+                        <td></td> 
                     </tr>`;
                 productDetails.append(row);
             });
         }
         // Thêm hàng tổng kết
-        let totalRow = `<tr class="table-info">
-        <td colspan="4"><strong>Tổng cộng</strong></td>
-        <td class="text-right"><strong>${totalQuantity.toLocaleString()}</strong></td>
-        <td class="text-right"><strong>${totalDiscount.toLocaleString()}</strong></td>
-        <td class="text-right"><strong>${totalPayable.toLocaleString()}</strong></td>
+        let totalRow = `<tr class="bg-blue-200">
+        <td colspan="5" class="text-sm"><strong>Tổng cộng</strong></td>
+        <td class="text-sm text-right"><strong>${totalQuantity.toLocaleString()}</strong></td>
+        <td class="text-sm text-right"><strong>${totalDiscount.toLocaleString()}</strong></td>
+        <td class="text-sm text-right"><strong>${totalPayable.toLocaleString()}</strong></td>
         </tr>`;
         productDetails.append(totalRow);
 
