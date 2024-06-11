@@ -20,11 +20,11 @@ class CreateOrderTemporaryDetailsTable extends Migration
             $table->string('product_code')->nullable(); // Mã SP
             $table->unsignedMediumInteger('sap_code')->nullable(); // Mã SAP
             $table->string('product_name')->nullable(); // Tên sản phẩm
-            $table->unsignedTinyInteger('packing')->nullable();//quy cách đóng gói
+            $table->unsignedSmallInteger('packing')->nullable();//quy cách đóng gói
             $table->unsignedMediumInteger('price')->nullable();
-            $table->unsignedTinyInteger('thung')->nullable();
-            $table->unsignedTinyInteger('le')->nullable();
-            $table->unsignedTinyInteger('quantity')->nullable();//packing * thung + le
+            $table->unsignedSmallInteger('thung')->nullable();
+            $table->unsignedSmallInteger('le')->nullable();
+            $table->unsignedSmallInteger('quantity')->nullable();//packing * thung + le
             $table->unsignedMediumInteger('subtotal')->nullable();//thành tiền = price * quantity
             $table->decimal('discount_percentage', 5, 2)->nullable(); // Phần trăm chiết khấu
             $table->unsignedMediumInteger('discounted_price')->nullable(); // Giá sau chiết khấu = price * discount_percentage/100

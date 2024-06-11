@@ -580,13 +580,13 @@ $(document).ready(function() {
             let quantityInput = row.querySelector('[name="quantity[]"]');
             let calculatedQuantity = (packing * thung) + le;
             quantityInput.value = calculatedQuantity;  // Cập nhật số lượng dựa trên thung và lẻ
-            subtotal.value = price * calculatedQuantity;
+            subtotal.value = Math.round(price * calculatedQuantity);
 
-            discounted_price.value = price * (1 - discountFactor);
+            discounted_price.value = Math.round(price * (1 - discountFactor));
             let payable = row.querySelector('[name="payable[]"]');
-            payable.value = discounted_price.value * calculatedQuantity;
+            payable.value = Math.round(discounted_price.value * calculatedQuantity);
             let discount = row.querySelector('[name="discount[]"]');
-            discount.value = subtotal.value - payable.value;
+            discount.value = Math.round(subtotal.value - payable.value);
             updateTotals();
         } else{
             // let thung = row.querySelector('[name="thung[]"]');
