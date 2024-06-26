@@ -28,7 +28,7 @@
                     <td>{{ $product->product_name }}</td>
                     <td>{{ $product->price }}</td>
                     <td>
-                        <input type="number" step="1" name="discounts[{{ $product->sap_code }}]" value="{{ $product->discount_percentage ?? 0 }}" class="form-control">
+                        <input type="number" step="0.01" name="discounts[{{ $product->sap_code }}]" value="{{ $product->discount_percentage ?? 0 }}" class="form-control">
                     </td>
                 </tr>
                 @endforeach
